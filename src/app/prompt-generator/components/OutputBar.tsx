@@ -28,9 +28,13 @@ export function OutputBar({
   const [isExpanded, setIsExpanded] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
 
-  // Auto-expand entire output bar and prompt preview when user scrolls to the bottom
+  // Auto-expand entire output bar and prompt preview when user scrolls to the bottom (desktop only)
   useEffect(() => {
     const handleScroll = () => {
+      // Skip auto-expand on mobile devices
+      const isMobile = window.innerWidth < 768;
+      if (isMobile) return;
+
       const scrolledToBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 150;
       if (scrolledToBottom) {
         setIsMinimized(false);
