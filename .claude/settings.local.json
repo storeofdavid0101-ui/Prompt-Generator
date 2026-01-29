@@ -2,7 +2,13 @@
   "permissions": {
     "allow": [
       "Bash(npm run build:*)",
-      "Bash(pkill:*)"
+      "Bash(pkill:*)",
+      "Bash(timeout 10 npm run dev:*)",
+      "Bash(curl:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nAdd camera conflict detection, color palettes, and UI improvements\n\n- Add camera category system with conflict detection \\(vintage-lofi, antique,\n  modern-cinema, etc.\\) to prevent incompatible parameter combinations\n- Block conflicting atmospheres, visual presets, and DOF options based on\n  selected camera type with visual warning indicators\n- Add fixed lens support for cameras without interchangeable lenses \\(GoPro,\n  iPhone, VHS, Polaroid, etc.\\) showing locked lens info instead of dropdown\n- Add Color Palette section with 10 preset palettes \\(Teal & Orange, Noir,\n  Cyberpunk, Sunset, Ocean, Pastel, Earthy, Sepia, Forest, Golden Hour\\)\n- Add Custom palette option with 6 individual hex color input boxes\n- Change \"Characters\" label to \"Character Description\"\n- Set Creative Controls to OFF by default\n- Move data definitions to module level to fix variable hoisting runtime error\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git push:*)",
+      "Bash(git commit:*)"
     ]
   }
 }

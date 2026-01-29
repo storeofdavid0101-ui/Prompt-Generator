@@ -9,8 +9,8 @@ import {
 } from 'lucide-react';
 
 // Types
-type AIModel = 'midjourney' | 'flux' | 'stable-diffusion' | 'dalle3';
-type Atmosphere = 'cinematic' | 'golden-hour' | 'cyberpunk' | 'studio' | 'moody' | 'dreamy' | 'natural' | 'vintage';
+type AIModel = 'midjourney' | 'flux' | 'stable-diffusion' | 'dalle3' | 'chatgpt';
+type Atmosphere = 'cinematic' | 'cyberpunk' | 'studio' | 'moody' | 'dreamy' | 'natural' | 'vintage';
 type CameraCategory = 'vintage-lofi' | 'antique' | 'classic-film' | 'epic-film' | 'medium-format-classic' | '35mm-classic' | 'modern-cinema' | 'modern-digital' | 'consumer-mobile' | 'none';
 
 interface ModelConfig {
@@ -169,7 +169,7 @@ const categoryConflicts: Record<CameraCategory, ConflictRules> = {
   },
 };
 
-// Per-camera fixed lens overrides (more specific than category)
+// Per-camera fixed lens overrides (truly fixed, no zoom)
 const cameraFixedLens: Record<string, string> = {
   'GoPro': 'ultra-wide 16mm equivalent',
   'iPhone Pro': 'built-in multi-lens system',
@@ -178,15 +178,34 @@ const cameraFixedLens: Record<string, string> = {
   'Pinhole Camera': 'pinhole aperture (no lens)',
   'Polaroid SX-70': 'fixed 116mm lens',
   'Contax T2': 'Zeiss Sonnar 38mm f/2.8',
-  'VHS Camcorder': 'built-in zoom lens',
-  'Handycam': 'built-in zoom lens',
-  'Hi8': 'built-in zoom lens',
-  'Betacam': 'broadcast zoom lens',
-  'MiniDV': 'built-in zoom lens',
   'Daguerreotype': 'Petzval-style brass lens',
   'Wet Plate': 'large format brass lens',
   'Tintype': 'period brass lens',
   'Rolleiflex': 'Zeiss Planar 80mm f/2.8',
+};
+
+// Cameras with built-in zoom lenses (user can choose focal length within range)
+const cameraZoomRange: Record<string, { range: string; options: string[] }> = {
+  'VHS Camcorder': {
+    range: '8-80mm (48-480mm equiv)',
+    options: ['8mm (Wide)', '24mm', '40mm', '60mm', '80mm (Tele)'],
+  },
+  'Handycam': {
+    range: '3.6-36mm (40-400mm equiv)',
+    options: ['3.6mm (Wide)', '10mm', '20mm', '36mm (Tele)'],
+  },
+  'Hi8': {
+    range: '5.4-54mm (42-420mm equiv)',
+    options: ['5.4mm (Wide)', '15mm', '30mm', '54mm (Tele)'],
+  },
+  'Betacam': {
+    range: '8.5-119mm broadcast zoom',
+    options: ['8.5mm (Wide)', '25mm', '50mm', '85mm', '119mm (Tele)'],
+  },
+  'MiniDV': {
+    range: '5.9-59mm f/1.6 (41-410mm equiv)',
+    options: ['5.9mm (Wide)', '15mm', '30mm', '45mm', '59mm (Tele)'],
+  },
 };
 
 // Reverse conflicts: when atmosphere/preset is selected, which cameras are blocked
@@ -207,12 +226,6 @@ const atmosphereConfigs: Record<Atmosphere, AtmosphereConfig> = {
     keywords: 'cinematic lighting, dramatic shadows, high contrast, film grain, anamorphic lens flare, movie scene',
     gradient: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
     description: 'Hollywood-style dramatic lighting',
-  },
-  'golden-hour': {
-    name: 'Golden Hour',
-    keywords: 'golden hour lighting, warm sunlight, soft shadows, lens flare, sunset glow, magic hour',
-    gradient: 'linear-gradient(135deg, #f39c12 0%, #e74c3c 50%, #9b59b6 100%)',
-    description: 'Warm sunset/sunrise lighting',
   },
   'cyberpunk': {
     name: 'Cyberpunk',
@@ -286,6 +299,85 @@ const visualPresets: Record<string, PresetConfig> = {
   },
 };
 
+// Lighting Options
+const lightingOptions: Record<string, { name: string; keywords: string; category: string; gradient: string }> = {
+  // Classic Cinematic
+  'rembrandt': {
+    name: 'Rembrandt',
+    keywords: 'Rembrandt lighting, dramatic portrait lighting, triangle light on cheek, single light source, classic portrait',
+    category: 'classic',
+    gradient: 'linear-gradient(135deg, #8B7355 0%, #2C1810 100%)',
+  },
+  'chiaroscuro': {
+    name: 'Chiaroscuro',
+    keywords: 'chiaroscuro lighting, extreme contrast, deep shadows, dramatic light and dark, Caravaggio style, film noir lighting',
+    category: 'classic',
+    gradient: 'linear-gradient(135deg, #1a1a1a 0%, #4a4a4a 50%, #1a1a1a 100%)',
+  },
+  'highkey': {
+    name: 'High Key',
+    keywords: 'high key lighting, bright and soft, minimal shadows, clean white background, airy, optimistic mood',
+    category: 'classic',
+    gradient: 'linear-gradient(135deg, #64748b 0%, #94a3b8 50%, #475569 100%)',
+  },
+  'lowkey': {
+    name: 'Low Key',
+    keywords: 'low key lighting, mostly dark, selective highlights, moody shadows, noir atmosphere, dramatic tension',
+    category: 'classic',
+    gradient: 'linear-gradient(135deg, #0d0d0d 0%, #1a1a1a 50%, #2d2d2d 100%)',
+  },
+  // Natural / Atmospheric
+  'goldenhour': {
+    name: 'Golden Hour',
+    keywords: 'golden hour lighting, warm sunlight, soft orange glow, sunset light, magic hour, long shadows',
+    category: 'natural',
+    gradient: 'linear-gradient(135deg, #f39c12 0%, #e74c3c 50%, #9b59b6 100%)',
+  },
+  'bluehour': {
+    name: 'Blue Hour',
+    keywords: 'blue hour lighting, cool blue ambient light, twilight, melancholic mood, post-sunset, pre-dawn',
+    category: 'natural',
+    gradient: 'linear-gradient(135deg, #2c3e50 0%, #3498db 50%, #1a252f 100%)',
+  },
+  'moonlit': {
+    name: 'Moonlit Night',
+    keywords: 'moonlight, night exterior, deep blue light, high contrast shadows, lunar illumination, nocturnal',
+    category: 'natural',
+    gradient: 'linear-gradient(135deg, #0c1445 0%, #1a237e 50%, #0d1b2a 100%)',
+  },
+  'practical': {
+    name: 'Practical Light',
+    keywords: 'practical lighting, motivated light sources, table lamp glow, candlelight, TV screen light, realistic interior lighting',
+    category: 'natural',
+    gradient: 'linear-gradient(135deg, #d4a574 0%, #8b6914 50%, #3d2914 100%)',
+  },
+  // Stylized / Modern
+  'neon': {
+    name: 'Cyberpunk Neon',
+    keywords: 'neon lighting, cyberpunk colors, pink and blue neon, reflective surfaces, wet streets, futuristic glow',
+    category: 'stylized',
+    gradient: 'linear-gradient(135deg, #ff006e 0%, #8338ec 50%, #3a86ff 100%)',
+  },
+  'godrays': {
+    name: 'God Rays',
+    keywords: 'volumetric lighting, god rays, light beams through dust, atmospheric haze, epic light shafts, divine light',
+    category: 'stylized',
+    gradient: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 50%, #ee9ca7 100%)',
+  },
+  'softbox': {
+    name: 'Studio Softbox',
+    keywords: 'studio lighting, softbox diffused light, fashion photography lighting, clean and even, professional portrait',
+    category: 'stylized',
+    gradient: 'linear-gradient(135deg, #546e7a 0%, #78909c 50%, #37474f 100%)',
+  },
+  'bioluminescent': {
+    name: 'Bioluminescent',
+    keywords: 'bioluminescent glow, self-illuminating, avatar style, fantasy lighting, glowing organisms, ethereal inner light',
+    category: 'stylized',
+    gradient: 'linear-gradient(135deg, #00d4ff 0%, #00ff88 50%, #7b2cbf 100%)',
+  },
+};
+
 // Color Palette Options with actual hex values
 const colorPalettes: Record<string, { name: string; colors: string[] }> = {
   'teal-orange': {
@@ -323,10 +415,6 @@ const colorPalettes: Record<string, { name: string; colors: string[] }> = {
   'forest-moss': {
     name: 'Forest Moss',
     colors: ['#2D5A27', '#4A7C23', '#8FBC8F', '#556B2F', '#6B8E23', '#228B22'],
-  },
-  'golden-hour': {
-    name: 'Golden Hour',
-    colors: ['#FFD700', '#FFA500', '#FF8C00', '#FF7F50', '#FFDAB9', '#FFE4B5'],
   },
 };
 
@@ -404,10 +492,10 @@ const cameraOptions = [
   { label: '8mm Film', keywords: 'shot on 8mm film, heavy film grain, vintage home movie, warm Kodachrome tones, light leaks, projector flicker, dust and scratches, narrow gauge film, 1950s-60s aesthetic, faded colors, sprocket artifacts, amateur film look' },
   // Vintage Video
   { label: 'VHS Camcorder', keywords: 'VHS aesthetic, analog video, scan lines, tracking artifacts, color bleeding, horizontal noise bars, oversaturated reds, interlaced 480i, chromatic aberration, tape degradation, magnetic tape distortion, 1980s home video, CRT television look' },
-  { label: 'MiniDV', keywords: 'MiniDV footage, early digital video, 2000s indie film look, DV compression artifacts, interlaced video, tape dropout glitches, Y2K era aesthetic, amateur filmmaker look, digital video noise, standard definition widescreen' },
-  { label: 'Hi8', keywords: 'Hi8 video, consumer analog video, 1990s camcorder aesthetic, warmer colors than VHS, slightly sharper than VHS, pastel color shift, soft highlights, family vacation footage, S-video quality, late analog era' },
-  { label: 'Handycam', keywords: 'Sony Handycam, consumer camcorder, home video aesthetic, auto-exposure fluctuations, handheld shake, built-in microphone audio, family memories, birthday party footage, amateur video, auto white balance shifts, zoom hunting' },
-  { label: 'Betacam', keywords: 'Betacam footage, broadcast television quality, ENG electronic news gathering, 1980s-90s TV news aesthetic, professional analog video, component video signal, institutional video, slightly soft image, TV studio lighting, video journalist look' },
+  { label: 'MiniDV', keywords: 'MiniDV footage, early digital video, 2000s indie film look, low resolution 480i, soft blurry image, not sharp, standard definition video still, DV compression artifacts, interlaced video, tape dropout glitches, Y2K era aesthetic, muted washed out colors, color smearing on edges, blocky pixelated compression, crushed blacks, blown highlights, green color cast, unnatural skin tones, low quality video capture, fuzzy details, video frame grab' },
+  { label: 'Hi8', keywords: 'Hi8 video, consumer analog video, 1990s camcorder aesthetic, warmer colors than VHS, slightly sharper than VHS, pastel color shift, soft highlights, family vacation footage, S-video quality, late analog era, RGB color fringing on edges, chroma bleed, soft blurry low resolution, interlaced video artifacts' },
+  { label: 'Handycam', keywords: 'Sony Handycam, consumer camcorder, home video aesthetic, low resolution video, soft blurry image, not sharp, auto-exposure fluctuations, handheld camera shake, amateur video quality, auto white balance color shifts, auto focus hunting, washed out colors, video noise in shadows, interlaced artifacts, blown out highlights, consumer video look, 1990s home movie, low quality video still, fuzzy details, Video8 format, RGB misregistration, color channel separation on edges' },
+  { label: 'Betacam', keywords: 'Betacam SP video frame grab, standard definition 480i, extremely soft and blurry image, very low resolution fuzzy details, blue cyan color cast tint, blown out white washed sky, hazy lifted milky blacks, flat low contrast image, faded washed out desaturated colors, RGB misregistration, red green blue channel separation on edges, chroma misalignment color fringing, old degraded TV news broadcast footage, 1980s-90s VHS-era video capture, analog tape generation loss, interlace scan lines, looks like old television recording, definitely not sharp, not cinematic, not HD, not 4K, ugly low quality video still' },
   // Niche & Vintage Photography
   { label: 'Polaroid SX-70', keywords: 'Polaroid instant photo, vintage instant film, soft dreamy colors, white border frame, Polaroid color shift, slightly washed out, creamy highlights, soft vignette, 1970s instant photography, square format, imperfect development, warm color cast' },
   { label: 'Contax T2', keywords: 'shot on Contax T2, 35mm compact, Zeiss lens, 1990s aesthetic' },
@@ -427,6 +515,79 @@ const dofOptions = [
   { value: 'normal', label: 'Normal', keywords: '' },
   { value: 'deep', label: 'Deep (All in Focus)', keywords: 'deep depth of field, everything in focus, f/11, sharp throughout' },
   { value: 'tilt-shift', label: 'Tilt-Shift', keywords: 'tilt-shift photography, miniature effect, selective focus' },
+];
+
+// Aspect Ratio Options
+const aspectRatioOptions = [
+  { value: 'none', label: 'Default', ratio: '' },
+  { value: '1:1', label: '1:1 Square', ratio: '1:1' },
+  { value: '4:3', label: '4:3 Standard', ratio: '4:3' },
+  { value: '3:2', label: '3:2 Classic', ratio: '3:2' },
+  { value: '16:9', label: '16:9 Widescreen', ratio: '16:9' },
+  { value: '21:9', label: '21:9 Cinematic', ratio: '21:9' },
+  { value: '9:16', label: '9:16 Vertical', ratio: '9:16' },
+  { value: '2:3', label: '2:3 Portrait', ratio: '2:3' },
+  { value: '4:5', label: '4:5 Instagram', ratio: '4:5' },
+];
+
+// Camera-specific allowed aspect ratios
+const cameraAspectRatios: Record<string, string[]> = {
+  // Vintage Video - mostly 4:3, some later models 16:9
+  'VHS Camcorder': ['4:3'],
+  'Betacam': ['4:3', '16:9'],
+  'Hi8': ['4:3'],
+  'MiniDV': ['4:3', '16:9'],
+  'Handycam': ['4:3', '16:9'],
+  // Film formats
+  '8mm Film': ['4:3', '1.33:1'],
+  'Super 8': ['4:3'],
+  '16mm Film': ['4:3', '1.66:1'],
+  'Super 16': ['16:9', '1.66:1'],
+  '35mm Film': ['4:3', '16:9', '21:9', '2.39:1'],
+  '65mm Film': ['21:9', '2.2:1'],
+  '70mm IMAX': ['1.43:1', '16:9'],
+  'IMAX Camera': ['1.43:1', '16:9'],
+  // Polaroid - square
+  'Polaroid SX-70': ['1:1'],
+  // Medium format - typically square or 4:5
+  'Hasselblad 500C': ['1:1'],
+  'Rolleiflex': ['1:1'],
+  'Mamiya RZ67': ['4:5', '1:1'],
+  // Antique - portrait orientation typically
+  'Daguerreotype': ['4:5', '3:4', '1:1'],
+  'Tintype': ['4:5', '3:4', '1:1'],
+  'Wet Plate': ['4:5', '3:4', '1:1'],
+};
+
+// Director Styles - Famous directors with distinctive visual styles
+const directorStyles: Array<{
+  name: string;
+  keywords: string;
+  blockedAtmospheres: Atmosphere[];
+  blockedPresets: string[];
+}> = [
+  { name: 'Wes Anderson', keywords: 'Wes Anderson style, symmetrical composition, pastel color palette, whimsical, centered framing, vintage aesthetic', blockedAtmospheres: ['cyberpunk', 'moody'], blockedPresets: ['highcontrast', 'bleachbypass'] },
+  { name: 'Quentin Tarantino', keywords: 'Quentin Tarantino style, realistic film still, photorealistic, live action movie, 35mm film, bold colors, low angle shots, trunk shot, 70s grindhouse aesthetic, cinematic lighting, not illustration, not anime', blockedAtmospheres: ['dreamy', 'studio'], blockedPresets: ['desaturated'] },
+  { name: 'Stanley Kubrick', keywords: 'Stanley Kubrick style, one-point perspective, symmetrical framing, cold colors, wide angle, unsettling atmosphere', blockedAtmospheres: ['dreamy'], blockedPresets: ['vivid'] },
+  { name: 'David Lynch', keywords: 'David Lynch style, surrealist, dreamlike, dark atmosphere, uncanny, mysterious lighting, noir', blockedAtmospheres: ['natural', 'studio'], blockedPresets: ['vivid', 'raw'] },
+  { name: 'Christopher Nolan', keywords: 'Christopher Nolan style, IMAX quality, dark and gritty, complex composition, realistic, grand scale', blockedAtmospheres: ['dreamy', 'vintage'], blockedPresets: ['desaturated'] },
+  { name: 'Denis Villeneuve', keywords: 'Denis Villeneuve style, atmospheric, vast landscapes, slow and deliberate, muted colors, epic scale, minimal', blockedAtmospheres: ['cyberpunk', 'vintage'], blockedPresets: ['vivid'] },
+  { name: 'Ridley Scott', keywords: 'Ridley Scott style, detailed production design, atmospheric lighting, smoke and haze, epic, textured', blockedAtmospheres: ['dreamy'], blockedPresets: [] },
+  { name: 'Wong Kar-wai', keywords: 'Wong Kar-wai style, neon lights, motion blur, saturated colors, romantic melancholy, urban night', blockedAtmospheres: ['natural', 'studio'], blockedPresets: ['raw', 'desaturated'] },
+  { name: 'Terrence Malick', keywords: 'Terrence Malick style, golden hour, natural light, poetic, nature imagery, magic hour, ethereal', blockedAtmospheres: ['cyberpunk', 'studio', 'moody'], blockedPresets: ['highcontrast', 'bleachbypass'] },
+  { name: 'Akira Kurosawa', keywords: 'Akira Kurosawa style, dynamic composition, weather elements, rain and wind, samurai epic, dramatic', blockedAtmospheres: ['studio', 'cyberpunk'], blockedPresets: [] },
+  { name: 'Tim Burton', keywords: 'Tim Burton style, gothic, dark whimsy, German expressionist, twisted, striped patterns, pale characters', blockedAtmospheres: ['natural', 'studio'], blockedPresets: ['vivid', 'raw'] },
+  { name: 'Guillermo del Toro', keywords: 'Guillermo del Toro style, dark fantasy, ornate details, creature design, amber and teal, gothic romance', blockedAtmospheres: ['studio', 'natural'], blockedPresets: ['raw', 'desaturated'] },
+  { name: 'David Fincher', keywords: 'David Fincher style, dark and moody, green-yellow tint, meticulous, shadows, desaturated, noir', blockedAtmospheres: ['dreamy', 'natural'], blockedPresets: ['vivid', 'raw'] },
+  { name: 'Zack Snyder', keywords: 'Zack Snyder style, slow motion, desaturated colors, high contrast, epic action, comic book aesthetic', blockedAtmospheres: ['vintage', 'dreamy'], blockedPresets: ['raw'] },
+  { name: 'Sofia Coppola', keywords: 'Sofia Coppola style, soft pastels, dreamy, melancholic, feminine, natural light, intimate', blockedAtmospheres: ['cyberpunk', 'moody'], blockedPresets: ['highcontrast', 'bleachbypass'] },
+  { name: 'Edgar Wright', keywords: 'Edgar Wright style, dynamic editing, visual comedy, vibrant colors, whip pans, British humor', blockedAtmospheres: ['moody', 'vintage'], blockedPresets: ['desaturated', 'bleachbypass'] },
+  { name: 'Hayao Miyazaki', keywords: 'Hayao Miyazaki style, Studio Ghibli, hand-drawn animation, nature, flying scenes, whimsical, Japanese', blockedAtmospheres: ['cyberpunk', 'moody'], blockedPresets: ['highcontrast', 'bleachbypass'] },
+  { name: 'Coen Brothers', keywords: 'Coen Brothers style, quirky characters, dark humor, midwest americana, offbeat, ironic', blockedAtmospheres: ['dreamy', 'cyberpunk'], blockedPresets: [] },
+  { name: 'Park Chan-wook', keywords: 'Park Chan-wook style, revenge aesthetic, stylized violence, bold colors, symmetry, Korean cinema', blockedAtmospheres: ['dreamy', 'natural'], blockedPresets: ['raw', 'desaturated'] },
+  { name: 'Andrei Tarkovsky', keywords: 'Andrei Tarkovsky style, long contemplative shots, water imagery, spiritual, dreamlike, slow cinema', blockedAtmospheres: ['cyberpunk', 'studio'], blockedPresets: ['vivid', 'highcontrast'] },
+  { name: 'Roger Deakins', keywords: 'Roger Deakins cinematography, masterful lighting, natural beauty, precise composition, atmospheric', blockedAtmospheres: [], blockedPresets: [] },
+  { name: 'Emmanuel Lubezki', keywords: 'Emmanuel Lubezki cinematography, natural light, long takes, fluid camera movement, magic hour, immersive', blockedAtmospheres: ['studio', 'cyberpunk'], blockedPresets: ['highcontrast'] },
 ];
 
 export default function AdvancedPromptGenerator() {
@@ -451,6 +612,7 @@ export default function AdvancedPromptGenerator() {
   // Visual Presets
   const [selectedAtmosphere, setSelectedAtmosphere] = useState<Atmosphere | null>(null);
   const [selectedVisualPreset, setSelectedVisualPreset] = useState<string | null>(null);
+  const [selectedLighting, setSelectedLighting] = useState<string | null>(null);
   const [selectedColorPalette, setSelectedColorPalette] = useState<string | null>(null);
   const [customColors, setCustomColors] = useState<string[]>(['', '', '', '', '', '']);
 
@@ -462,12 +624,14 @@ export default function AdvancedPromptGenerator() {
   const [selectedShot, setSelectedShot] = useState('Medium Shot (MS)');
   const [customShot, setCustomShot] = useState('');
   const [depthOfField, setDepthOfField] = useState('normal');
+  const [aspectRatio, setAspectRatio] = useState('none');
 
   // Advanced
   const [negativePrompt, setNegativePrompt] = useState('');
   const [settingsLocked, setSettingsLocked] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [creativeControlsEnabled, setCreativeControlsEnabled] = useState(false);
+  const [selectedDirector, setSelectedDirector] = useState('');
 
   // Hover Preview removed for performance
 
@@ -479,6 +643,7 @@ export default function AdvancedPromptGenerator() {
     visual: false,
     color: false,
     camera: false,
+    lighting: false,
   });
 
   // User Presets (placeholder)
@@ -498,6 +663,13 @@ export default function AdvancedPromptGenerator() {
     const blockedPresets = new Set<string>(cameraRules.blockedPresets);
     const blockedDOF = new Set<string>(cameraRules.blockedDOF);
     const blockedCameras = new Set<string>();
+
+    // Add director-based blocking
+    const directorConfig = directorStyles.find(d => d.name === selectedDirector);
+    if (directorConfig) {
+      directorConfig.blockedAtmospheres.forEach(atm => blockedAtmospheres.add(atm));
+      directorConfig.blockedPresets.forEach(preset => blockedPresets.add(preset));
+    }
 
     // Check reverse conflicts: atmosphere blocks cameras
     if (selectedAtmosphere && atmosphereBlocksCategories[selectedAtmosphere]) {
@@ -535,9 +707,19 @@ export default function AdvancedPromptGenerator() {
       activeConflicts.push(`"${dofLabel}" DOF conflicts with ${selectedCamera}`);
     }
 
-    // Determine if camera has a fixed lens
-    const fixedLens = selectedCamera
+    // Determine if camera has a zoom range or fixed lens
+    // Zoom range takes precedence over category-level fixedLens
+    const zoomRange = selectedCamera
+      ? (cameraZoomRange[selectedCamera] || null)
+      : null;
+
+    const fixedLens = selectedCamera && !zoomRange
       ? (cameraFixedLens[selectedCamera] || cameraRules.fixedLens || null)
+      : null;
+
+    // Get allowed aspect ratios for camera (null means all allowed)
+    const allowedAspectRatios = selectedCamera
+      ? (cameraAspectRatios[selectedCamera] || null)
       : null;
 
     return {
@@ -548,8 +730,10 @@ export default function AdvancedPromptGenerator() {
       activeConflicts,
       warningMessage: cameraRules.warningMessage,
       fixedLens,
+      zoomRange,
+      allowedAspectRatios,
     };
-  }, [currentCameraCategory, selectedCamera, selectedAtmosphere, selectedVisualPreset, depthOfField]);
+  }, [currentCameraCategory, selectedCamera, selectedAtmosphere, selectedVisualPreset, depthOfField, selectedDirector]);
 
   // Auto-clear conflicting selections when camera changes
   const handleCameraChange = useCallback((newCamera: string) => {
@@ -571,7 +755,31 @@ export default function AdvancedPromptGenerator() {
     if (rules.blockedDOF.includes(depthOfField)) {
       setDepthOfField('normal');
     }
-  }, [settingsLocked, selectedAtmosphere, selectedVisualPreset, depthOfField]);
+    // Reset aspect ratio if camera has restrictions and current ratio isn't allowed
+    const allowedRatios = cameraAspectRatios[newCamera];
+    if (allowedRatios && aspectRatio !== 'none' && !allowedRatios.includes(aspectRatio)) {
+      setAspectRatio('none');
+    }
+  }, [settingsLocked, selectedAtmosphere, selectedVisualPreset, depthOfField, aspectRatio]);
+
+  // Auto-clear conflicting selections when director changes
+  const handleDirectorChange = useCallback((newDirector: string) => {
+    if (settingsLocked) return;
+
+    setSelectedDirector(newDirector);
+
+    const directorConfig = directorStyles.find(d => d.name === newDirector);
+    if (directorConfig) {
+      // Auto-clear conflicting atmosphere
+      if (selectedAtmosphere && directorConfig.blockedAtmospheres.includes(selectedAtmosphere)) {
+        setSelectedAtmosphere(null);
+      }
+      // Auto-clear conflicting preset
+      if (selectedVisualPreset && directorConfig.blockedPresets.includes(selectedVisualPreset)) {
+        setSelectedVisualPreset(null);
+      }
+    }
+  }, [settingsLocked, selectedAtmosphere, selectedVisualPreset]);
 
   // Model Configurations
   const modelConfigs: Record<AIModel, ModelConfig> = {
@@ -610,6 +818,15 @@ export default function AdvancedPromptGenerator() {
       variationParam: 'quality:',
       negativeParam: 'avoid:',
       aspectParam: 'size:',
+    },
+    'chatgpt': {
+      name: 'ChatGPT',
+      icon: '💬',
+      maxCreativity: 100,
+      creativityParam: '',
+      variationParam: '',
+      negativeParam: 'without',
+      aspectParam: '',
     },
   };
 
@@ -679,6 +896,12 @@ export default function AdvancedPromptGenerator() {
           variation: uniqueness > 50 ? 'quality: hd' : 'quality: standard',
           quality: '',
         };
+      case 'chatgpt':
+        return {
+          creativity: '',
+          variation: '',
+          quality: '',
+        };
       default:
         return { creativity: '', variation: '', quality: '' };
     }
@@ -739,10 +962,7 @@ export default function AdvancedPromptGenerator() {
       parts.push(`color palette: ${formattedColors}`);
     } else if (selectedColorPalette && selectedColorPalette !== 'custom' && colorPalettes[selectedColorPalette]) {
       const palette = colorPalettes[selectedColorPalette].colors;
-      const paletteDesc = palette.length >= 4
-        ? `primary tones: ${palette.slice(0, 2).join(', ')}, accent colors: ${palette.slice(2, 4).join(', ')}`
-        : palette.join(', ');
-      parts.push(`color grading with ${paletteDesc}`);
+      parts.push(`color palette: ${palette.join(', ')}`);
     }
 
     // [Atmosphere]
@@ -750,16 +970,29 @@ export default function AdvancedPromptGenerator() {
       parts.push(atmosphereConfigs[selectedAtmosphere].keywords);
     }
 
+    // [Lighting]
+    if (selectedLighting && lightingOptions[selectedLighting]) {
+      parts.push(lightingOptions[selectedLighting].keywords);
+    }
+
+    // [Director Style]
+    const directorConfig = directorStyles.find(d => d.name === selectedDirector);
+    if (directorConfig) {
+      parts.push(directorConfig.keywords);
+    }
+
     // [Camera]
     const cameraConfig = cameraOptions.find(c => c.label === selectedCamera);
     const finalCamera = customCamera.trim() || (cameraConfig ? cameraConfig.keywords : '');
 
-    // Check if camera has fixed lens (skip user lens selection for fixed-lens cameras)
+    // Check if camera has zoom range, fixed lens, or interchangeable lens
     const cameraCategory = selectedCamera ? (cameraCategories[selectedCamera] || 'none') : 'none';
-    const hasFixedLens = selectedCamera
+    const hasZoomRange = selectedCamera ? cameraZoomRange[selectedCamera] : null;
+    const hasFixedLens = selectedCamera && !hasZoomRange
       ? (cameraFixedLens[selectedCamera] || categoryConflicts[cameraCategory].fixedLens)
       : null;
 
+    // Include lens for zoom range cameras and interchangeable lens cameras, skip for fixed lens
     const finalLens = hasFixedLens ? null : (customLens.trim() || selectedLens);
     const shotConfig = shotOptions.find(s => s.label === selectedShot);
     const finalShot = customShot.trim() || (shotConfig ? shotConfig.keywords : selectedShot);
@@ -784,8 +1017,13 @@ export default function AdvancedPromptGenerator() {
     let prompt = parts.filter(Boolean).join(', ');
 
     // Add model-specific parameters (only if creative controls enabled)
+    const selectedRatio = aspectRatioOptions.find(r => r.value === aspectRatio);
+
     if (selectedModel === 'midjourney') {
       const mjParams = [];
+      if (aspectRatio !== 'none' && selectedRatio) {
+        mjParams.push(`--ar ${selectedRatio.ratio}`);
+      }
       if (creativeControlsEnabled) {
         if (params.creativity) mjParams.push(params.creativity);
         if (params.variation) mjParams.push(params.variation);
@@ -798,6 +1036,9 @@ export default function AdvancedPromptGenerator() {
         prompt += ' ' + mjParams.join(' ');
       }
     } else if (selectedModel === 'stable-diffusion') {
+      if (aspectRatio !== 'none' && selectedRatio) {
+        prompt += `, ${selectedRatio.ratio} aspect ratio`;
+      }
       if (negativePrompt.trim()) {
         prompt += `\n\n${config.negativeParam} ${negativePrompt.trim()}`;
       }
@@ -808,20 +1049,34 @@ export default function AdvancedPromptGenerator() {
       if (creativeControlsEnabled) {
         prompt += `\n\n[${params.creativity}, ${params.variation}]`;
       }
+      if (aspectRatio !== 'none' && selectedRatio) {
+        prompt += `\n[aspect_ratio: ${selectedRatio.ratio}]`;
+      }
       if (negativePrompt.trim()) {
         prompt += `\n${config.negativeParam} ${negativePrompt.trim()}`;
       }
     } else if (selectedModel === 'dalle3') {
       // DALL-E 3 uses natural language, parameters are embedded
+      if (aspectRatio !== 'none' && selectedRatio) {
+        prompt += `, ${selectedRatio.ratio} aspect ratio`;
+      }
       if (negativePrompt.trim()) {
         prompt += `, avoiding ${negativePrompt.trim()}`;
+      }
+    } else if (selectedModel === 'chatgpt') {
+      // ChatGPT uses conversational natural language
+      if (aspectRatio !== 'none' && selectedRatio) {
+        prompt += `, in ${selectedRatio.ratio} aspect ratio`;
+      }
+      if (negativePrompt.trim()) {
+        prompt += `, without ${negativePrompt.trim()}`;
       }
     }
 
     return prompt || 'Start by adding a subject...';
-  }, [subject, characterItems, currentCharacter, location, selectedVisualPreset, selectedColorPalette,
-      customColors, selectedAtmosphere, selectedCamera, customCamera, selectedLens, customLens,
-      selectedShot, customShot, depthOfField, selectedModel, negativePrompt, creativeControlsEnabled, translateSliders]);
+  }, [subject, characterItems, currentCharacter, location, selectedVisualPreset, selectedLighting, selectedColorPalette,
+      customColors, selectedAtmosphere, selectedDirector, selectedCamera, customCamera, selectedLens, customLens,
+      selectedShot, customShot, depthOfField, aspectRatio, selectedModel, negativePrompt, creativeControlsEnabled, translateSliders]);
 
   // Copy to Clipboard
   const copyToClipboard = async () => {
@@ -839,6 +1094,7 @@ export default function AdvancedPromptGenerator() {
     setLocation('');
     setSelectedAtmosphere(null);
     setSelectedVisualPreset(null);
+    setSelectedLighting(null);
     setSelectedColorPalette(null);
     setCustomColors(['', '', '', '', '', '']);
     setSelectedCamera('');
@@ -848,7 +1104,9 @@ export default function AdvancedPromptGenerator() {
     setSelectedShot('Medium Shot (MS)');
     setCustomShot('');
     setDepthOfField('normal');
+    setAspectRatio('none');
     setNegativePrompt('');
+    setSelectedDirector('');
     setCreativity(50);
     setVariation(50);
     setUniqueness(50);
@@ -1040,9 +1298,8 @@ export default function AdvancedPromptGenerator() {
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    className="overflow-hidden"
                   >
-                    <div className="grid grid-cols-2 gap-2 pb-4">
+                    <div className="grid grid-cols-2 gap-2 pb-4 px-1">
                       {(Object.entries(modelConfigs) as [AIModel, ModelConfig][]).map(([key, config]) => (
                         <motion.button
                           key={key}
@@ -1177,6 +1434,37 @@ export default function AdvancedPromptGenerator() {
                   }}
                 />
               </div>
+            </div>
+
+            <div className="h-px" style={{ backgroundColor: themeColors.borderColor }} />
+
+            {/* Director Style */}
+            <div className="py-3">
+              <label className="block text-xs font-medium mb-2 flex items-center gap-1.5" style={{ color: themeColors.textTertiary }}>
+                <Sparkles className="w-3 h-3" /> Director Style
+              </label>
+              <select
+                value={selectedDirector}
+                onChange={(e) => handleDirectorChange(e.target.value)}
+                disabled={settingsLocked}
+                className="w-full rounded-lg px-3 py-2 text-sm transition-all focus:outline-none focus:ring-2"
+                style={{
+                  backgroundColor: themeColors.inputBackground,
+                  border: `1px solid ${themeColors.inputBorder}`,
+                  color: themeColors.textPrimary,
+                  opacity: settingsLocked ? 0.6 : 1
+                }}
+              >
+                <option value="">No director style</option>
+                {directorStyles.map(director => (
+                  <option key={director.name} value={director.name}>{director.name}</option>
+                ))}
+              </select>
+              {selectedDirector && (
+                <p className="text-xs mt-1.5" style={{ color: themeColors.textTertiary }}>
+                  Some styles locked to match {selectedDirector}&apos;s aesthetic
+                </p>
+              )}
             </div>
 
             <div className="h-px" style={{ backgroundColor: themeColors.borderColor }} />
@@ -1536,6 +1824,42 @@ export default function AdvancedPromptGenerator() {
                             <span>{conflicts.fixedLens}</span>
                             <span className="text-xs opacity-60">(fixed)</span>
                           </div>
+                        ) : conflicts.zoomRange ? (
+                          // Zoom lens camera - show range info and zoom options
+                          <>
+                            <div
+                              className="w-full rounded-lg px-3 py-1.5 text-xs mb-2 flex items-center gap-2"
+                              style={{
+                                backgroundColor: themeColors.promptBg,
+                                border: `1px solid ${themeColors.borderColor}`,
+                                color: themeColors.textTertiary,
+                              }}
+                            >
+                              <Camera className="w-3 h-3" style={{ color: themeColors.accent }} />
+                              <span>Built-in zoom: {conflicts.zoomRange.range}</span>
+                            </div>
+                            <select
+                              value={selectedLens}
+                              onChange={(e) => {
+                                if (!settingsLocked) {
+                                  setSelectedLens(e.target.value);
+                                  setCustomLens('');
+                                }
+                              }}
+                              disabled={settingsLocked}
+                              className="w-full rounded-lg px-3 py-2 text-sm transition-all focus:outline-none focus:ring-2"
+                              style={{
+                                backgroundColor: themeColors.inputBackground,
+                                border: `1px solid ${themeColors.inputBorder}`,
+                                color: themeColors.textPrimary,
+                                opacity: settingsLocked ? 0.6 : 1
+                              }}
+                            >
+                              {conflicts.zoomRange.options.map(opt => (
+                                <option key={opt} value={opt}>{opt}</option>
+                              ))}
+                            </select>
+                          </>
                         ) : (
                           // Interchangeable lens camera - show dropdown
                           <>
@@ -1625,6 +1949,201 @@ export default function AdvancedPromptGenerator() {
                           }}
                         />
                       </div>
+
+                      {/* Aspect Ratio Selection */}
+                      <div>
+                        <label className="block text-xs mb-2" style={{ color: themeColors.textTertiary }}>Aspect Ratio</label>
+                        {conflicts.allowedAspectRatios ? (
+                          // Camera has specific allowed ratios
+                          <>
+                            <div
+                              className="w-full rounded-lg px-3 py-1.5 text-xs mb-2 flex items-center gap-2"
+                              style={{
+                                backgroundColor: themeColors.promptBg,
+                                border: `1px solid ${themeColors.borderColor}`,
+                                color: themeColors.textTertiary,
+                              }}
+                            >
+                              <Camera className="w-3 h-3" style={{ color: themeColors.accent }} />
+                              <span>Limited to authentic {selectedCamera} ratios</span>
+                            </div>
+                            <select
+                              value={aspectRatio}
+                              onChange={(e) => {
+                                if (!settingsLocked) {
+                                  setAspectRatio(e.target.value);
+                                }
+                              }}
+                              disabled={settingsLocked}
+                              className="w-full rounded-lg px-3 py-2 text-sm transition-all focus:outline-none focus:ring-2"
+                              style={{
+                                backgroundColor: themeColors.inputBackground,
+                                border: `1px solid ${themeColors.inputBorder}`,
+                                color: themeColors.textPrimary,
+                                opacity: settingsLocked ? 0.6 : 1
+                              }}
+                            >
+                              <option value="none">Default</option>
+                              {conflicts.allowedAspectRatios.map(ratio => {
+                                const opt = aspectRatioOptions.find(r => r.ratio === ratio);
+                                return (
+                                  <option key={ratio} value={ratio}>
+                                    {opt ? opt.label : ratio}
+                                  </option>
+                                );
+                              })}
+                            </select>
+                          </>
+                        ) : (
+                          // No camera selected or camera allows all ratios
+                          <select
+                            value={aspectRatio}
+                            onChange={(e) => {
+                              if (!settingsLocked) {
+                                setAspectRatio(e.target.value);
+                              }
+                            }}
+                            disabled={settingsLocked}
+                            className="w-full rounded-lg px-3 py-2 text-sm transition-all focus:outline-none focus:ring-2"
+                            style={{
+                              backgroundColor: themeColors.inputBackground,
+                              border: `1px solid ${themeColors.inputBorder}`,
+                              color: themeColors.textPrimary,
+                              opacity: settingsLocked ? 0.6 : 1
+                            }}
+                          >
+                            {aspectRatioOptions.map(opt => (
+                              <option key={opt.value} value={opt.value}>{opt.label}</option>
+                            ))}
+                          </select>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            <div className="h-px" style={{ backgroundColor: themeColors.borderColor }} />
+
+            {/* Lighting */}
+            <div>
+              <SectionHeader title="Lighting" icon={Sun} sectionKey="lighting" />
+              <AnimatePresence>
+                {expandedSections.lighting && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="pb-4 space-y-4">
+                      {/* Classic Cinematic */}
+                      <div>
+                        <label className="block text-xs mb-2" style={{ color: themeColors.textTertiary }}>Classic Cinematic</label>
+                        <div className="grid grid-cols-2 gap-2">
+                          {Object.entries(lightingOptions)
+                            .filter(([, opt]) => opt.category === 'classic')
+                            .map(([key, opt]) => (
+                              <motion.button
+                                key={key}
+                                onClick={() => {
+                                  if (!settingsLocked) {
+                                    setSelectedLighting(selectedLighting === key ? null : key);
+                                  }
+                                }}
+                                disabled={settingsLocked}
+                                className="px-3 py-2 rounded-lg text-xs font-medium transition-all text-left"
+                                style={{
+                                  background: selectedLighting === key ? opt.gradient : themeColors.inputBackground,
+                                  border: `1px solid ${selectedLighting === key ? 'transparent' : themeColors.inputBorder}`,
+                                  color: selectedLighting === key ? '#fff' : themeColors.textSecondary,
+                                  opacity: settingsLocked ? 0.6 : 1,
+                                }}
+                                whileHover={{ scale: settingsLocked ? 1 : 1.02 }}
+                                whileTap={{ scale: settingsLocked ? 1 : 0.98 }}
+                              >
+                                {opt.name}
+                              </motion.button>
+                            ))}
+                        </div>
+                      </div>
+
+                      {/* Natural / Atmospheric */}
+                      <div>
+                        <label className="block text-xs mb-2" style={{ color: themeColors.textTertiary }}>Natural / Atmospheric</label>
+                        <div className="grid grid-cols-2 gap-2">
+                          {Object.entries(lightingOptions)
+                            .filter(([, opt]) => opt.category === 'natural')
+                            .map(([key, opt]) => (
+                              <motion.button
+                                key={key}
+                                onClick={() => {
+                                  if (!settingsLocked) {
+                                    setSelectedLighting(selectedLighting === key ? null : key);
+                                  }
+                                }}
+                                disabled={settingsLocked}
+                                className="px-3 py-2 rounded-lg text-xs font-medium transition-all text-left"
+                                style={{
+                                  background: selectedLighting === key ? opt.gradient : themeColors.inputBackground,
+                                  border: `1px solid ${selectedLighting === key ? 'transparent' : themeColors.inputBorder}`,
+                                  color: selectedLighting === key ? '#fff' : themeColors.textSecondary,
+                                  opacity: settingsLocked ? 0.6 : 1,
+                                }}
+                                whileHover={{ scale: settingsLocked ? 1 : 1.02 }}
+                                whileTap={{ scale: settingsLocked ? 1 : 0.98 }}
+                              >
+                                {opt.name}
+                              </motion.button>
+                            ))}
+                        </div>
+                      </div>
+
+                      {/* Stylized / Modern */}
+                      <div>
+                        <label className="block text-xs mb-2" style={{ color: themeColors.textTertiary }}>Stylized / Modern</label>
+                        <div className="grid grid-cols-2 gap-2">
+                          {Object.entries(lightingOptions)
+                            .filter(([, opt]) => opt.category === 'stylized')
+                            .map(([key, opt]) => (
+                              <motion.button
+                                key={key}
+                                onClick={() => {
+                                  if (!settingsLocked) {
+                                    setSelectedLighting(selectedLighting === key ? null : key);
+                                  }
+                                }}
+                                disabled={settingsLocked}
+                                className="px-3 py-2 rounded-lg text-xs font-medium transition-all text-left"
+                                style={{
+                                  background: selectedLighting === key ? opt.gradient : themeColors.inputBackground,
+                                  border: `1px solid ${selectedLighting === key ? 'transparent' : themeColors.inputBorder}`,
+                                  color: selectedLighting === key ? '#fff' : themeColors.textSecondary,
+                                  opacity: settingsLocked ? 0.6 : 1,
+                                }}
+                                whileHover={{ scale: settingsLocked ? 1 : 1.02 }}
+                                whileTap={{ scale: settingsLocked ? 1 : 0.98 }}
+                              >
+                                {opt.name}
+                              </motion.button>
+                            ))}
+                        </div>
+                      </div>
+
+                      {/* Selected lighting preview */}
+                      {selectedLighting && (
+                        <div
+                          className="p-3 rounded-lg text-xs"
+                          style={{
+                            background: lightingOptions[selectedLighting].gradient,
+                            color: '#fff',
+                          }}
+                        >
+                          <div className="font-medium mb-1">{lightingOptions[selectedLighting].name}</div>
+                          <div className="opacity-80 text-[10px]">{lightingOptions[selectedLighting].keywords}</div>
+                        </div>
+                      )}
                     </div>
                   </motion.div>
                 )}
@@ -1839,7 +2358,7 @@ export default function AdvancedPromptGenerator() {
         <div className="max-w-[480px] mx-auto p-4">
           {/* Live Preview */}
           <div
-            className="rounded-xl p-3 mb-3 max-h-24 overflow-y-auto"
+            className="rounded-xl p-3 mb-3 overflow-hidden"
             style={{
               backgroundColor: themeColors.promptBg,
               border: `1px solid ${themeColors.borderColor}`,
@@ -1848,7 +2367,7 @@ export default function AdvancedPromptGenerator() {
             <div className="flex items-start gap-2">
               <Eye className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: themeColors.accent }} />
               <p
-                className="text-xs font-mono leading-relaxed"
+                className="text-xs font-mono leading-relaxed line-clamp-2"
                 style={{ color: themeColors.textPrimary }}
               >
                 {generatePrompt()}
