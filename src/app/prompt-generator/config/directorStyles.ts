@@ -73,40 +73,10 @@ export const directorStyles: DirectorStyle[] = [
     blockedPresets: ['vivid', 'raw'],
   },
   {
-    name: 'Guillermo del Toro',
-    keywords: 'Guillermo del Toro style, dark fantasy, ornate details, creature design, amber and teal, gothic romance',
-    blockedAtmospheres: ['studio', 'natural'],
-    blockedPresets: ['raw', 'desaturated'],
-  },
-  {
     name: 'David Fincher',
     keywords: 'David Fincher style, dark and moody, green-yellow tint, meticulous, shadows, desaturated, noir',
     blockedAtmospheres: ['dreamy', 'natural'],
     blockedPresets: ['vivid', 'raw'],
-  },
-  {
-    name: 'Zack Snyder',
-    keywords: 'Zack Snyder style, slow motion, desaturated colors, high contrast, epic action, comic book aesthetic',
-    blockedAtmospheres: ['vintage', 'dreamy'],
-    blockedPresets: ['raw'],
-  },
-  {
-    name: 'Sofia Coppola',
-    keywords: 'Sofia Coppola style, soft pastels, dreamy, melancholic, feminine, natural light, intimate',
-    blockedAtmospheres: ['cyberpunk', 'moody'],
-    blockedPresets: ['highcontrast', 'bleachbypass'],
-  },
-  {
-    name: 'Edgar Wright',
-    keywords: 'Edgar Wright style, dynamic editing, visual comedy, vibrant colors, whip pans, British humor',
-    blockedAtmospheres: ['moody', 'vintage'],
-    blockedPresets: ['desaturated', 'bleachbypass'],
-  },
-  {
-    name: 'Hayao Miyazaki',
-    keywords: 'Hayao Miyazaki style, Studio Ghibli, hand-drawn animation, nature, flying scenes, whimsical, Japanese',
-    blockedAtmospheres: ['cyberpunk', 'moody'],
-    blockedPresets: ['highcontrast', 'bleachbypass'],
   },
   {
     name: 'Coen Brothers',
@@ -125,17 +95,5 @@ export const directorStyles: DirectorStyle[] = [
     keywords: 'Andrei Tarkovsky style, long contemplative shots, water imagery, spiritual, dreamlike, slow cinema',
     blockedAtmospheres: ['cyberpunk', 'studio'],
     blockedPresets: ['vivid', 'highcontrast'],
-  },
-  {
-    name: 'Roger Deakins',
-    keywords: 'Roger Deakins cinematography, masterful lighting, natural beauty, precise composition, atmospheric',
-    blockedAtmospheres: [],
-    blockedPresets: [],
-  },
-  {
-    name: 'Emmanuel Lubezki',
-    keywords: 'Emmanuel Lubezki cinematography, natural light, long takes, fluid camera movement, magic hour, immersive',
-    blockedAtmospheres: ['studio', 'cyberpunk'],
-    blockedPresets: ['highcontrast'],
   },
 ];

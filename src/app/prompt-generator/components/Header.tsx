@@ -33,11 +33,11 @@ export function Header({
           className="text-xl font-semibold tracking-tight"
           style={{ color: themeColors.textPrimary }}
         >
-          AI Prompt Studio
+          PromptCine Studio
         </h1>
       </div>
       <p className="text-sm" style={{ color: themeColors.textTertiary }}>
-        Multi-model prompt generator with visual presets
+        Direct your Prompt
       </p>
 
       <div className="flex items-center justify-center gap-3 mt-4">
