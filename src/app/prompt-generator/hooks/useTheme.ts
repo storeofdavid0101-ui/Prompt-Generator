@@ -20,7 +20,7 @@ export function useTheme(darkMode: boolean): ThemeColors {
         inputBorder: 'rgba(63, 63, 70, 0.8)',
         accent: '#6366f1',
         accentHover: '#818cf8',
-        promptBg: 'rgba(99, 102, 241, 0.08)',
+        promptBg: 'rgba(88, 80, 140, 0.35)',
         success: '#10b981',
         warning: '#f59e0b',
       };
@@ -37,7 +37,7 @@ export function useTheme(darkMode: boolean): ThemeColors {
       inputBorder: 'rgba(139, 115, 85, 0.3)',
       accent: '#6366f1',
       accentHover: '#818cf8',
-      promptBg: 'rgba(99, 102, 241, 0.08)',
+      promptBg: 'rgba(99, 102, 241, 0.15)',
       success: '#10b981',
       warning: '#f59e0b',
     };

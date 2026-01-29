@@ -102,6 +102,14 @@ export function OutputBar({
             )}
           </motion.button>
         </div>
+
+        {/* Disclaimer */}
+        <p
+          className="text-[10px] text-center mt-3 opacity-60"
+          style={{ color: themeColors.textTertiary }}
+        >
+          All director styles are for inspirational purposes and are not endorsed by the artists.
+        </p>
       </div>
     </motion.div>
   );
