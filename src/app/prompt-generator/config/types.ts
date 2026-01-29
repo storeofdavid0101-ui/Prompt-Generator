@@ -112,9 +112,11 @@ export interface AspectRatioOption {
 // Director style configuration with conflict rules
 export interface DirectorStyle {
   name: string;
+  description: string;
   keywords: string;
   blockedAtmospheres: Atmosphere[];
   blockedPresets: string[];
+  blockedCameras: string[];
 }
 
 // Conflict rules for camera categories
@@ -155,6 +157,13 @@ export interface ThemeColors {
   warning: string;
 }
 
+// Effect stacking warning for blur/mood terms
+export interface EffectStackingWarning {
+  category: 'blur' | 'mood' | 'quality';
+  message: string;
+  includedTerms: string[];
+}
+
 // Conflict detection result
 export interface ConflictResult {
   blockedAtmospheres: Set<Atmosphere>;
@@ -162,6 +171,7 @@ export interface ConflictResult {
   blockedDOF: Set<string>;
   blockedCameras: Set<string>;
   activeConflicts: string[];
+  effectStackingWarnings: EffectStackingWarning[];
   warningMessage?: string;
   fixedLens: string | null;
   zoomRange: ZoomRange | null;
@@ -177,6 +187,19 @@ export interface ExpandedSections {
   color: boolean;
   camera: boolean;
   lighting: boolean;
+}
+
+// Locked sections state - individual locks per section
+export interface LockedSections {
+  model: boolean;
+  subject: boolean;
+  director: boolean;
+  atmosphere: boolean;
+  visual: boolean;
+  color: boolean;
+  camera: boolean;
+  lighting: boolean;
+  advanced: boolean;
 }
 
 // Main generator state

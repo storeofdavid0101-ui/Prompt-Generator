@@ -140,6 +140,98 @@ function formatHexColor(color: string): string {
 }
 
 /**
+ * Builds a natural language prompt from components
+ * Used for models that prefer descriptive sentences over comma-separated tags
+ */
+function buildNaturalPrompt(components: {
+  subject: string;
+  characters: string[];
+  location: string;
+  visualPreset: string | null;
+  colorPalette: string | null;
+  atmosphere: string | null;
+  lighting: string | null;
+  director: string | null;
+  camera: string | null;
+  lens: string | null;
+  shot: string | null;
+  dof: string | null;
+}): string {
+  const sentences: string[] = [];
+
+  // Main subject sentence
+  let mainSentence = '';
+  if (components.subject) {
+    mainSentence = components.subject;
+  }
+
+  // Add characters
+  if (components.characters.length > 0) {
+    if (mainSentence) {
+      mainSentence += ` featuring ${components.characters.join(' and ')}`;
+    } else {
+      mainSentence = `A scene featuring ${components.characters.join(' and ')}`;
+    }
+  }
+
+  // Add location
+  if (components.location) {
+    mainSentence += mainSentence ? `, set ${components.location}` : `Set ${components.location}`;
+  }
+
+  if (mainSentence) {
+    sentences.push(mainSentence + '.');
+  }
+
+  // Visual style sentence
+  const styleElements: string[] = [];
+  if (components.atmosphere) {
+    styleElements.push(components.atmosphere);
+  }
+  if (components.visualPreset) {
+    styleElements.push(components.visualPreset);
+  }
+  if (styleElements.length > 0) {
+    sentences.push(`The scene has ${styleElements.join(' with ')}.`);
+  }
+
+  // Lighting sentence
+  if (components.lighting) {
+    sentences.push(`Lit with ${components.lighting}.`);
+  }
+
+  // Color palette
+  if (components.colorPalette) {
+    sentences.push(`Using a color palette of ${components.colorPalette}.`);
+  }
+
+  // Camera and technical details sentence
+  const techElements: string[] = [];
+  if (components.camera) {
+    techElements.push(`shot on ${components.camera}`);
+  }
+  if (components.lens) {
+    techElements.push(`with a ${components.lens} lens`);
+  }
+  if (components.shot) {
+    techElements.push(`framed as a ${components.shot}`);
+  }
+  if (components.dof) {
+    techElements.push(`with ${components.dof}`);
+  }
+  if (techElements.length > 0) {
+    sentences.push(techElements.join(', ') + '.');
+  }
+
+  // Director style
+  if (components.director) {
+    sentences.push(`In the style of ${components.director}.`);
+  }
+
+  return sentences.join(' ');
+}
+
+/**
  * Generates the final prompt from all user selections
  */
 export function generatePrompt(params: PromptBuilderParams): string {
@@ -170,63 +262,49 @@ export function generatePrompt(params: PromptBuilderParams): string {
     uniqueness,
   } = params;
 
-  const parts: string[] = [];
   const config = modelConfigs[selectedModel];
   const sliderParams = translateSliders(selectedModel, creativity, variation, uniqueness);
 
-  // [Subject] - Always first
-  if (subject.trim()) {
-    parts.push(subject.trim());
-  }
-
-  // Characters (include both saved items and current input)
+  // Gather all the component values
   const allCharacters = [
     ...characterItems.map((c) => c.content),
     ...(currentCharacter.trim() ? [currentCharacter.trim()] : []),
   ];
-  if (allCharacters.length > 0) {
-    parts.push(allCharacters.join(', '));
-  }
 
-  // Location
-  if (location.trim()) {
-    parts.push(`in ${location.trim()}`);
-  }
+  // Get visual preset keywords
+  const visualPresetKeywords =
+    selectedVisualPreset && visualPresets[selectedVisualPreset]
+      ? visualPresets[selectedVisualPreset].keywords
+      : null;
 
-  // Visual Presets
-  if (selectedVisualPreset && visualPresets[selectedVisualPreset]) {
-    parts.push(visualPresets[selectedVisualPreset].keywords);
-  }
-
-  // Color Palette
+  // Get color palette
   const validCustomColors = customColors.filter((c) => isValidHexColor(c));
+  let colorPaletteValue: string | null = null;
   if (selectedColorPalette === 'custom' && validCustomColors.length > 0) {
-    const formattedColors = validCustomColors.map(formatHexColor).join(', ');
-    parts.push(`color palette: ${formattedColors}`);
+    colorPaletteValue = validCustomColors.map(formatHexColor).join(', ');
   } else if (
     selectedColorPalette &&
     selectedColorPalette !== 'custom' &&
     colorPalettes[selectedColorPalette]
   ) {
-    const palette = colorPalettes[selectedColorPalette].colors;
-    parts.push(`color palette: ${palette.join(', ')}`);
+    colorPaletteValue = colorPalettes[selectedColorPalette].colors.join(', ');
   }
 
-  // Atmosphere
-  if (selectedAtmosphere && atmosphereConfigs[selectedAtmosphere as keyof typeof atmosphereConfigs]) {
-    parts.push(atmosphereConfigs[selectedAtmosphere as keyof typeof atmosphereConfigs].keywords);
-  }
+  // Get atmosphere keywords
+  const atmosphereKeywords =
+    selectedAtmosphere && atmosphereConfigs[selectedAtmosphere as keyof typeof atmosphereConfigs]
+      ? atmosphereConfigs[selectedAtmosphere as keyof typeof atmosphereConfigs].keywords
+      : null;
 
-  // Lighting
-  if (selectedLighting && lightingOptions[selectedLighting]) {
-    parts.push(lightingOptions[selectedLighting].keywords);
-  }
+  // Get lighting keywords
+  const lightingKeywords =
+    selectedLighting && lightingOptions[selectedLighting]
+      ? lightingOptions[selectedLighting].keywords
+      : null;
 
-  // Director Style
+  // Get director style
   const directorConfig = directorStyles.find((d) => d.name === selectedDirector);
-  if (directorConfig) {
-    parts.push(directorConfig.keywords);
-  }
+  const directorKeywords = directorConfig ? directorConfig.keywords : null;
 
   // Camera
   const cameraConfig = cameraOptions.find((c) => c.label === selectedCamera);
@@ -246,24 +324,94 @@ export function generatePrompt(params: PromptBuilderParams): string {
   const finalShot = customShot.trim() || (shotConfig ? shotConfig.keywords : selectedShot);
   const dofConfig = dofOptions.find((d) => d.value === depthOfField);
 
-  if (finalCamera) {
-    parts.push(finalCamera);
-  }
-  if (finalLens) {
-    parts.push(`${finalLens} lens`);
-  }
-  if (finalShot) {
-    parts.push(finalShot);
-  }
-
   // Skip DOF for cameras that don't support it
   const categoryRules = categoryConflicts[cameraCategory];
-  if (dofConfig && dofConfig.keywords && !categoryRules.blockedDOF.includes(depthOfField)) {
-    parts.push(dofConfig.keywords);
-  }
+  const finalDof =
+    dofConfig && dofConfig.keywords && !categoryRules.blockedDOF.includes(depthOfField)
+      ? dofConfig.keywords
+      : null;
 
-  // Build main prompt
-  let prompt = parts.filter(Boolean).join(', ');
+  // Build main prompt based on model's prompt style
+  let prompt: string;
+
+  if (config.promptStyle === 'natural') {
+    // Natural language style for models like ChatGPT, DALL-E 3, Flux, etc.
+    prompt = buildNaturalPrompt({
+      subject: subject.trim(),
+      characters: allCharacters,
+      location: location.trim() ? `in ${location.trim()}` : '',
+      visualPreset: visualPresetKeywords,
+      colorPalette: colorPaletteValue,
+      atmosphere: atmosphereKeywords,
+      lighting: lightingKeywords,
+      director: directorKeywords,
+      camera: finalCamera || null,
+      lens: finalLens || null,
+      shot: finalShot || null,
+      dof: finalDof,
+    });
+  } else {
+    // Tags style (comma-separated) for Midjourney, Stable Diffusion, Ideogram
+    const parts: string[] = [];
+
+    // [Subject] - Always first
+    if (subject.trim()) {
+      parts.push(subject.trim());
+    }
+
+    // Characters
+    if (allCharacters.length > 0) {
+      parts.push(allCharacters.join(', '));
+    }
+
+    // Location
+    if (location.trim()) {
+      parts.push(`in ${location.trim()}`);
+    }
+
+    // Visual Presets
+    if (visualPresetKeywords) {
+      parts.push(visualPresetKeywords);
+    }
+
+    // Color Palette
+    if (colorPaletteValue) {
+      parts.push(`color palette: ${colorPaletteValue}`);
+    }
+
+    // Atmosphere
+    if (atmosphereKeywords) {
+      parts.push(atmosphereKeywords);
+    }
+
+    // Lighting
+    if (lightingKeywords) {
+      parts.push(lightingKeywords);
+    }
+
+    // Director Style
+    if (directorKeywords) {
+      parts.push(directorKeywords);
+    }
+
+    // Camera
+    if (finalCamera) {
+      parts.push(finalCamera);
+    }
+    if (finalLens) {
+      parts.push(`${finalLens} lens`);
+    }
+    if (finalShot) {
+      parts.push(finalShot);
+    }
+
+    // DOF
+    if (finalDof) {
+      parts.push(finalDof);
+    }
+
+    prompt = parts.filter(Boolean).join(', ');
+  }
 
   // Add model-specific parameters
   const selectedRatio = aspectRatioOptions.find((r) => r.value === aspectRatio);

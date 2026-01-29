@@ -5,8 +5,9 @@
 
 'use client';
 
-import React from 'react';
-import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronDown } from 'lucide-react';
 import {
   Header,
   ConflictBanner,
@@ -20,11 +21,24 @@ import {
   LightingSelector,
   AdvancedTools,
   OutputBar,
+  SectionLock,
 } from './components';
 import { usePromptGeneratorState } from './hooks';
 
 export function PromptGenerator() {
   const state = usePromptGeneratorState();
+  const [showScrollHint, setShowScrollHint] = useState(true);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // Hide hint when user reaches near the bottom of the page
+      const scrolledToBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 200;
+      setShowScrollHint(!scrolledToBottom);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <div
@@ -34,11 +48,50 @@ export function PromptGenerator() {
       <div className="max-w-[480px] mx-auto px-4 py-6 space-y-4">
         <Header
           darkMode={state.darkMode}
-          settingsLocked={state.settingsLocked}
           onToggleDarkMode={() => state.setDarkMode(!state.darkMode)}
-          onToggleLock={() => state.setSettingsLocked(!state.settingsLocked)}
           themeColors={state.themeColors}
         />
+
+        {/* Scroll Indicator - Fixed position, follows user */}
+        <AnimatePresence>
+          {showScrollHint && (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              className="fixed right-4 top-1/2 -translate-y-1/2 z-40"
+            >
+              <motion.div
+                animate={{ y: [0, 8, 0] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+                className="flex flex-col items-center gap-1 px-2 py-3 rounded-full backdrop-blur-sm"
+                style={{
+                  backgroundColor: `${state.themeColors.cardBackground}cc`,
+                  border: `1px solid ${state.themeColors.borderColor}`,
+                }}
+              >
+                <ChevronDown
+                  className="w-4 h-4"
+                  style={{ color: state.themeColors.accent }}
+                />
+                <span
+                  className="text-[10px] font-medium writing-mode-vertical"
+                  style={{
+                    color: state.themeColors.textTertiary,
+                    writingMode: 'vertical-rl',
+                    textOrientation: 'mixed',
+                  }}
+                >
+                  More
+                </span>
+                <ChevronDown
+                  className="w-4 h-4"
+                  style={{ color: state.themeColors.accent }}
+                />
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <ConflictBanner conflicts={state.conflicts} themeColors={state.themeColors} />
 
@@ -58,8 +111,9 @@ export function PromptGenerator() {
           <div className="p-5 space-y-1">
             <ModelSelector
               selectedModel={state.selectedModel}
-              settingsLocked={state.settingsLocked}
-              onSelectModel={(model) => !state.settingsLocked && state.setSelectedModel(model)}
+              isLocked={state.lockedSections.model}
+              onToggleLock={() => state.toggleLock('model')}
+              onSelectModel={(model) => !state.lockedSections.model && state.setSelectedModel(model)}
               themeColors={state.themeColors}
             />
 
@@ -70,7 +124,8 @@ export function PromptGenerator() {
               characterItems={state.characterItems}
               currentCharacter={state.currentCharacter}
               location={state.location}
-              settingsLocked={state.settingsLocked}
+              isLocked={state.lockedSections.subject}
+              onToggleLock={() => state.toggleLock('subject')}
               onSubjectChange={state.setSubject}
               onCurrentCharacterChange={state.setCurrentCharacter}
               onAddCharacter={state.addCharacter}
@@ -83,7 +138,8 @@ export function PromptGenerator() {
 
             <DirectorSelector
               selectedDirector={state.selectedDirector}
-              settingsLocked={state.settingsLocked}
+              isLocked={state.lockedSections.director}
+              onToggleLock={() => state.toggleLock('director')}
               onDirectorChange={state.handleDirectorChange}
               themeColors={state.themeColors}
             />
@@ -92,9 +148,10 @@ export function PromptGenerator() {
 
             <AtmosphereSelector
               selectedAtmosphere={state.selectedAtmosphere}
-              settingsLocked={state.settingsLocked}
+              isLocked={state.lockedSections.atmosphere}
+              onToggleLock={() => state.toggleLock('atmosphere')}
               conflicts={state.conflicts}
-              onSelectAtmosphere={(atm) => !state.settingsLocked && state.setSelectedAtmosphere(atm)}
+              onSelectAtmosphere={(atm) => !state.lockedSections.atmosphere && state.setSelectedAtmosphere(atm)}
               themeColors={state.themeColors}
             />
 
@@ -103,9 +160,10 @@ export function PromptGenerator() {
             <VisualStyleSelector
               selectedVisualPreset={state.selectedVisualPreset}
               isExpanded={state.expandedSections.visual}
-              settingsLocked={state.settingsLocked}
+              isLocked={state.lockedSections.visual}
+              onToggleLock={() => state.toggleLock('visual')}
               conflicts={state.conflicts}
-              onSelectPreset={(preset) => !state.settingsLocked && state.setSelectedVisualPreset(preset)}
+              onSelectPreset={(preset) => !state.lockedSections.visual && state.setSelectedVisualPreset(preset)}
               onToggleSection={state.toggleSection}
               themeColors={state.themeColors}
             />
@@ -116,9 +174,10 @@ export function PromptGenerator() {
               selectedColorPalette={state.selectedColorPalette}
               customColors={state.customColors}
               isExpanded={state.expandedSections.color}
-              settingsLocked={state.settingsLocked}
-              onSelectPalette={(palette) => !state.settingsLocked && state.setSelectedColorPalette(palette)}
-              onCustomColorsChange={(colors) => !state.settingsLocked && state.setCustomColors(colors)}
+              isLocked={state.lockedSections.color}
+              onToggleLock={() => state.toggleLock('color')}
+              onSelectPalette={(palette) => !state.lockedSections.color && state.setSelectedColorPalette(palette)}
+              onCustomColorsChange={(colors) => !state.lockedSections.color && state.setCustomColors(colors)}
               onToggleSection={state.toggleSection}
               themeColors={state.themeColors}
             />
@@ -134,25 +193,26 @@ export function PromptGenerator() {
               customShot={state.customShot}
               aspectRatio={state.aspectRatio}
               isExpanded={state.expandedSections.camera}
-              settingsLocked={state.settingsLocked}
+              isLocked={state.lockedSections.camera}
+              onToggleLock={() => state.toggleLock('camera')}
               conflicts={state.conflicts}
               onCameraChange={state.handleCameraChange}
-              onCustomCameraChange={(v) => !state.settingsLocked && state.setCustomCamera(v)}
+              onCustomCameraChange={(v) => !state.lockedSections.camera && state.setCustomCamera(v)}
               onLensChange={(v) => {
-                if (!state.settingsLocked) {
+                if (!state.lockedSections.camera) {
                   state.setSelectedLens(v);
                   state.setCustomLens('');
                 }
               }}
-              onCustomLensChange={(v) => !state.settingsLocked && state.setCustomLens(v)}
+              onCustomLensChange={(v) => !state.lockedSections.camera && state.setCustomLens(v)}
               onShotChange={(v) => {
-                if (!state.settingsLocked) {
+                if (!state.lockedSections.camera) {
                   state.setSelectedShot(v);
                   state.setCustomShot('');
                 }
               }}
-              onCustomShotChange={(v) => !state.settingsLocked && state.setCustomShot(v)}
-              onAspectRatioChange={(v) => !state.settingsLocked && state.setAspectRatio(v)}
+              onCustomShotChange={(v) => !state.lockedSections.camera && state.setCustomShot(v)}
+              onAspectRatioChange={(v) => !state.lockedSections.camera && state.setAspectRatio(v)}
               onToggleSection={state.toggleSection}
               themeColors={state.themeColors}
             />
@@ -162,8 +222,9 @@ export function PromptGenerator() {
             <LightingSelector
               selectedLighting={state.selectedLighting}
               isExpanded={state.expandedSections.lighting}
-              settingsLocked={state.settingsLocked}
-              onSelectLighting={(lighting) => !state.settingsLocked && state.setSelectedLighting(lighting)}
+              isLocked={state.lockedSections.lighting}
+              onToggleLock={() => state.toggleLock('lighting')}
+              onSelectLighting={(lighting) => !state.lockedSections.lighting && state.setSelectedLighting(lighting)}
               onToggleSection={state.toggleSection}
               themeColors={state.themeColors}
             />
@@ -179,16 +240,17 @@ export function PromptGenerator() {
           depthOfField={state.depthOfField}
           selectedModel={state.selectedModel}
           showAdvanced={state.showAdvanced}
-          settingsLocked={state.settingsLocked}
+          isLocked={state.lockedSections.advanced}
+          onToggleLock={() => state.toggleLock('advanced')}
           conflicts={state.conflicts}
-          onNegativePromptChange={(v) => !state.settingsLocked && state.setNegativePrompt(v)}
+          onNegativePromptChange={(v) => !state.lockedSections.advanced && state.setNegativePrompt(v)}
           onCreativeControlsToggle={() =>
-            !state.settingsLocked && state.setCreativeControlsEnabled(!state.creativeControlsEnabled)
+            !state.lockedSections.advanced && state.setCreativeControlsEnabled(!state.creativeControlsEnabled)
           }
-          onCreativityChange={(v) => !state.settingsLocked && state.setCreativity(v)}
-          onVariationChange={(v) => !state.settingsLocked && state.setVariation(v)}
-          onUniquenessChange={(v) => !state.settingsLocked && state.setUniqueness(v)}
-          onDepthOfFieldChange={(v) => !state.settingsLocked && state.setDepthOfField(v)}
+          onCreativityChange={(v) => !state.lockedSections.advanced && state.setCreativity(v)}
+          onVariationChange={(v) => !state.lockedSections.advanced && state.setVariation(v)}
+          onUniquenessChange={(v) => !state.lockedSections.advanced && state.setUniqueness(v)}
+          onDepthOfFieldChange={(v) => !state.lockedSections.advanced && state.setDepthOfField(v)}
           onToggleAdvanced={() => state.setShowAdvanced(!state.showAdvanced)}
           themeColors={state.themeColors}
         />
@@ -197,7 +259,6 @@ export function PromptGenerator() {
       <OutputBar
         prompt={state.prompt}
         copied={state.copied}
-        settingsLocked={state.settingsLocked}
         onReset={state.resetAll}
         onCopy={state.copyToClipboard}
         themeColors={state.themeColors}

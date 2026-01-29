@@ -18,6 +18,7 @@ import type {
   Atmosphere,
   CharacterItem,
   ExpandedSections,
+  LockedSections,
 } from '../config/types';
 
 const DEFAULT_EXPANDED_SECTIONS: ExpandedSections = {
@@ -28,6 +29,18 @@ const DEFAULT_EXPANDED_SECTIONS: ExpandedSections = {
   color: false,
   camera: false,
   lighting: false,
+};
+
+const DEFAULT_LOCKED_SECTIONS: LockedSections = {
+  model: false,
+  subject: false,
+  director: false,
+  atmosphere: false,
+  visual: false,
+  color: false,
+  camera: false,
+  lighting: false,
+  advanced: false,
 };
 
 export function usePromptGeneratorState() {
@@ -69,10 +82,12 @@ export function usePromptGeneratorState() {
 
   // Advanced
   const [negativePrompt, setNegativePrompt] = useState('');
-  const [settingsLocked, setSettingsLocked] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [creativeControlsEnabled, setCreativeControlsEnabled] = useState(false);
   const [selectedDirector, setSelectedDirector] = useState('');
+
+  // Section Locks
+  const [lockedSections, setLockedSections] = useState<LockedSections>(DEFAULT_LOCKED_SECTIONS);
 
   // UI State
   const [expandedSections, setExpandedSections] = useState<ExpandedSections>(
@@ -96,10 +111,18 @@ export function usePromptGeneratorState() {
     }));
   }, []);
 
+  // Lock Toggle
+  const toggleLock = useCallback((key: keyof LockedSections) => {
+    setLockedSections((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  }, []);
+
   // Camera change handler with auto-clear
   const handleCameraChange = useCallback(
     (newCamera: string) => {
-      if (settingsLocked) return;
+      if (lockedSections.camera) return;
 
       setSelectedCamera(newCamera);
       setCustomCamera('');
@@ -121,13 +144,13 @@ export function usePromptGeneratorState() {
         setAspectRatio('none');
       }
     },
-    [settingsLocked, selectedAtmosphere, selectedVisualPreset, depthOfField, aspectRatio]
+    [lockedSections.camera, selectedAtmosphere, selectedVisualPreset, depthOfField, aspectRatio]
   );
 
   // Director change handler with auto-clear
   const handleDirectorChange = useCallback(
     (newDirector: string) => {
-      if (settingsLocked) return;
+      if (lockedSections.director) return;
 
       setSelectedDirector(newDirector);
 
@@ -141,27 +164,27 @@ export function usePromptGeneratorState() {
         }
       }
     },
-    [settingsLocked, selectedAtmosphere, selectedVisualPreset]
+    [lockedSections.director, selectedAtmosphere, selectedVisualPreset]
   );
 
   // Character Management
   const addCharacter = useCallback(() => {
-    if (currentCharacter.trim() && !settingsLocked) {
+    if (currentCharacter.trim() && !lockedSections.subject) {
       setCharacterItems((prev) => [
         ...prev,
         { id: crypto.randomUUID().slice(0, 9), content: currentCharacter.trim() },
       ]);
       setCurrentCharacter('');
     }
-  }, [currentCharacter, settingsLocked]);
+  }, [currentCharacter, lockedSections.subject]);
 
   const removeCharacter = useCallback(
     (id: string) => {
-      if (!settingsLocked) {
+      if (!lockedSections.subject) {
         setCharacterItems((prev) => prev.filter((item) => item.id !== id));
       }
     },
-    [settingsLocked]
+    [lockedSections.subject]
   );
 
   // Generate Prompt
@@ -209,32 +232,47 @@ export function usePromptGeneratorState() {
     setTimeout(() => setCopied(false), 2000);
   }, [prompt]);
 
-  // Reset All
+  // Reset All (only resets unlocked sections)
   const resetAll = useCallback(() => {
-    if (settingsLocked) return;
-    setSubject('');
-    setCharacterItems([]);
-    setCurrentCharacter('');
-    setLocation('');
-    setSelectedAtmosphere(null);
-    setSelectedVisualPreset(null);
-    setSelectedLighting(null);
-    setSelectedColorPalette(null);
-    setCustomColors(['', '', '', '', '', '']);
-    setSelectedCamera('');
-    setCustomCamera('');
-    setSelectedLens('50mm');
-    setCustomLens('');
-    setSelectedShot('Medium Shot (MS)');
-    setCustomShot('');
-    setDepthOfField('normal');
-    setAspectRatio('none');
-    setNegativePrompt('');
-    setSelectedDirector('');
-    setCreativity(50);
-    setVariation(50);
-    setUniqueness(50);
-  }, [settingsLocked]);
+    if (!lockedSections.subject) {
+      setSubject('');
+      setCharacterItems([]);
+      setCurrentCharacter('');
+      setLocation('');
+    }
+    if (!lockedSections.atmosphere) {
+      setSelectedAtmosphere(null);
+    }
+    if (!lockedSections.visual) {
+      setSelectedVisualPreset(null);
+    }
+    if (!lockedSections.lighting) {
+      setSelectedLighting(null);
+    }
+    if (!lockedSections.color) {
+      setSelectedColorPalette(null);
+      setCustomColors(['', '', '', '', '', '']);
+    }
+    if (!lockedSections.camera) {
+      setSelectedCamera('');
+      setCustomCamera('');
+      setSelectedLens('50mm');
+      setCustomLens('');
+      setSelectedShot('Medium Shot (MS)');
+      setCustomShot('');
+      setDepthOfField('normal');
+      setAspectRatio('none');
+    }
+    if (!lockedSections.advanced) {
+      setNegativePrompt('');
+      setCreativity(50);
+      setVariation(50);
+      setUniqueness(50);
+    }
+    if (!lockedSections.director) {
+      setSelectedDirector('');
+    }
+  }, [lockedSections]);
 
   return {
     // Theme
@@ -309,8 +347,8 @@ export function usePromptGeneratorState() {
     setShowAdvanced,
 
     // UI
-    settingsLocked,
-    setSettingsLocked,
+    lockedSections,
+    toggleLock,
     expandedSections,
     toggleSection,
     conflicts,

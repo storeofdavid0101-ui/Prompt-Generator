@@ -5,7 +5,6 @@
 
 'use client';
 
-import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sun } from 'lucide-react';
 import { SectionHeader } from './ui';
@@ -15,7 +14,8 @@ import type { ThemeColors } from '../config/types';
 interface LightingSelectorProps {
   selectedLighting: string | null;
   isExpanded: boolean;
-  settingsLocked: boolean;
+  isLocked: boolean;
+  onToggleLock: () => void;
   onSelectLighting: (lighting: string | null) => void;
   onToggleSection: (key: string) => void;
   themeColors: ThemeColors;
@@ -32,7 +32,8 @@ const categoryLabels: Record<LightingCategory, string> = {
 export function LightingSelector({
   selectedLighting,
   isExpanded,
-  settingsLocked,
+  isLocked,
+  onToggleLock,
   onSelectLighting,
   onToggleSection,
   themeColors,
@@ -49,21 +50,21 @@ export function LightingSelector({
             <motion.button
               key={key}
               onClick={() => {
-                if (!settingsLocked) {
+                if (!isLocked) {
                   onSelectLighting(selectedLighting === key ? null : key);
                 }
               }}
-              disabled={settingsLocked}
+              disabled={isLocked}
               className="px-3 py-2 rounded-lg text-xs font-medium transition-all text-left"
               style={{
                 background:
                   selectedLighting === key ? opt.gradient : themeColors.inputBackground,
                 border: `1px solid ${selectedLighting === key ? 'transparent' : themeColors.inputBorder}`,
                 color: selectedLighting === key ? '#fff' : themeColors.textSecondary,
-                opacity: settingsLocked ? 0.6 : 1,
+                opacity: isLocked ? 0.6 : 1,
               }}
-              whileHover={{ scale: settingsLocked ? 1 : 1.02 }}
-              whileTap={{ scale: settingsLocked ? 1 : 0.98 }}
+              whileHover={{ scale: isLocked ? 1 : 1.02 }}
+              whileTap={{ scale: isLocked ? 1 : 0.98 }}
             >
               {opt.name}
             </motion.button>
@@ -79,7 +80,9 @@ export function LightingSelector({
         icon={Sun}
         sectionKey="lighting"
         isExpanded={isExpanded}
+        isLocked={isLocked}
         onToggle={onToggleSection}
+        onToggleLock={onToggleLock}
         themeColors={themeColors}
       />
       <AnimatePresence>

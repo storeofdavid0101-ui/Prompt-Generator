@@ -6,17 +6,18 @@
 
 'use client';
 
-import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sliders, Check, AlertTriangle } from 'lucide-react';
 import { SectionHeader } from './ui';
 import { visualPresets } from '../config';
 import type { ThemeColors, ConflictResult } from '../config/types';
+import { SectionLock } from './SectionLock';
 
 interface VisualStyleSelectorProps {
   selectedVisualPreset: string | null;
   isExpanded: boolean;
-  settingsLocked: boolean;
+  isLocked: boolean;
+  onToggleLock: () => void;
   conflicts: ConflictResult;
   onSelectPreset: (preset: string | null) => void;
   onToggleSection: (key: string) => void;
@@ -26,7 +27,8 @@ interface VisualStyleSelectorProps {
 export function VisualStyleSelector({
   selectedVisualPreset,
   isExpanded,
-  settingsLocked,
+  isLocked,
+  onToggleLock,
   conflicts,
   onSelectPreset,
   onToggleSection,
@@ -40,7 +42,9 @@ export function VisualStyleSelector({
         sectionKey="visual"
         badge={selectedVisualPreset ? visualPresets[selectedVisualPreset].name : undefined}
         isExpanded={isExpanded}
+        isLocked={isLocked}
         onToggle={onToggleSection}
+        onToggleLock={onToggleLock}
         themeColors={themeColors}
       />
       <AnimatePresence>
@@ -64,18 +68,18 @@ export function VisualStyleSelector({
                   <button
                     key={key}
                     onClick={() =>
-                      !settingsLocked &&
+                      !isLocked &&
                       !isBlocked &&
                       onSelectPreset(selectedVisualPreset === key ? null : key)
                     }
-                    disabled={settingsLocked || isBlocked}
+                    disabled={isLocked || isBlocked}
                     className="relative p-3 rounded-xl text-left transition-all border overflow-hidden hover:scale-[1.02] active:scale-[0.98]"
                     style={{
                       borderColor:
                         selectedVisualPreset === key
                           ? themeColors.accent
                           : themeColors.borderColor,
-                      opacity: settingsLocked || isBlocked ? 0.4 : 1,
+                      opacity: isLocked || isBlocked ? 0.4 : 1,
                     }}
                   >
                     <div

@@ -6,15 +6,17 @@
 
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Cloud, ChevronDown, Check, AlertTriangle, X } from 'lucide-react';
 import { atmosphereConfigs } from '../config';
 import type { Atmosphere, ThemeColors, ConflictResult } from '../config/types';
+import { SectionLock } from './SectionLock';
 
 interface AtmosphereSelectorProps {
   selectedAtmosphere: Atmosphere | null;
-  settingsLocked: boolean;
+  isLocked: boolean;
+  onToggleLock: () => void;
   conflicts: ConflictResult;
   onSelectAtmosphere: (atmosphere: Atmosphere | null) => void;
   themeColors: ThemeColors;
@@ -22,7 +24,8 @@ interface AtmosphereSelectorProps {
 
 export function AtmosphereSelector({
   selectedAtmosphere,
-  settingsLocked,
+  isLocked,
+  onToggleLock,
   conflicts,
   onSelectAtmosphere,
   themeColors,
@@ -45,12 +48,15 @@ export function AtmosphereSelector({
 
   return (
     <div className="py-3">
-      <label
-        className="block text-xs font-medium mb-1.5 flex items-center gap-1.5"
-        style={{ color: themeColors.textTertiary }}
-      >
-        <Cloud className="w-3 h-3" /> Atmosphere
-      </label>
+      <div className="flex items-center justify-between mb-1.5">
+        <label
+          className="text-xs font-medium flex items-center gap-1.5"
+          style={{ color: themeColors.textTertiary }}
+        >
+          <Cloud className="w-3 h-3" /> Atmosphere
+        </label>
+        <SectionLock isLocked={isLocked} onToggle={onToggleLock} themeColors={themeColors} />
+      </div>
       <p className="text-[10px] mb-2" style={{ color: themeColors.textTertiary }}>
         Scene mood and environment feel
       </p>
@@ -58,14 +64,14 @@ export function AtmosphereSelector({
       <div ref={dropdownRef} className="relative">
         {/* Dropdown Trigger */}
         <button
-          onClick={() => !settingsLocked && setIsOpen(!isOpen)}
-          disabled={settingsLocked}
+          onClick={() => !isLocked && setIsOpen(!isOpen)}
+          disabled={isLocked}
           className="w-full rounded-lg px-3 py-2.5 text-sm transition-all focus:outline-none focus:ring-2 flex items-center justify-between"
           style={{
             backgroundColor: themeColors.inputBackground,
             border: `1px solid ${isOpen ? themeColors.accent : themeColors.inputBorder}`,
             color: themeColors.textPrimary,
-            opacity: settingsLocked ? 0.6 : 1,
+            opacity: isLocked ? 0.6 : 1,
           }}
         >
           <div className="flex items-center gap-2">

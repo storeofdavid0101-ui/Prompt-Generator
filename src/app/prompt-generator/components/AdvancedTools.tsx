@@ -5,9 +5,8 @@
 
 'use client';
 
-import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Settings, ChevronDown, Sparkles, Layers, Zap, AlertTriangle, Bookmark, Save } from 'lucide-react';
+import { Settings, ChevronDown, Sparkles, Layers, Zap, AlertTriangle, Bookmark, Save, Lock, Unlock } from 'lucide-react';
 import { UniversalSlider } from './ui';
 import { modelConfigs, dofOptions } from '../config';
 import type { AIModel, ThemeColors, ConflictResult } from '../config/types';
@@ -21,7 +20,8 @@ interface AdvancedToolsProps {
   depthOfField: string;
   selectedModel: AIModel;
   showAdvanced: boolean;
-  settingsLocked: boolean;
+  isLocked: boolean;
+  onToggleLock: () => void;
   conflicts: ConflictResult;
   onNegativePromptChange: (value: string) => void;
   onCreativeControlsToggle: () => void;
@@ -42,7 +42,8 @@ export function AdvancedTools({
   depthOfField,
   selectedModel,
   showAdvanced,
-  settingsLocked,
+  isLocked,
+  onToggleLock,
   conflicts,
   onNegativePromptChange,
   onCreativeControlsToggle,
@@ -61,20 +62,40 @@ export function AdvancedTools({
         borderColor: themeColors.borderColor,
       }}
     >
-      <button
-        onClick={onToggleAdvanced}
-        className="w-full p-4 flex items-center justify-between"
-      >
-        <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between p-4">
+        <button
+          onClick={onToggleAdvanced}
+          className="flex-1 flex items-center gap-2"
+        >
           <Settings className="w-4 h-4" style={{ color: themeColors.accent }} />
           <span className="text-sm font-medium" style={{ color: themeColors.textPrimary }}>
             Advanced Tools
           </span>
-        </div>
-        <motion.div animate={{ rotate: showAdvanced ? 180 : 0 }}>
-          <ChevronDown className="w-4 h-4" style={{ color: themeColors.textTertiary }} />
-        </motion.div>
-      </button>
+          <motion.div animate={{ rotate: showAdvanced ? 180 : 0 }}>
+            <ChevronDown className="w-4 h-4" style={{ color: themeColors.textTertiary }} />
+          </motion.div>
+        </button>
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleLock();
+          }}
+          className="p-1 rounded-md transition-colors"
+          style={{
+            color: isLocked ? themeColors.accent : themeColors.textTertiary,
+            backgroundColor: isLocked ? `${themeColors.accent}15` : 'transparent',
+          }}
+          title={isLocked ? 'Unlock this section' : 'Lock this section'}
+        >
+          {isLocked ? (
+            <Lock className="w-3.5 h-3.5" />
+          ) : (
+            <Unlock className="w-3.5 h-3.5" />
+          )}
+        </motion.button>
+      </div>
 
       <AnimatePresence>
         {showAdvanced && (
@@ -99,13 +120,13 @@ export function AdvancedTools({
                     onChange={(e) => onNegativePromptChange(e.target.value)}
                     placeholder="blurry, low quality, distorted, watermark..."
                     rows={2}
-                    disabled={settingsLocked}
+                    disabled={isLocked}
                     className="w-full rounded-lg px-3 py-2.5 text-sm resize-none transition-all focus:outline-none focus:ring-2"
                     style={{
                       backgroundColor: themeColors.inputBackground,
                       border: `1px solid ${themeColors.inputBorder}`,
                       color: themeColors.textPrimary,
-                      opacity: settingsLocked ? 0.6 : 1,
+                      opacity: isLocked ? 0.6 : 1,
                     }}
                   />
                   <p className="text-xs mt-1" style={{ color: themeColors.textTertiary }}>
@@ -150,14 +171,14 @@ export function AdvancedTools({
                     </p>
                   </div>
                   <button
-                    onClick={() => !settingsLocked && onCreativeControlsToggle()}
-                    disabled={settingsLocked}
+                    onClick={() => !isLocked && onCreativeControlsToggle()}
+                    disabled={isLocked}
                     className="relative w-11 h-6 rounded-full transition-colors"
                     style={{
                       backgroundColor: creativeControlsEnabled
                         ? themeColors.accent
                         : themeColors.borderColor,
-                      opacity: settingsLocked ? 0.6 : 1,
+                      opacity: isLocked ? 0.6 : 1,
                     }}
                   >
                     <div
@@ -181,7 +202,7 @@ export function AdvancedTools({
                       value={creativity}
                       onChange={onCreativityChange}
                       icon={Sparkles}
-                      disabled={settingsLocked}
+                      disabled={isLocked}
                       themeColors={themeColors}
                     />
                     <UniversalSlider
@@ -189,7 +210,7 @@ export function AdvancedTools({
                       value={variation}
                       onChange={onVariationChange}
                       icon={Layers}
-                      disabled={settingsLocked}
+                      disabled={isLocked}
                       themeColors={themeColors}
                     />
                     <UniversalSlider
@@ -197,7 +218,7 @@ export function AdvancedTools({
                       value={uniqueness}
                       onChange={onUniquenessChange}
                       icon={Zap}
-                      disabled={settingsLocked}
+                      disabled={isLocked}
                       themeColors={themeColors}
                     />
                     <p className="text-xs" style={{ color: themeColors.textTertiary }}>
@@ -221,8 +242,8 @@ export function AdvancedTools({
                     return (
                       <button
                         key={dof.value}
-                        onClick={() => !settingsLocked && !isBlocked && onDepthOfFieldChange(dof.value)}
-                        disabled={settingsLocked || isBlocked}
+                        onClick={() => !isLocked && !isBlocked && onDepthOfFieldChange(dof.value)}
+                        disabled={isLocked || isBlocked}
                         className="p-2.5 rounded-lg text-xs text-left transition-all border flex items-center justify-between"
                         style={{
                           backgroundColor:
@@ -232,7 +253,7 @@ export function AdvancedTools({
                               ? themeColors.accent
                               : themeColors.borderColor,
                           color: themeColors.textPrimary,
-                          opacity: settingsLocked || isBlocked ? 0.4 : 1,
+                          opacity: isLocked || isBlocked ? 0.4 : 1,
                         }}
                       >
                         <span>{dof.label}</span>

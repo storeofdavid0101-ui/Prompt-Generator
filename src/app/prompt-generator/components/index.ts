@@ -18,3 +18,4 @@ export { CameraSettings } from './CameraSettings';
 export { LightingSelector } from './LightingSelector';
 export { AdvancedTools } from './AdvancedTools';
 export { OutputBar } from './OutputBar';
+export { SectionLock } from './SectionLock';

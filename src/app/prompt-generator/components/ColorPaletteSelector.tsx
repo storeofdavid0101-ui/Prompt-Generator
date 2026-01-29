@@ -5,18 +5,19 @@
 
 'use client';
 
-import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Palette, Check } from 'lucide-react';
 import { SectionHeader } from './ui';
 import { colorPalettes } from '../config';
 import type { ThemeColors } from '../config/types';
+import { SectionLock } from './SectionLock';
 
 interface ColorPaletteSelectorProps {
   selectedColorPalette: string | null;
   customColors: string[];
   isExpanded: boolean;
-  settingsLocked: boolean;
+  isLocked: boolean;
+  onToggleLock: () => void;
   onSelectPalette: (palette: string | null) => void;
   onCustomColorsChange: (colors: string[]) => void;
   onToggleSection: (key: string) => void;
@@ -31,7 +32,8 @@ export function ColorPaletteSelector({
   selectedColorPalette,
   customColors,
   isExpanded,
-  settingsLocked,
+  isLocked,
+  onToggleLock,
   onSelectPalette,
   onCustomColorsChange,
   onToggleSection,
@@ -44,7 +46,7 @@ export function ColorPaletteSelector({
   };
 
   const handleCustomColorChange = (index: number, value: string) => {
-    if (!settingsLocked) {
+    if (!isLocked) {
       const newColors = [...customColors];
       newColors[index] = value;
       onCustomColorsChange(newColors);
@@ -59,7 +61,9 @@ export function ColorPaletteSelector({
         sectionKey="color"
         badge={getBadge()}
         isExpanded={isExpanded}
+        isLocked={isLocked}
         onToggle={onToggleSection}
+        onToggleLock={onToggleLock}
         themeColors={themeColors}
       />
       <AnimatePresence>
@@ -77,11 +81,11 @@ export function ColorPaletteSelector({
                   <button
                     key={key}
                     onClick={() => {
-                      if (!settingsLocked) {
+                      if (!isLocked) {
                         onSelectPalette(selectedColorPalette === key ? null : key);
                       }
                     }}
-                    disabled={settingsLocked}
+                    disabled={isLocked}
                     className="p-2.5 rounded-xl text-left transition-all border overflow-hidden hover:scale-[1.02] active:scale-[0.98]"
                     style={{
                       borderColor:
@@ -90,7 +94,7 @@ export function ColorPaletteSelector({
                           : themeColors.borderColor,
                       backgroundColor:
                         selectedColorPalette === key ? themeColors.promptBg : 'transparent',
-                      opacity: settingsLocked ? 0.4 : 1,
+                      opacity: isLocked ? 0.4 : 1,
                     }}
                   >
                     <div className="flex items-center justify-between mb-1.5">
@@ -119,11 +123,11 @@ export function ColorPaletteSelector({
                 {/* Custom Palette Option */}
                 <button
                   onClick={() => {
-                    if (!settingsLocked) {
+                    if (!isLocked) {
                       onSelectPalette(selectedColorPalette === 'custom' ? null : 'custom');
                     }
                   }}
-                  disabled={settingsLocked}
+                  disabled={isLocked}
                   className="p-2.5 rounded-xl text-left transition-all border overflow-hidden hover:scale-[1.02] active:scale-[0.98]"
                   style={{
                     borderColor:
@@ -132,7 +136,7 @@ export function ColorPaletteSelector({
                         : themeColors.borderColor,
                     backgroundColor:
                       selectedColorPalette === 'custom' ? themeColors.promptBg : 'transparent',
-                    opacity: settingsLocked ? 0.4 : 1,
+                    opacity: isLocked ? 0.4 : 1,
                   }}
                 >
                   <div className="flex items-center justify-between mb-1.5">
@@ -200,14 +204,14 @@ export function ColorPaletteSelector({
                               value={color}
                               onChange={(e) => handleCustomColorChange(index, e.target.value)}
                               placeholder={`#${(index + 1).toString().padStart(2, '0')}...`}
-                              disabled={settingsLocked}
+                              disabled={isLocked}
                               maxLength={7}
                               className="flex-1 min-w-0 rounded-lg px-2 py-1.5 text-xs transition-all focus:outline-none focus:ring-1"
                               style={{
                                 backgroundColor: themeColors.inputBackground,
                                 border: `1px solid ${themeColors.inputBorder}`,
                                 color: themeColors.textPrimary,
-                                opacity: settingsLocked ? 0.6 : 1,
+                                opacity: isLocked ? 0.6 : 1,
                               }}
                             />
                           </div>

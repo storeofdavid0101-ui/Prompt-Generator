@@ -5,17 +5,18 @@
 
 'use client';
 
-import React from 'react';
 import { motion } from 'framer-motion';
-import { User, MapPin, Plus, X } from 'lucide-react';
+import { User, MapPin, X, FileText, CornerDownLeft } from 'lucide-react';
 import type { CharacterItem, ThemeColors } from '../config/types';
+import { SectionLock } from './SectionLock';
 
 interface SubjectInputsProps {
   subject: string;
   characterItems: CharacterItem[];
   currentCharacter: string;
   location: string;
-  settingsLocked: boolean;
+  isLocked: boolean;
+  onToggleLock: () => void;
   onSubjectChange: (value: string) => void;
   onCurrentCharacterChange: (value: string) => void;
   onAddCharacter: () => void;
@@ -29,7 +30,8 @@ export function SubjectInputs({
   characterItems,
   currentCharacter,
   location,
-  settingsLocked,
+  isLocked,
+  onToggleLock,
   onSubjectChange,
   onCurrentCharacterChange,
   onAddCharacter,
@@ -45,6 +47,17 @@ export function SubjectInputs({
 
   return (
     <div className="py-3 space-y-3">
+      {/* Section Header with Lock */}
+      <div className="flex items-center justify-between">
+        <label
+          className="text-xs font-medium flex items-center gap-1.5"
+          style={{ color: themeColors.textTertiary }}
+        >
+          <FileText className="w-3 h-3" /> Content
+        </label>
+        <SectionLock isLocked={isLocked} onToggle={onToggleLock} themeColors={themeColors} />
+      </div>
+
       {/* Subject Input */}
       <div>
         <label
@@ -75,36 +88,34 @@ export function SubjectInputs({
         >
           <User className="w-3 h-3" /> Character Description
         </label>
-        <div className="flex gap-2">
+        <div className="relative">
           <input
             type="text"
             value={currentCharacter}
             onChange={(e) => onCurrentCharacterChange(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Add character description..."
-            disabled={settingsLocked}
-            className="flex-1 rounded-lg px-3 py-2 text-sm transition-all focus:outline-none focus:ring-2"
+            placeholder="e.g., tall woman with red hair, wearing armor"
+            disabled={isLocked}
+            className="w-full rounded-lg pl-3 pr-16 py-2 text-sm transition-all focus:outline-none focus:ring-2"
             style={{
               backgroundColor: themeColors.inputBackground,
               border: `1px solid ${themeColors.inputBorder}`,
               color: themeColors.textPrimary,
-              opacity: settingsLocked ? 0.6 : 1,
+              opacity: isLocked ? 0.6 : 1,
             }}
           />
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={onAddCharacter}
-            disabled={settingsLocked}
-            className="px-3 rounded-lg"
-            style={{
-              backgroundColor: themeColors.accent,
-              color: '#fff',
-              opacity: settingsLocked ? 0.6 : 1,
-            }}
-          >
-            <Plus className="w-4 h-4" />
-          </motion.button>
+          {currentCharacter && (
+            <div
+              className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px]"
+              style={{
+                backgroundColor: themeColors.accent + '20',
+                color: themeColors.accent,
+              }}
+            >
+              <CornerDownLeft className="w-3 h-3" />
+              <span>Enter</span>
+            </div>
+          )}
         </div>
 
         {characterItems.length > 0 && (
@@ -125,7 +136,7 @@ export function SubjectInputs({
                 <span className="max-w-[150px] truncate">{item.content}</span>
                 <button
                   onClick={() => onRemoveCharacter(item.id)}
-                  disabled={settingsLocked}
+                  disabled={isLocked}
                   className="ml-1 hover:opacity-70"
                 >
                   <X className="w-3 h-3" style={{ color: themeColors.textTertiary }} />
@@ -149,13 +160,13 @@ export function SubjectInputs({
           value={location}
           onChange={(e) => onLocationChange(e.target.value)}
           placeholder="e.g., neon-lit Tokyo street at night"
-          disabled={settingsLocked}
+          disabled={isLocked}
           className="w-full rounded-lg px-3 py-2 text-sm transition-all focus:outline-none focus:ring-2"
           style={{
             backgroundColor: themeColors.inputBackground,
             border: `1px solid ${themeColors.inputBorder}`,
             color: themeColors.textPrimary,
-            opacity: settingsLocked ? 0.6 : 1,
+            opacity: isLocked ? 0.6 : 1,
           }}
         />
       </div>

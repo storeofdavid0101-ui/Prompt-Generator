@@ -4,7 +4,7 @@
  */
 
 import { useMemo } from 'react';
-import type { Atmosphere, CameraCategory, ConflictResult } from '../config/types';
+import type { Atmosphere, CameraCategory, ConflictResult, EffectStackingWarning } from '../config/types';
 import {
   cameraCategories,
   categoryConflicts,
@@ -53,6 +53,7 @@ export function useConflicts({
     if (directorConfig) {
       directorConfig.blockedAtmospheres.forEach((atm) => blockedAtmospheres.add(atm));
       directorConfig.blockedPresets.forEach((preset) => blockedPresets.add(preset));
+      directorConfig.blockedCameras.forEach((cam) => blockedCameras.add(cam));
     }
 
     // Check reverse conflicts: atmosphere blocks cameras
@@ -108,12 +109,52 @@ export function useConflicts({
       ? cameraAspectRatios[selectedCamera] || null
       : null;
 
+    // Detect effect stacking warnings (multiple blur/mood terms compounding)
+    const effectStackingWarnings: EffectStackingWarning[] = [];
+
+    // Dreamy atmosphere already includes blur effects
+    if (selectedAtmosphere === 'dreamy') {
+      const dreamyBlurTerms = ['soft focus', 'ethereal glow', 'bokeh', 'gaussian blur'];
+
+      // Warn if shallow DOF (bokeh) is also selected - compounds blur
+      if (depthOfField === 'shallow') {
+        effectStackingWarnings.push({
+          category: 'blur',
+          message: 'Dreamy + Shallow DOF may cause artifact sparkles. Consider using "Normal" DOF instead.',
+          includedTerms: dreamyBlurTerms,
+        });
+      } else if (depthOfField === 'tilt-shift') {
+        effectStackingWarnings.push({
+          category: 'blur',
+          message: 'Dreamy + Tilt-Shift creates heavy blur stacking. May cause unrealistic effects.',
+          includedTerms: dreamyBlurTerms,
+        });
+      } else {
+        // General info about what dreamy includes
+        effectStackingWarnings.push({
+          category: 'blur',
+          message: 'Dreamy already includes blur effects. Avoid adding more blur terms in your subject.',
+          includedTerms: dreamyBlurTerms,
+        });
+      }
+    }
+
+    // Romantic atmosphere has soft glow - warn about stacking
+    if (selectedAtmosphere === 'romantic' && depthOfField === 'shallow') {
+      effectStackingWarnings.push({
+        category: 'blur',
+        message: 'Romantic + Shallow DOF stacks soft effects. Use "Normal" DOF for cleaner results.',
+        includedTerms: ['soft warm light', 'gentle glow'],
+      });
+    }
+
     return {
       blockedAtmospheres,
       blockedPresets,
       blockedDOF,
       blockedCameras,
       activeConflicts,
+      effectStackingWarnings,
       warningMessage: cameraRules.warningMessage,
       fixedLens,
       zoomRange,

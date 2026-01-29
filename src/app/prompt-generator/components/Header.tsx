@@ -1,28 +1,23 @@
 /**
  * Application header component
- * Contains title, theme toggle, and lock controls
+ * Contains title and theme toggle
  */
 
 'use client';
 
-import React from 'react';
 import { motion } from 'framer-motion';
-import { Zap, Sun, Moon, Lock, Unlock } from 'lucide-react';
+import { Zap, Sun, Moon } from 'lucide-react';
 import type { ThemeColors } from '../config/types';
 
 interface HeaderProps {
   darkMode: boolean;
-  settingsLocked: boolean;
   onToggleDarkMode: () => void;
-  onToggleLock: () => void;
   themeColors: ThemeColors;
 }
 
 export function Header({
   darkMode,
-  settingsLocked,
   onToggleDarkMode,
-  onToggleLock,
   themeColors,
 }: HeaderProps) {
   return (
@@ -54,23 +49,6 @@ export function Header({
         >
           {darkMode ? <Sun className="w-3 h-3" /> : <Moon className="w-3 h-3" />}
           {darkMode ? 'Light' : 'Dark'}
-        </motion.button>
-
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={onToggleLock}
-          className="px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-2 border"
-          style={{
-            backgroundColor: settingsLocked
-              ? themeColors.warning + '20'
-              : themeColors.inputBackground,
-            borderColor: settingsLocked ? themeColors.warning : themeColors.borderColor,
-            color: settingsLocked ? themeColors.warning : themeColors.textSecondary,
-          }}
-        >
-          {settingsLocked ? <Lock className="w-3 h-3" /> : <Unlock className="w-3 h-3" />}
-          {settingsLocked ? 'Locked' : 'Lock'}
         </motion.button>
       </div>
     </div>

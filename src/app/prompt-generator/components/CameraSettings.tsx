@@ -5,7 +5,6 @@
 
 'use client';
 
-import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Camera, Lock } from 'lucide-react';
 import { SectionHeader } from './ui';
@@ -21,7 +20,8 @@ interface CameraSettingsProps {
   customShot: string;
   aspectRatio: string;
   isExpanded: boolean;
-  settingsLocked: boolean;
+  isLocked: boolean;
+  onToggleLock: () => void;
   conflicts: ConflictResult;
   onCameraChange: (camera: string) => void;
   onCustomCameraChange: (value: string) => void;
@@ -43,7 +43,8 @@ export function CameraSettings({
   customShot,
   aspectRatio,
   isExpanded,
-  settingsLocked,
+  isLocked,
+  onToggleLock,
   conflicts,
   onCameraChange,
   onCustomCameraChange,
@@ -59,7 +60,7 @@ export function CameraSettings({
     backgroundColor: themeColors.inputBackground,
     border: `1px solid ${themeColors.inputBorder}`,
     color: themeColors.textPrimary,
-    opacity: settingsLocked ? 0.6 : 1,
+    opacity: isLocked ? 0.6 : 1,
   };
 
   return (
@@ -69,7 +70,9 @@ export function CameraSettings({
         icon={Camera}
         sectionKey="camera"
         isExpanded={isExpanded}
+        isLocked={isLocked}
         onToggle={onToggleSection}
+        onToggleLock={onToggleLock}
         themeColors={themeColors}
       />
       <AnimatePresence>
@@ -89,7 +92,7 @@ export function CameraSettings({
                 <select
                   value={selectedCamera}
                   onChange={(e) => onCameraChange(e.target.value)}
-                  disabled={settingsLocked}
+                  disabled={isLocked}
                   className="w-full rounded-lg px-3 py-2 text-sm transition-all focus:outline-none focus:ring-2 mb-2"
                   style={inputStyle}
                 >
@@ -114,7 +117,7 @@ export function CameraSettings({
                   value={customCamera}
                   onChange={(e) => onCustomCameraChange(e.target.value)}
                   placeholder="Or enter custom camera (e.g., Canon 5D)"
-                  disabled={settingsLocked}
+                  disabled={isLocked}
                   className="w-full rounded-lg px-3 py-2 text-sm transition-all focus:outline-none focus:ring-2"
                   style={inputStyle}
                 />
@@ -154,7 +157,7 @@ export function CameraSettings({
                     <select
                       value={selectedLens}
                       onChange={(e) => onLensChange(e.target.value)}
-                      disabled={settingsLocked}
+                      disabled={isLocked}
                       className="w-full rounded-lg px-3 py-2 text-sm transition-all focus:outline-none focus:ring-2"
                       style={inputStyle}
                     >
@@ -170,7 +173,7 @@ export function CameraSettings({
                     <select
                       value={selectedLens}
                       onChange={(e) => onLensChange(e.target.value)}
-                      disabled={settingsLocked}
+                      disabled={isLocked}
                       className="w-full rounded-lg px-3 py-2 text-sm transition-all focus:outline-none focus:ring-2 mb-2"
                       style={inputStyle}
                     >
@@ -185,7 +188,7 @@ export function CameraSettings({
                       value={customLens}
                       onChange={(e) => onCustomLensChange(e.target.value)}
                       placeholder="Or enter custom lens (e.g., 21mm Zeiss)"
-                      disabled={settingsLocked}
+                      disabled={isLocked}
                       className="w-full rounded-lg px-3 py-2 text-sm transition-all focus:outline-none focus:ring-2"
                       style={inputStyle}
                     />
@@ -201,7 +204,7 @@ export function CameraSettings({
                 <select
                   value={selectedShot}
                   onChange={(e) => onShotChange(e.target.value)}
-                  disabled={settingsLocked}
+                  disabled={isLocked}
                   className="w-full rounded-lg px-3 py-2 text-sm transition-all focus:outline-none focus:ring-2 mb-2"
                   style={inputStyle}
                 >
@@ -216,7 +219,7 @@ export function CameraSettings({
                   value={customShot}
                   onChange={(e) => onCustomShotChange(e.target.value)}
                   placeholder="Or enter custom shot type"
-                  disabled={settingsLocked}
+                  disabled={isLocked}
                   className="w-full rounded-lg px-3 py-2 text-sm transition-all focus:outline-none focus:ring-2"
                   style={inputStyle}
                 />
@@ -243,7 +246,7 @@ export function CameraSettings({
                     <select
                       value={aspectRatio}
                       onChange={(e) => onAspectRatioChange(e.target.value)}
-                      disabled={settingsLocked}
+                      disabled={isLocked}
                       className="w-full rounded-lg px-3 py-2 text-sm transition-all focus:outline-none focus:ring-2"
                       style={inputStyle}
                     >
@@ -262,7 +265,7 @@ export function CameraSettings({
                   <select
                     value={aspectRatio}
                     onChange={(e) => onAspectRatioChange(e.target.value)}
-                    disabled={settingsLocked}
+                    disabled={isLocked}
                     className="w-full rounded-lg px-3 py-2 text-sm transition-all focus:outline-none focus:ring-2"
                     style={inputStyle}
                   >
