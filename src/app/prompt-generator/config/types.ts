@@ -4,7 +4,16 @@
  */
 
 // AI model identifiers supported by the prompt generator
-export type AIModel = 'midjourney' | 'flux' | 'stable-diffusion' | 'dalle3' | 'chatgpt';
+export type AIModel =
+  | 'midjourney'
+  | 'flux'
+  | 'stable-diffusion'
+  | 'dalle3'
+  | 'chatgpt'
+  | 'imagen'
+  | 'ideogram'
+  | 'leonardo'
+  | 'firefly';
 
 // Available atmosphere presets for visual styling
 export type Atmosphere =
@@ -41,6 +50,8 @@ export interface ModelConfig {
   variationParam: string;
   negativeParam: string;
   aspectParam: string;
+  supportsNegativePrompt: boolean;
+  promptStyle: 'tags' | 'natural' | 'structured';
 }
 
 // Atmosphere preset configuration

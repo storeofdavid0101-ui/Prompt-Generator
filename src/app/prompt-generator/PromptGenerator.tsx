@@ -58,10 +58,8 @@ export function PromptGenerator() {
           <div className="p-5 space-y-1">
             <ModelSelector
               selectedModel={state.selectedModel}
-              isExpanded={state.expandedSections.model}
               settingsLocked={state.settingsLocked}
               onSelectModel={(model) => !state.settingsLocked && state.setSelectedModel(model)}
-              onToggleSection={state.toggleSection}
               themeColors={state.themeColors}
             />
 

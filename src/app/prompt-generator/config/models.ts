@@ -1,6 +1,7 @@
 /**
  * AI Model configurations
  * Defines parameters and settings for each supported AI image generation model
+ * Each model has specific prompt syntax and capability support
  */
 
 import type { AIModel, ModelConfig } from './types';
@@ -14,6 +15,8 @@ export const modelConfigs: Record<AIModel, ModelConfig> = {
     variationParam: '--chaos',
     negativeParam: '--no',
     aspectParam: '--ar',
+    supportsNegativePrompt: true,
+    promptStyle: 'tags',
   },
   flux: {
     name: 'Flux',
@@ -21,8 +24,10 @@ export const modelConfigs: Record<AIModel, ModelConfig> = {
     maxCreativity: 20,
     creativityParam: 'guidance_scale:',
     variationParam: 'variation:',
-    negativeParam: 'negative:',
+    negativeParam: '',
     aspectParam: 'aspect:',
+    supportsNegativePrompt: false,
+    promptStyle: 'natural',
   },
   'stable-diffusion': {
     name: 'Stable Diffusion',
@@ -32,6 +37,8 @@ export const modelConfigs: Record<AIModel, ModelConfig> = {
     variationParam: 'Variation:',
     negativeParam: 'Negative prompt:',
     aspectParam: 'Size:',
+    supportsNegativePrompt: true,
+    promptStyle: 'tags',
   },
   dalle3: {
     name: 'DALL-E 3',
@@ -39,8 +46,10 @@ export const modelConfigs: Record<AIModel, ModelConfig> = {
     maxCreativity: 100,
     creativityParam: 'style:',
     variationParam: 'quality:',
-    negativeParam: 'avoid:',
+    negativeParam: '',
     aspectParam: 'size:',
+    supportsNegativePrompt: false,
+    promptStyle: 'natural',
   },
   chatgpt: {
     name: 'ChatGPT',
@@ -50,5 +59,51 @@ export const modelConfigs: Record<AIModel, ModelConfig> = {
     variationParam: '',
     negativeParam: 'without',
     aspectParam: '',
+    supportsNegativePrompt: true,
+    promptStyle: 'natural',
+  },
+  imagen: {
+    name: 'Imagen 3',
+    icon: '🌈',
+    maxCreativity: 100,
+    creativityParam: 'creativity:',
+    variationParam: 'seed_variation:',
+    negativeParam: 'negative_prompt:',
+    aspectParam: 'aspect_ratio:',
+    supportsNegativePrompt: true,
+    promptStyle: 'natural',
+  },
+  ideogram: {
+    name: 'Ideogram',
+    icon: '✨',
+    maxCreativity: 100,
+    creativityParam: '--style',
+    variationParam: '--variation',
+    negativeParam: '--negative',
+    aspectParam: '--aspect',
+    supportsNegativePrompt: true,
+    promptStyle: 'tags',
+  },
+  leonardo: {
+    name: 'Leonardo.ai',
+    icon: '🎭',
+    maxCreativity: 100,
+    creativityParam: 'guidance_scale:',
+    variationParam: 'preset_style:',
+    negativeParam: 'negative_prompt:',
+    aspectParam: 'dimensions:',
+    supportsNegativePrompt: true,
+    promptStyle: 'natural',
+  },
+  firefly: {
+    name: 'Adobe Firefly',
+    icon: '🔥',
+    maxCreativity: 100,
+    creativityParam: 'style_strength:',
+    variationParam: 'variation:',
+    negativeParam: '',
+    aspectParam: 'aspect_ratio:',
+    supportsNegativePrompt: false,
+    promptStyle: 'natural',
   },
 };

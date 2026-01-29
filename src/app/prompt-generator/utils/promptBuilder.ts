@@ -96,6 +96,30 @@ function translateSliders(
         variation: '',
         quality: '',
       };
+    case 'imagen':
+      return {
+        creativity: creativity > 70 ? 'high creativity' : 'balanced creativity',
+        variation: `seed variation: ${variation}`,
+        quality: uniqueness > 50 ? 'high quality' : 'standard quality',
+      };
+    case 'ideogram':
+      return {
+        creativity: `--style ${creativity > 70 ? 'artistic' : 'realistic'}`,
+        variation: `--variation ${variation}`,
+        quality: '',
+      };
+    case 'leonardo':
+      return {
+        creativity: `guidance_scale: ${((creativity / 100) * 20).toFixed(1)}`,
+        variation: variation > 50 ? 'preset_style: dynamic' : 'preset_style: cinematic',
+        quality: uniqueness > 50 ? 'high_resolution: true' : '',
+      };
+    case 'firefly':
+      return {
+        creativity: creativity > 70 ? 'style_strength: high' : 'style_strength: medium',
+        variation: '',
+        quality: uniqueness > 50 ? 'quality: high' : 'quality: standard',
+      };
     default:
       return { creativity: '', variation: '', quality: '' };
   }
@@ -271,28 +295,72 @@ export function generatePrompt(params: PromptBuilderParams): string {
       prompt += `\n\n${sliderParams.creativity}, ${sliderParams.quality}`;
     }
   } else if (selectedModel === 'flux') {
+    // Flux - natural language only, no negative prompts supported
     if (creativeControlsEnabled) {
       prompt += `\n\n[${sliderParams.creativity}, ${sliderParams.variation}]`;
     }
     if (aspectRatio !== 'none' && selectedRatio) {
       prompt += `\n[aspect_ratio: ${selectedRatio.ratio}]`;
     }
-    if (negativePrompt.trim()) {
-      prompt += `\n${config.negativeParam} ${negativePrompt.trim()}`;
-    }
+    // Note: Flux does not support negative prompts - they are ignored
   } else if (selectedModel === 'dalle3') {
+    // DALL-E 3 - natural language, negative prompts are counterproductive
     if (aspectRatio !== 'none' && selectedRatio) {
       prompt += `, ${selectedRatio.ratio} aspect ratio`;
     }
-    if (negativePrompt.trim()) {
-      prompt += `, avoiding ${negativePrompt.trim()}`;
-    }
+    // Note: DALL-E 3 tends to include what you exclude, so we skip negative prompts
   } else if (selectedModel === 'chatgpt') {
     if (aspectRatio !== 'none' && selectedRatio) {
       prompt += `, in ${selectedRatio.ratio} aspect ratio`;
     }
-    if (negativePrompt.trim()) {
+    if (negativePrompt.trim() && config.supportsNegativePrompt) {
       prompt += `, without ${negativePrompt.trim()}`;
+    }
+  } else if (selectedModel === 'imagen') {
+    // Google Imagen 3 - natural language style
+    if (aspectRatio !== 'none' && selectedRatio) {
+      prompt += `\n\n[aspect_ratio: ${selectedRatio.ratio}]`;
+    }
+    if (negativePrompt.trim() && config.supportsNegativePrompt) {
+      prompt += `\n[negative_prompt: ${negativePrompt.trim()}]`;
+    }
+    if (creativeControlsEnabled) {
+      prompt += `\n[${sliderParams.creativity}, ${sliderParams.quality}]`;
+    }
+  } else if (selectedModel === 'ideogram') {
+    // Ideogram - tag-based style with parameters
+    const ideoParams = [];
+    if (aspectRatio !== 'none' && selectedRatio) {
+      ideoParams.push(`--aspect ${selectedRatio.ratio}`);
+    }
+    if (negativePrompt.trim() && config.supportsNegativePrompt) {
+      ideoParams.push(`--negative ${negativePrompt.trim()}`);
+    }
+    if (creativeControlsEnabled) {
+      if (sliderParams.creativity) ideoParams.push(sliderParams.creativity);
+      if (sliderParams.variation) ideoParams.push(sliderParams.variation);
+    }
+    if (ideoParams.length > 0) {
+      prompt += ' ' + ideoParams.join(' ');
+    }
+  } else if (selectedModel === 'leonardo') {
+    // Leonardo.ai - natural language with structured parameters
+    if (aspectRatio !== 'none' && selectedRatio) {
+      prompt += `\n\n[dimensions: ${selectedRatio.ratio}]`;
+    }
+    if (negativePrompt.trim() && config.supportsNegativePrompt) {
+      prompt += `\n[negative_prompt: ${negativePrompt.trim()}]`;
+    }
+    if (creativeControlsEnabled) {
+      prompt += `\n[${sliderParams.creativity}, ${sliderParams.variation}]`;
+    }
+  } else if (selectedModel === 'firefly') {
+    // Adobe Firefly - natural language, no negative prompts
+    if (aspectRatio !== 'none' && selectedRatio) {
+      prompt += `, ${selectedRatio.ratio} aspect ratio`;
+    }
+    if (creativeControlsEnabled) {
+      prompt += `\n\n[${sliderParams.creativity}, ${sliderParams.quality}]`;
     }
   }
 

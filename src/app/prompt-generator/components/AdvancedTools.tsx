@@ -85,33 +85,51 @@ export function AdvancedTools({
             className="overflow-hidden"
           >
             <div className="px-4 pb-4 space-y-4">
-              {/* Negative Prompt */}
-              <div>
-                <label
-                  className="block text-xs font-medium mb-2"
-                  style={{ color: themeColors.textTertiary }}
-                >
-                  Negative Prompt (Things to Avoid)
-                </label>
-                <textarea
-                  value={negativePrompt}
-                  onChange={(e) => onNegativePromptChange(e.target.value)}
-                  placeholder="blurry, low quality, distorted, watermark..."
-                  rows={2}
-                  disabled={settingsLocked}
-                  className="w-full rounded-lg px-3 py-2.5 text-sm resize-none transition-all focus:outline-none focus:ring-2"
+              {/* Negative Prompt - only show for models that support it */}
+              {modelConfigs[selectedModel].supportsNegativePrompt ? (
+                <div>
+                  <label
+                    className="block text-xs font-medium mb-2"
+                    style={{ color: themeColors.textTertiary }}
+                  >
+                    Negative Prompt (Things to Avoid)
+                  </label>
+                  <textarea
+                    value={negativePrompt}
+                    onChange={(e) => onNegativePromptChange(e.target.value)}
+                    placeholder="blurry, low quality, distorted, watermark..."
+                    rows={2}
+                    disabled={settingsLocked}
+                    className="w-full rounded-lg px-3 py-2.5 text-sm resize-none transition-all focus:outline-none focus:ring-2"
+                    style={{
+                      backgroundColor: themeColors.inputBackground,
+                      border: `1px solid ${themeColors.inputBorder}`,
+                      color: themeColors.textPrimary,
+                      opacity: settingsLocked ? 0.6 : 1,
+                    }}
+                  />
+                  <p className="text-xs mt-1" style={{ color: themeColors.textTertiary }}>
+                    Uses {modelConfigs[selectedModel].negativeParam} for{' '}
+                    {modelConfigs[selectedModel].name}
+                  </p>
+                </div>
+              ) : (
+                <div
+                  className="p-3 rounded-lg border"
                   style={{
                     backgroundColor: themeColors.inputBackground,
-                    border: `1px solid ${themeColors.inputBorder}`,
-                    color: themeColors.textPrimary,
-                    opacity: settingsLocked ? 0.6 : 1,
+                    borderColor: themeColors.warning + '40',
                   }}
-                />
-                <p className="text-xs mt-1" style={{ color: themeColors.textTertiary }}>
-                  Uses {modelConfigs[selectedModel].negativeParam} for{' '}
-                  {modelConfigs[selectedModel].name}
-                </p>
-              </div>
+                >
+                  <p className="text-xs font-medium" style={{ color: themeColors.textSecondary }}>
+                    Negative prompts not supported
+                  </p>
+                  <p className="text-xs mt-1" style={{ color: themeColors.textTertiary }}>
+                    {modelConfigs[selectedModel].name} uses natural language processing.
+                    Describe what you want instead of what to avoid.
+                  </p>
+                </div>
+              )}
 
               {/* Creative Controls Section */}
               <div

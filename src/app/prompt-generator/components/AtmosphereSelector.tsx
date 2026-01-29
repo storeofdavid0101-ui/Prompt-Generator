@@ -84,15 +84,23 @@ export function AtmosphereSelector({
           </div>
           <div className="flex items-center gap-1">
             {selectedAtmosphere && (
-              <button
+              <span
+                role="button"
+                tabIndex={0}
                 onClick={(e) => {
                   e.stopPropagation();
                   onSelectAtmosphere(null);
                 }}
-                className="p-0.5 rounded hover:bg-black/10"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.stopPropagation();
+                    onSelectAtmosphere(null);
+                  }
+                }}
+                className="p-0.5 rounded hover:bg-black/10 cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" style={{ color: themeColors.textTertiary }} />
-              </button>
+              </span>
             )}
             <ChevronDown
               className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}

@@ -1,85 +1,167 @@
 /**
  * AI Model selector component
- * Allows selection between different AI image generation models
+ * Dropdown-style selector for AI image generation models
  */
 
 'use client';
 
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Layers } from 'lucide-react';
-import { SectionHeader } from './ui';
+import { Layers, ChevronDown, Check } from 'lucide-react';
 import { modelConfigs } from '../config';
 import type { AIModel, ThemeColors } from '../config/types';
 
 interface ModelSelectorProps {
   selectedModel: AIModel;
-  isExpanded: boolean;
   settingsLocked: boolean;
   onSelectModel: (model: AIModel) => void;
-  onToggleSection: (key: string) => void;
   themeColors: ThemeColors;
 }
 
 export function ModelSelector({
   selectedModel,
-  isExpanded,
   settingsLocked,
   onSelectModel,
-  onToggleSection,
   themeColors,
 }: ModelSelectorProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const selectedConfig = modelConfigs[selectedModel];
+
   return (
-    <div>
-      <SectionHeader
-        title="AI Model"
-        icon={Layers}
-        sectionKey="model"
-        isExpanded={isExpanded}
-        onToggle={onToggleSection}
-        themeColors={themeColors}
-      />
-      <AnimatePresence>
-        {isExpanded && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-          >
-            <div className="grid grid-cols-2 gap-2 pb-4 px-1">
-              {(Object.entries(modelConfigs) as [AIModel, typeof modelConfigs[AIModel]][]).map(
-                ([key, config]) => (
-                  <motion.button
-                    key={key}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => !settingsLocked && onSelectModel(key)}
-                    disabled={settingsLocked}
-                    className="p-3 rounded-xl text-left transition-all border"
-                    style={{
-                      backgroundColor:
-                        selectedModel === key ? themeColors.promptBg : 'transparent',
-                      borderColor:
-                        selectedModel === key ? themeColors.accent : themeColors.borderColor,
-                      opacity: settingsLocked ? 0.6 : 1,
-                    }}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg">{config.icon}</span>
-                      <span
-                        className="text-sm font-medium"
-                        style={{ color: themeColors.textPrimary }}
+    <div className="py-3">
+      <label
+        className="block text-xs font-medium mb-1.5 flex items-center gap-1.5"
+        style={{ color: themeColors.textTertiary }}
+      >
+        <Layers className="w-3 h-3" /> AI Model
+      </label>
+      <p className="text-[10px] mb-2" style={{ color: themeColors.textTertiary }}>
+        Select target AI image generator
+      </p>
+
+      <div ref={dropdownRef} className="relative">
+        {/* Dropdown Trigger */}
+        <button
+          onClick={() => !settingsLocked && setIsOpen(!isOpen)}
+          disabled={settingsLocked}
+          className="w-full rounded-lg px-3 py-2.5 text-sm transition-all focus:outline-none focus:ring-2 flex items-center justify-between"
+          style={{
+            backgroundColor: themeColors.inputBackground,
+            border: `1px solid ${isOpen ? themeColors.accent : themeColors.inputBorder}`,
+            color: themeColors.textPrimary,
+            opacity: settingsLocked ? 0.6 : 1,
+          }}
+        >
+          <div className="flex items-center gap-2">
+            <span className="text-lg">{selectedConfig.icon}</span>
+            <span className="font-medium">{selectedConfig.name}</span>
+            {!selectedConfig.supportsNegativePrompt && (
+              <span
+                className="text-[10px] px-1.5 py-0.5 rounded"
+                style={{
+                  backgroundColor: themeColors.warning + '20',
+                  color: themeColors.warning,
+                }}
+              >
+                No negative
+              </span>
+            )}
+          </div>
+          <ChevronDown
+            className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+            style={{ color: themeColors.textTertiary }}
+          />
+        </button>
+
+        {/* Dropdown Menu */}
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.15 }}
+              className="absolute z-50 w-full mt-1 rounded-xl overflow-hidden shadow-xl"
+              style={{
+                backgroundColor: themeColors.cardBackground,
+                border: `1px solid ${themeColors.borderColor}`,
+              }}
+            >
+              <div className="max-h-[320px] overflow-y-auto py-1">
+                {(Object.entries(modelConfigs) as [AIModel, typeof modelConfigs[AIModel]][]).map(
+                  ([key, config]) => {
+                    const isSelected = selectedModel === key;
+
+                    return (
+                      <button
+                        key={key}
+                        onClick={() => {
+                          onSelectModel(key);
+                          setIsOpen(false);
+                        }}
+                        className="w-full px-3 py-2.5 flex items-center gap-3 hover:bg-black/5 transition-colors"
+                        style={{
+                          backgroundColor: isSelected ? themeColors.promptBg : 'transparent',
+                        }}
                       >
-                        {config.name}
-                      </span>
-                    </div>
-                  </motion.button>
-                )
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                        {/* Icon */}
+                        <span className="text-xl w-7 text-center">{config.icon}</span>
+
+                        {/* Text */}
+                        <div className="flex-1 text-left">
+                          <div className="flex items-center gap-2">
+                            <span
+                              className="text-sm font-medium"
+                              style={{ color: themeColors.textPrimary }}
+                            >
+                              {config.name}
+                            </span>
+                            {!config.supportsNegativePrompt && (
+                              <span
+                                className="text-[9px] px-1 py-0.5 rounded"
+                                style={{
+                                  backgroundColor: themeColors.warning + '20',
+                                  color: themeColors.warning,
+                                }}
+                              >
+                                No negative
+                              </span>
+                            )}
+                          </div>
+                          <div
+                            className="text-xs"
+                            style={{ color: themeColors.textTertiary }}
+                          >
+                            {config.promptStyle === 'tags' ? 'Tag-based prompts' : 'Natural language'}
+                          </div>
+                        </div>
+
+                        {/* Check icon */}
+                        {isSelected && (
+                          <Check className="w-4 h-4" style={{ color: themeColors.accent }} />
+                        )}
+                      </button>
+                    );
+                  }
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }
