@@ -3,20 +3,19 @@
  *
  * Handles aspect ratio selection with two modes:
  * 1. Restricted - Limited to camera's authentic aspect ratios
- * 2. Standard - All aspect ratios available
+ * 2. Standard - Stylish dropdown with visual ratio indicators
  *
  * @module CameraSettings/AspectRatioSelector
  */
 
 'use client';
 
-import { memo, useMemo } from 'react';
+import { memo } from 'react';
 import { Camera } from 'lucide-react';
-import { aspectRatioOptions, helpDescriptions } from '../../config';
-import { StyledSelect, InfoBanner } from './components';
+import { helpDescriptions } from '../../config';
+import { InfoBanner, AspectRatioDropdown } from './components';
 import { HelpLabel } from '../ui';
-import { CSS_CLASSES, ARIA_LABELS } from './constants';
-import type { AspectRatioSelectorProps, SelectOption } from './types';
+import type { AspectRatioSelectorProps } from './types';
 
 /**
  * Aspect ratio selector with camera-aware restrictions
@@ -41,43 +40,6 @@ export const AspectRatioSelector = memo(function AspectRatioSelector({
   isLocked,
   themeColors,
 }: AspectRatioSelectorProps) {
-  /**
-   * Memoized label styles
-   */
-  const labelStyles = useMemo(
-    () => ({ color: themeColors.textTertiary }),
-    [themeColors]
-  );
-
-  /**
-   * Standard aspect ratio options (all available)
-   */
-  const allOptions: SelectOption[] = useMemo(
-    () => aspectRatioOptions.map((opt) => ({
-      label: opt.label,
-      value: opt.value,
-    })),
-    []
-  );
-
-  /**
-   * Restricted aspect ratio options (camera-specific)
-   */
-  const restrictedOptions: SelectOption[] = useMemo(() => {
-    if (!allowedAspectRatios) return [];
-
-    const defaultOption: SelectOption = { label: 'Default', value: 'none' };
-    const cameraOptions = allowedAspectRatios.map((ratio) => {
-      const option = aspectRatioOptions.find((r) => r.ratio === ratio);
-      return {
-        label: option ? option.label : ratio,
-        value: ratio,
-      };
-    });
-
-    return [defaultOption, ...cameraOptions];
-  }, [allowedAspectRatios]);
-
   // Restricted mode - limited to camera's authentic ratios
   if (allowedAspectRatios) {
     return (
@@ -94,19 +56,18 @@ export const AspectRatioSelector = memo(function AspectRatioSelector({
           variant="info"
           themeColors={themeColors}
         />
-        <StyledSelect
-          value={aspectRatio}
-          options={restrictedOptions}
-          onChange={onAspectRatioChange}
+        <AspectRatioDropdown
+          selectedRatio={aspectRatio}
+          allowedRatios={allowedAspectRatios}
+          onRatioChange={onAspectRatioChange}
           isLocked={isLocked}
           themeColors={themeColors}
-          ariaLabel={ARIA_LABELS.aspectRatioSelect}
         />
       </div>
     );
   }
 
-  // Standard mode - all aspect ratios available
+  // Standard mode - stylish dropdown with visual indicators
   return (
     <div>
       <HelpLabel
@@ -115,13 +76,11 @@ export const AspectRatioSelector = memo(function AspectRatioSelector({
         themeColors={themeColors}
         className="mb-2"
       />
-      <StyledSelect
-        value={aspectRatio}
-        options={allOptions}
-        onChange={onAspectRatioChange}
+      <AspectRatioDropdown
+        selectedRatio={aspectRatio}
+        onRatioChange={onAspectRatioChange}
         isLocked={isLocked}
         themeColors={themeColors}
-        ariaLabel={ARIA_LABELS.aspectRatioSelect}
       />
     </div>
   );

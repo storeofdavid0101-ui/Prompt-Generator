@@ -4,7 +4,7 @@
  * Handles three distinct lens selection modes:
  * 1. Fixed lens - Camera has non-interchangeable lens
  * 2. Zoom range - Camera has built-in zoom with limited options
- * 3. Standard - Full lens selection with custom input
+ * 3. Standard - Stylish dropdown with categories and custom input
  *
  * @module CameraSettings/LensSelector
  */
@@ -13,10 +13,10 @@
 
 import { memo, useMemo } from 'react';
 import { Lock, Camera } from 'lucide-react';
-import { lensOptions, helpDescriptions } from '../../config';
-import { StyledSelect, StyledInput, InfoBanner } from './components';
+import { helpDescriptions } from '../../config';
+import { StyledSelect, InfoBanner, LensDropdown } from './components';
 import { HelpLabel } from '../ui';
-import { CSS_CLASSES, ARIA_LABELS, PLACEHOLDERS } from './constants';
+import { ARIA_LABELS } from './constants';
 import type { LensSelectorProps, SelectOption } from './types';
 
 /**
@@ -46,22 +46,6 @@ export const LensSelector = memo(function LensSelector({
   isLocked,
   themeColors,
 }: LensSelectorProps) {
-  /**
-   * Memoized label styles
-   */
-  const labelStyles = useMemo(
-    () => ({ color: themeColors.textTertiary }),
-    [themeColors]
-  );
-
-  /**
-   * Standard lens options
-   */
-  const standardOptions: SelectOption[] = useMemo(
-    () => lensOptions.map((lens) => ({ label: lens, value: lens })),
-    []
-  );
-
   /**
    * Zoom range options
    */
@@ -119,7 +103,7 @@ export const LensSelector = memo(function LensSelector({
     );
   }
 
-  // Standard mode - full lens selection with custom input
+  // Standard mode - stylish dropdown with categories and custom input
   return (
     <div>
       <HelpLabel
@@ -128,23 +112,13 @@ export const LensSelector = memo(function LensSelector({
         themeColors={themeColors}
         className="mb-2"
       />
-      <div className="mb-2">
-        <StyledSelect
-          value={selectedLens}
-          options={standardOptions}
-          onChange={onLensChange}
-          isLocked={isLocked}
-          themeColors={themeColors}
-          ariaLabel={ARIA_LABELS.lensSelect}
-        />
-      </div>
-      <StyledInput
-        value={customLens}
-        placeholder={PLACEHOLDERS.customLens}
-        onChange={onCustomLensChange}
+      <LensDropdown
+        selectedLens={selectedLens}
+        customLens={customLens}
+        onLensChange={onLensChange}
+        onCustomLensChange={onCustomLensChange}
         isLocked={isLocked}
         themeColors={themeColors}
-        ariaLabel={ARIA_LABELS.lensCustom}
       />
     </div>
   );

@@ -110,28 +110,137 @@ export const camerasByCategory = cameraOptions.reduce((acc, camera) => {
   return acc;
 }, {} as Record<CameraCategory, CameraOptionWithCategory[]>);
 
-// Lens focal length options
-export const lensOptions = [
-  'Macro', 'Fisheye', '14mm', '18mm', '24mm', '28mm', '35mm', '50mm', '85mm', '135mm', '200mm', '400mm', '600mm'
+/** Lens category type */
+export type LensCategory = 'ultra-wide' | 'wide' | 'standard' | 'portrait' | 'telephoto' | 'super-telephoto' | 'special';
+
+/** Extended lens option with category */
+export interface LensOptionWithCategory {
+  label: string;
+  value: string;
+  category: LensCategory;
+}
+
+// Lens focal length options with categories
+export const lensOptions: LensOptionWithCategory[] = [
+  // Special
+  { label: 'Macro', value: 'Macro', category: 'special' },
+  { label: 'Fisheye', value: 'Fisheye', category: 'special' },
+  // Ultra Wide
+  { label: '14mm', value: '14mm', category: 'ultra-wide' },
+  { label: '18mm', value: '18mm', category: 'ultra-wide' },
+  // Wide
+  { label: '24mm', value: '24mm', category: 'wide' },
+  { label: '28mm', value: '28mm', category: 'wide' },
+  { label: '35mm', value: '35mm', category: 'wide' },
+  // Standard
+  { label: '50mm', value: '50mm', category: 'standard' },
+  // Portrait
+  { label: '85mm', value: '85mm', category: 'portrait' },
+  { label: '135mm', value: '135mm', category: 'portrait' },
+  // Telephoto
+  { label: '200mm', value: '200mm', category: 'telephoto' },
+  // Super Telephoto
+  { label: '400mm', value: '400mm', category: 'super-telephoto' },
+  { label: '600mm', value: '600mm', category: 'super-telephoto' },
 ];
 
-// Shot type options with AI-friendly keywords
-export const shotOptions: ShotOption[] = [
-  { label: 'Extreme Wide Shot (XWS)', keywords: 'extreme wide shot, establishing shot, vast landscape, tiny subject' },
-  { label: 'Wide Shot (WS)', keywords: 'wide shot, full environment visible, subject in context' },
-  { label: 'Full Shot', keywords: 'full shot, entire body visible, head to toe framing' },
-  { label: 'Medium Wide Shot', keywords: 'medium wide shot, cowboy shot, knees up framing' },
-  { label: 'Medium Shot (MS)', keywords: 'medium shot, waist up framing, conversational distance' },
-  { label: 'Medium Close-Up (MCU)', keywords: 'medium close-up, chest up framing, emotional connection' },
-  { label: 'Close-Up (CU)', keywords: 'close-up shot, face filling frame, intimate portrait' },
-  { label: 'Extreme Close-Up (ECU)', keywords: 'extreme close-up, macro detail, eyes or single feature' },
-  { label: 'Low Angle', keywords: 'low angle shot, camera looking up, powerful perspective' },
-  { label: 'High Angle', keywords: 'high angle shot, camera looking down, vulnerable perspective' },
-  { label: 'Dutch Angle', keywords: 'dutch angle, tilted camera, canted frame, disorienting' },
-  { label: "Bird's Eye View", keywords: "bird's eye view, top-down shot, overhead perspective, aerial view" },
-  { label: 'POV', keywords: 'POV shot, point of view, first person perspective, subjective camera' },
-  { label: 'Over the Shoulder (OTS)', keywords: 'over the shoulder shot, OTS, back of head visible, looking at subject' },
+// Lens category display names
+export const lensCategoryNames: Record<LensCategory, string> = {
+  'ultra-wide': 'Ultra Wide',
+  'wide': 'Wide Angle',
+  'standard': 'Standard',
+  'portrait': 'Portrait',
+  'telephoto': 'Telephoto',
+  'super-telephoto': 'Super Telephoto',
+  'special': 'Special',
+};
+
+// Group lenses by category
+export const lensesByCategory = lensOptions.reduce((acc, lens) => {
+  if (!acc[lens.category]) {
+    acc[lens.category] = [];
+  }
+  acc[lens.category].push(lens);
+  return acc;
+}, {} as Record<LensCategory, LensOptionWithCategory[]>);
+
+/** Shot type category */
+export type ShotCategory = 'distance' | 'angle' | 'special';
+
+/** Extended shot option with category */
+export interface ShotOptionWithCategory extends ShotOption {
+  category: ShotCategory;
+}
+
+// Shot type options with AI-friendly keywords and categories
+export const shotOptions: ShotOptionWithCategory[] = [
+  // Distance shots
+  { label: 'Extreme Wide Shot (XWS)', keywords: 'extreme wide shot, establishing shot, vast landscape, tiny subject', category: 'distance' },
+  { label: 'Wide Shot (WS)', keywords: 'wide shot, full environment visible, subject in context', category: 'distance' },
+  { label: 'Full Shot', keywords: 'full shot, entire body visible, head to toe framing', category: 'distance' },
+  { label: 'Medium Wide Shot', keywords: 'medium wide shot, cowboy shot, knees up framing', category: 'distance' },
+  { label: 'Medium Shot (MS)', keywords: 'medium shot, waist up framing, conversational distance', category: 'distance' },
+  { label: 'Medium Close-Up (MCU)', keywords: 'medium close-up, chest up framing, emotional connection', category: 'distance' },
+  { label: 'Close-Up (CU)', keywords: 'close-up shot, face filling frame, intimate portrait', category: 'distance' },
+  { label: 'Extreme Close-Up (ECU)', keywords: 'extreme close-up, macro detail, eyes or single feature', category: 'distance' },
+  // Angle shots
+  { label: 'Low Angle', keywords: 'low angle shot, camera looking up, powerful perspective', category: 'angle' },
+  { label: 'High Angle', keywords: 'high angle shot, camera looking down, vulnerable perspective', category: 'angle' },
+  { label: 'Dutch Angle', keywords: 'dutch angle, tilted camera, canted frame, disorienting', category: 'angle' },
+  { label: "Bird's Eye View", keywords: "bird's eye view, top-down shot, overhead perspective, aerial view", category: 'angle' },
+  // Special shots
+  { label: 'POV', keywords: 'POV shot, point of view, first person perspective, subjective camera', category: 'special' },
+  { label: 'Over the Shoulder (OTS)', keywords: 'over the shoulder shot, OTS, back of head visible, looking at subject', category: 'special' },
 ];
+
+// Shot type category display names
+export const shotCategoryNames: Record<ShotCategory, string> = {
+  'distance': 'Distance Shots',
+  'angle': 'Angle Shots',
+  'special': 'Special Shots',
+};
+
+// Group shots by category
+export const shotsByCategory = shotOptions.reduce((acc, shot) => {
+  if (!acc[shot.category]) {
+    acc[shot.category] = [];
+  }
+  acc[shot.category].push(shot);
+  return acc;
+}, {} as Record<ShotCategory, ShotOptionWithCategory[]>);
+
+/** Aspect ratio category */
+export type AspectCategory = 'square' | 'standard' | 'widescreen' | 'vertical';
+
+/** Extended aspect ratio option with category */
+export interface AspectRatioOptionWithCategory extends AspectRatioOption {
+  category: AspectCategory;
+}
+
+// Aspect ratio options with categories
+export const aspectRatioOptionsWithCategory: AspectRatioOptionWithCategory[] = [
+  { value: 'none', label: 'Default', ratio: '', category: 'standard' },
+  // Square
+  { value: '1:1', label: '1:1 Square', ratio: '1:1', category: 'square' },
+  // Standard
+  { value: '4:3', label: '4:3 Standard', ratio: '4:3', category: 'standard' },
+  { value: '3:2', label: '3:2 Classic', ratio: '3:2', category: 'standard' },
+  // Widescreen
+  { value: '16:9', label: '16:9 Widescreen', ratio: '16:9', category: 'widescreen' },
+  { value: '21:9', label: '21:9 Cinematic', ratio: '21:9', category: 'widescreen' },
+  // Vertical
+  { value: '9:16', label: '9:16 Vertical', ratio: '9:16', category: 'vertical' },
+  { value: '2:3', label: '2:3 Portrait', ratio: '2:3', category: 'vertical' },
+  { value: '4:5', label: '4:5 Instagram', ratio: '4:5', category: 'vertical' },
+];
+
+// Aspect ratio category display names
+export const aspectCategoryNames: Record<AspectCategory, string> = {
+  'square': 'Square',
+  'standard': 'Standard',
+  'widescreen': 'Widescreen',
+  'vertical': 'Vertical',
+};
 
 // Depth of field options
 export const dofOptions: DOFOption[] = [

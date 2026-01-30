@@ -1,7 +1,7 @@
 /**
- * LocationDropdown component
- * Accessible dropdown for selecting location presets or entering custom locations
- * Includes keyboard navigation and proper ARIA attributes
+ * ShotTypeDropdown component
+ * Stylish dropdown for selecting shot types with categories
+ * Includes keyboard navigation and custom shot input
  */
 
 'use client';
@@ -17,11 +17,10 @@ import {
   type KeyboardEvent,
 } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Edit3 } from 'lucide-react';
-import type { LocationDropdownProps } from './types';
-import { KeyboardCodes } from './types';
-import type { LocationPreset } from '../../config/locationPresets';
-import { LocationPresetList } from './LocationPresetList';
+import { ChevronDown, Focus, Move, Sparkles, Edit3 } from 'lucide-react';
+import type { ThemeColors } from '../../../config/types';
+import type { ShotCategory, ShotOptionWithCategory } from '../../../config/cameraOptions';
+import { shotsByCategory, shotCategoryNames, shotOptions } from '../../../config/cameraOptions';
 
 /** Animation variants for dropdown menu */
 const dropdownVariants = {
@@ -37,30 +36,55 @@ const inputVariants = {
   exit: { opacity: 0, height: 0 },
 } as const;
 
-/** Dropdown option for keyboard navigation */
-interface DropdownOption {
-  type: 'custom' | 'preset';
-  value: string;
-  label: string;
+interface ShotTypeDropdownProps {
+  selectedShot: string;
+  customShot: string;
+  onShotChange: (shot: string) => void;
+  onCustomShotChange: (value: string) => void;
+  isLocked: boolean;
+  themeColors: ThemeColors;
 }
 
-/** Check if location matches a preset */
-function isLocationPreset(location: string, options: DropdownOption[]): boolean {
-  if (!location) return false;
-  return options.some((opt) => opt.type === 'preset' && opt.value === location);
+/** Get icon for shot category */
+function getCategoryIcon(category: ShotCategory) {
+  switch (category) {
+    case 'distance':
+      return Move;
+    case 'angle':
+      return Focus;
+    case 'special':
+      return Sparkles;
+    default:
+      return Focus;
+  }
+}
+
+/** Keyboard codes for accessibility */
+const KeyboardCodes = {
+  ENTER: 'Enter',
+  ESCAPE: 'Escape',
+  ARROW_UP: 'ArrowUp',
+  ARROW_DOWN: 'ArrowDown',
+  TAB: 'Tab',
+  SPACE: ' ',
+} as const;
+
+/** Check if a shot is in the preset list */
+function isShotPreset(shot: string): boolean {
+  return shotOptions.some((s) => s.label === shot);
 }
 
 /**
- * LocationDropdown - Accessible location selector with preset support
+ * ShotTypeDropdown - Stylish shot type selector with categories
  */
-export const LocationDropdown = memo(function LocationDropdown({
-  location,
+export const ShotTypeDropdown = memo(function ShotTypeDropdown({
+  selectedShot,
+  customShot,
+  onShotChange,
+  onCustomShotChange,
   isLocked,
-  onLocationChange,
   themeColors,
-  presetsByCategory,
-  categoryNames,
-}: LocationDropdownProps) {
+}: ShotTypeDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const [forceCustomMode, setForceCustomMode] = useState(false);
@@ -72,23 +96,35 @@ export const LocationDropdown = memo(function LocationDropdown({
   const dropdownId = useId();
 
   // Flatten all options for keyboard navigation
-  const allOptions = useMemo((): DropdownOption[] => {
-    const options: DropdownOption[] = [{ type: 'custom', value: '', label: 'Custom' }];
-    Object.values(presetsByCategory).forEach((presets) => {
-      presets.forEach((preset: LocationPreset) => {
-        options.push({ type: 'preset', value: preset.keywords, label: preset.label });
+  const allOptions = useMemo(() => {
+    const options: { type: 'custom' | 'shot'; value: string; label: string }[] = [
+      { type: 'custom', value: '', label: 'Custom' },
+    ];
+    Object.entries(shotsByCategory).forEach(([, shots]) => {
+      shots.forEach((shot: ShotOptionWithCategory) => {
+        options.push({
+          type: 'shot',
+          value: shot.label,
+          label: shot.label,
+        });
       });
     });
     return options;
-  }, [presetsByCategory]);
+  }, []);
 
-  // Derive custom mode from location value
-  // Check forceCustomMode FIRST so clicking "Custom Location" works even when a preset is selected
+  // Derive custom mode
   const isCustomMode = useMemo(() => {
     if (forceCustomMode) return true;
-    if (location && isLocationPreset(location, allOptions)) return false;
-    return !location;
-  }, [location, allOptions, forceCustomMode]);
+    if (selectedShot && isShotPreset(selectedShot)) return false;
+    return !selectedShot || customShot.trim().length > 0;
+  }, [selectedShot, customShot, forceCustomMode]);
+
+  // Get display text
+  const displayText = useMemo(() => {
+    if (customShot.trim()) return customShot;
+    if (selectedShot) return selectedShot;
+    return 'Select shot type...';
+  }, [selectedShot, customShot]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -103,23 +139,6 @@ export const LocationDropdown = memo(function LocationDropdown({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isOpen]);
 
-  // Focus first option when dropdown opens
-  useEffect(() => {
-    if (isOpen && listRef.current) {
-      const firstItem = listRef.current.querySelector('[role="option"]');
-      if (firstItem instanceof HTMLElement) firstItem.focus();
-    }
-  }, [isOpen]);
-
-  // Focus option when focusedIndex changes
-  useEffect(() => {
-    if (focusedIndex >= 0 && listRef.current) {
-      const options = listRef.current.querySelectorAll('[role="option"]');
-      const target = options[focusedIndex];
-      if (target instanceof HTMLElement) target.focus();
-    }
-  }, [focusedIndex]);
-
   const handleToggle = useCallback(() => {
     if (isLocked) return;
     setIsOpen((prev) => {
@@ -128,24 +147,26 @@ export const LocationDropdown = memo(function LocationDropdown({
     });
   }, [isLocked]);
 
-  const handlePresetSelect = useCallback((keywords: string) => {
+  const handleShotSelect = useCallback((label: string) => {
     setForceCustomMode(false);
-    onLocationChange(keywords);
+    onShotChange(label);
+    onCustomShotChange('');
     setIsOpen(false);
     setFocusedIndex(-1);
     toggleButtonRef.current?.focus();
-  }, [onLocationChange]);
+  }, [onShotChange, onCustomShotChange]);
 
   const handleCustomSelect = useCallback(() => {
     setForceCustomMode(true);
+    onShotChange('');
     setIsOpen(false);
     setFocusedIndex(-1);
     setTimeout(() => customInputRef.current?.focus(), 150);
-  }, []);
+  }, [onShotChange]);
 
   const handleCustomInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => onLocationChange(e.target.value),
-    [onLocationChange]
+    (e: React.ChangeEvent<HTMLInputElement>) => onCustomShotChange(e.target.value),
+    [onCustomShotChange]
   );
 
   const handleKeyDown = useCallback(
@@ -180,7 +201,7 @@ export const LocationDropdown = memo(function LocationDropdown({
             if (opt.type === 'custom') {
               handleCustomSelect();
             } else {
-              handlePresetSelect(opt.value);
+              handleShotSelect(opt.value);
             }
           }
           break;
@@ -190,7 +211,7 @@ export const LocationDropdown = memo(function LocationDropdown({
           break;
       }
     },
-    [isOpen, focusedIndex, allOptions, handleToggle, handleCustomSelect, handlePresetSelect]
+    [isOpen, focusedIndex, allOptions, handleToggle, handleCustomSelect, handleShotSelect]
   );
 
   // Memoized styles
@@ -198,7 +219,7 @@ export const LocationDropdown = memo(function LocationDropdown({
     toggleButton: {
       backgroundColor: themeColors.inputBackground,
       border: `1px solid ${themeColors.inputBorder}`,
-      color: location ? themeColors.textPrimary : themeColors.textTertiary,
+      color: selectedShot || customShot ? themeColors.textPrimary : themeColors.textTertiary,
       opacity: isLocked ? 0.6 : 1,
     },
     dropdown: {
@@ -220,7 +241,10 @@ export const LocationDropdown = memo(function LocationDropdown({
       color: themeColors.textPrimary,
       opacity: isLocked ? 0.6 : 1,
     },
-  }), [themeColors, location, isLocked, isCustomMode]);
+  }), [themeColors, selectedShot, customShot, isLocked, isCustomMode]);
+
+  // Category order
+  const categoryOrder: ShotCategory[] = ['distance', 'angle', 'special'];
 
   return (
     <div ref={dropdownRef} className="relative" onKeyDown={handleKeyDown}>
@@ -229,18 +253,19 @@ export const LocationDropdown = memo(function LocationDropdown({
         type="button"
         onClick={handleToggle}
         disabled={isLocked}
-        className="w-full rounded-lg px-3 py-2 text-sm transition-all focus:outline-none focus:ring-2 flex items-center justify-between"
+        className="w-full rounded-lg px-3 py-2.5 text-sm transition-all focus:outline-none focus:ring-2 flex items-center justify-between gap-2"
         style={styles.toggleButton}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
         aria-controls={dropdownId}
-        aria-label={`Location: ${location || 'Select or enter a location'}`}
+        aria-label={`Shot Type: ${displayText}`}
       >
-        <span className="truncate text-left flex-1">
-          {location || 'Select or enter a location...'}
-        </span>
+        <div className="flex items-center gap-2 min-w-0">
+          <Focus className="w-4 h-4 flex-shrink-0" style={{ color: themeColors.accent }} />
+          <span className="truncate text-left">{displayText}</span>
+        </div>
         <ChevronDown
-          className={`w-4 h-4 ml-2 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+          className={`w-4 h-4 flex-shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
           style={{ color: themeColors.textTertiary }}
           aria-hidden="true"
         />
@@ -261,52 +286,88 @@ export const LocationDropdown = memo(function LocationDropdown({
               ref={listRef}
               id={dropdownId}
               role="listbox"
-              aria-label="Location options"
-              className="max-h-[300px] overflow-y-auto"
+              aria-label="Shot type options"
+              className="max-h-[350px] overflow-y-auto"
             >
+              {/* Custom option */}
               <li
                 role="option"
                 aria-selected={isCustomMode}
                 tabIndex={-1}
                 onClick={handleCustomSelect}
-                onKeyDown={(e) => {
-                  if (e.key === KeyboardCodes.ENTER || e.key === KeyboardCodes.SPACE) {
-                    e.preventDefault();
-                    handleCustomSelect();
-                  }
-                }}
                 className="w-full px-3 py-2.5 text-sm text-left flex items-center gap-2 cursor-pointer transition-colors hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-inset"
                 style={styles.customOption}
               >
-                <Edit3 className="w-3.5 h-3.5" style={{ color: themeColors.accent }} aria-hidden="true" />
-                <span>Custom Location</span>
+                <Edit3 className="w-4 h-4" style={{ color: themeColors.accent }} aria-hidden="true" />
+                <span className="font-medium">Custom Shot Type</span>
               </li>
-              <LocationPresetList
-                presetsByCategory={presetsByCategory}
-                categoryNames={categoryNames}
-                currentLocation={location}
-                themeColors={themeColors}
-                onSelect={handlePresetSelect}
-                categoryHeaderStyle={styles.categoryHeader}
-              />
+
+              {/* Shot categories */}
+              {categoryOrder.map((category) => {
+                const shots = shotsByCategory[category];
+                if (!shots || shots.length === 0) return null;
+                const CategoryIcon = getCategoryIcon(category);
+
+                return (
+                  <li key={category} role="group" aria-label={shotCategoryNames[category]}>
+                    {/* Category header */}
+                    <div
+                      className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider flex items-center gap-1.5 sticky top-0"
+                      style={styles.categoryHeader}
+                    >
+                      <CategoryIcon className="w-3 h-3" />
+                      {shotCategoryNames[category]}
+                    </div>
+
+                    {/* Shot items */}
+                    {shots.map((shot) => {
+                      const isSelected = selectedShot === shot.label && !customShot;
+
+                      return (
+                        <div
+                          key={shot.label}
+                          role="option"
+                          aria-selected={isSelected}
+                          onClick={() => handleShotSelect(shot.label)}
+                          className={`
+                            w-full px-3 py-2 text-sm text-left cursor-pointer transition-all
+                            hover:bg-black/5
+                            ${isSelected ? 'font-medium' : ''}
+                          `}
+                          style={{
+                            backgroundColor: isSelected ? `${themeColors.accent}15` : undefined,
+                            color: isSelected ? themeColors.accent : themeColors.textPrimary,
+                            paddingLeft: '2rem',
+                          }}
+                        >
+                          <span className="flex items-center gap-2">
+                            {shot.label}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </li>
+                );
+              })}
             </ul>
           </motion.div>
         )}
       </AnimatePresence>
 
+      {/* Custom input */}
       <AnimatePresence>
         {isCustomMode && (
           <motion.div variants={inputVariants} initial="hidden" animate="visible" exit="exit" className="mt-2">
             <input
               ref={customInputRef}
               type="text"
-              value={location}
+              value={customShot}
               onChange={handleCustomInputChange}
-              placeholder="e.g., neon-lit Tokyo street at night"
+              placeholder="Enter custom shot type (e.g., Two-Shot)"
               disabled={isLocked}
               className="w-full rounded-lg px-3 py-2 text-sm transition-all focus:outline-none focus:ring-2"
               style={styles.customInput}
-              aria-label="Custom location description"
+              aria-label="Custom shot type input"
             />
           </motion.div>
         )}
@@ -315,4 +376,4 @@ export const LocationDropdown = memo(function LocationDropdown({
   );
 });
 
-LocationDropdown.displayName = 'LocationDropdown';
+ShotTypeDropdown.displayName = 'ShotTypeDropdown';

@@ -1,7 +1,7 @@
 /**
- * CameraDropdown component
- * Stylish dropdown for selecting cameras with categories
- * Includes keyboard navigation and custom camera input
+ * LensDropdown component
+ * Stylish dropdown for selecting lenses with categories
+ * Includes keyboard navigation and custom lens input
  */
 
 'use client';
@@ -17,10 +17,10 @@ import {
   type KeyboardEvent,
 } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Camera, Video, Film, Aperture, Clapperboard, Edit3 } from 'lucide-react';
+import { ChevronDown, Aperture, ZoomIn, ZoomOut, CircleDot, Target, Edit3 } from 'lucide-react';
 import type { ThemeColors } from '../../../config/types';
-import type { CameraCategory, CameraOptionWithCategory } from '../../../config/cameraOptions';
-import { camerasByCategory, cameraCategoryNames } from '../../../config/cameraOptions';
+import type { LensCategory, LensOptionWithCategory } from '../../../config/cameraOptions';
+import { lensesByCategory, lensCategoryNames, lensOptions } from '../../../config/cameraOptions';
 
 /** Animation variants for dropdown menu */
 const dropdownVariants = {
@@ -36,33 +36,34 @@ const inputVariants = {
   exit: { opacity: 0, height: 0 },
 } as const;
 
-interface CameraDropdownProps {
-  selectedCamera: string;
-  customCamera: string;
-  blockedCameras: Set<string>;
-  onCameraChange: (camera: string) => void;
-  onCustomCameraChange: (value: string) => void;
+interface LensDropdownProps {
+  selectedLens: string;
+  customLens: string;
+  onLensChange: (lens: string) => void;
+  onCustomLensChange: (value: string) => void;
   isLocked: boolean;
   themeColors: ThemeColors;
 }
 
-/** Get icon for camera category */
-function getCategoryIcon(category: CameraCategory) {
+/** Get icon for lens category */
+function getCategoryIcon(category: LensCategory) {
   switch (category) {
-    case 'consumer':
-      return Camera;
-    case 'mirrorless':
+    case 'ultra-wide':
+      return ZoomOut;
+    case 'wide':
+      return ZoomOut;
+    case 'standard':
+      return CircleDot;
+    case 'portrait':
       return Aperture;
-    case 'cinema':
-    case 'classic':
-      return Clapperboard;
-    case 'film':
-    case 'vintage-film':
-      return Film;
-    case 'vintage-video':
-      return Video;
+    case 'telephoto':
+      return ZoomIn;
+    case 'super-telephoto':
+      return Target;
+    case 'special':
+      return Aperture;
     default:
-      return Camera;
+      return Aperture;
   }
 }
 
@@ -76,18 +77,22 @@ const KeyboardCodes = {
   SPACE: ' ',
 } as const;
 
+/** Check if a lens is in the preset list */
+function isLensPreset(lens: string): boolean {
+  return lensOptions.some((l) => l.value === lens);
+}
+
 /**
- * CameraDropdown - Stylish camera selector with categories
+ * LensDropdown - Stylish lens selector with categories
  */
-export const CameraDropdown = memo(function CameraDropdown({
-  selectedCamera,
-  customCamera,
-  blockedCameras,
-  onCameraChange,
-  onCustomCameraChange,
+export const LensDropdown = memo(function LensDropdown({
+  selectedLens,
+  customLens,
+  onLensChange,
+  onCustomLensChange,
   isLocked,
   themeColors,
-}: CameraDropdownProps) {
+}: LensDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const [forceCustomMode, setForceCustomMode] = useState(false);
@@ -100,35 +105,34 @@ export const CameraDropdown = memo(function CameraDropdown({
 
   // Flatten all options for keyboard navigation
   const allOptions = useMemo(() => {
-    const options: { type: 'custom' | 'camera'; value: string; label: string; blocked?: boolean }[] = [
+    const options: { type: 'custom' | 'lens'; value: string; label: string }[] = [
       { type: 'custom', value: '', label: 'Custom' },
     ];
-    Object.entries(camerasByCategory).forEach(([, cameras]) => {
-      cameras.forEach((camera: CameraOptionWithCategory) => {
+    Object.entries(lensesByCategory).forEach(([, lenses]) => {
+      lenses.forEach((lens: LensOptionWithCategory) => {
         options.push({
-          type: 'camera',
-          value: camera.label,
-          label: camera.label,
-          blocked: blockedCameras.has(camera.label),
+          type: 'lens',
+          value: lens.value,
+          label: lens.label,
         });
       });
     });
     return options;
-  }, [blockedCameras]);
+  }, []);
 
   // Derive custom mode
   const isCustomMode = useMemo(() => {
     if (forceCustomMode) return true;
-    if (selectedCamera && allOptions.some(o => o.type === 'camera' && o.value === selectedCamera)) return false;
-    return !selectedCamera || customCamera.trim().length > 0;
-  }, [selectedCamera, customCamera, allOptions, forceCustomMode]);
+    if (selectedLens && isLensPreset(selectedLens)) return false;
+    return !selectedLens || customLens.trim().length > 0;
+  }, [selectedLens, customLens, forceCustomMode]);
 
   // Get display text
   const displayText = useMemo(() => {
-    if (customCamera.trim()) return customCamera;
-    if (selectedCamera) return selectedCamera;
-    return 'Select camera...';
-  }, [selectedCamera, customCamera]);
+    if (customLens.trim()) return customLens;
+    if (selectedLens) return selectedLens;
+    return 'Select lens...';
+  }, [selectedLens, customLens]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -151,26 +155,26 @@ export const CameraDropdown = memo(function CameraDropdown({
     });
   }, [isLocked]);
 
-  const handleCameraSelect = useCallback((label: string) => {
+  const handleLensSelect = useCallback((value: string) => {
     setForceCustomMode(false);
-    onCameraChange(label);
-    onCustomCameraChange('');
+    onLensChange(value);
+    onCustomLensChange('');
     setIsOpen(false);
     setFocusedIndex(-1);
     toggleButtonRef.current?.focus();
-  }, [onCameraChange, onCustomCameraChange]);
+  }, [onLensChange, onCustomLensChange]);
 
   const handleCustomSelect = useCallback(() => {
     setForceCustomMode(true);
-    onCameraChange('');
+    onLensChange('');
     setIsOpen(false);
     setFocusedIndex(-1);
     setTimeout(() => customInputRef.current?.focus(), 150);
-  }, [onCameraChange]);
+  }, [onLensChange]);
 
   const handleCustomInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => onCustomCameraChange(e.target.value),
-    [onCustomCameraChange]
+    (e: React.ChangeEvent<HTMLInputElement>) => onCustomLensChange(e.target.value),
+    [onCustomLensChange]
   );
 
   const handleKeyDown = useCallback(
@@ -204,8 +208,8 @@ export const CameraDropdown = memo(function CameraDropdown({
             const opt = allOptions[focusedIndex];
             if (opt.type === 'custom') {
               handleCustomSelect();
-            } else if (!opt.blocked) {
-              handleCameraSelect(opt.value);
+            } else {
+              handleLensSelect(opt.value);
             }
           }
           break;
@@ -215,7 +219,7 @@ export const CameraDropdown = memo(function CameraDropdown({
           break;
       }
     },
-    [isOpen, focusedIndex, allOptions, handleToggle, handleCustomSelect, handleCameraSelect]
+    [isOpen, focusedIndex, allOptions, handleToggle, handleCustomSelect, handleLensSelect]
   );
 
   // Memoized styles
@@ -223,7 +227,7 @@ export const CameraDropdown = memo(function CameraDropdown({
     toggleButton: {
       backgroundColor: themeColors.inputBackground,
       border: `1px solid ${themeColors.inputBorder}`,
-      color: selectedCamera || customCamera ? themeColors.textPrimary : themeColors.textTertiary,
+      color: selectedLens || customLens ? themeColors.textPrimary : themeColors.textTertiary,
       opacity: isLocked ? 0.6 : 1,
     },
     dropdown: {
@@ -245,12 +249,11 @@ export const CameraDropdown = memo(function CameraDropdown({
       color: themeColors.textPrimary,
       opacity: isLocked ? 0.6 : 1,
     },
-  }), [themeColors, selectedCamera, customCamera, isLocked, isCustomMode]);
+  }), [themeColors, selectedLens, customLens, isLocked, isCustomMode]);
 
   // Category order
-  const categoryOrder: CameraCategory[] = [
-    'consumer', 'mirrorless', 'cinema', 'film', 'premium',
-    'classic', 'vintage-film', 'vintage-video', 'vintage-photo', 'antique'
+  const categoryOrder: LensCategory[] = [
+    'special', 'ultra-wide', 'wide', 'standard', 'portrait', 'telephoto', 'super-telephoto'
   ];
 
   return (
@@ -265,10 +268,10 @@ export const CameraDropdown = memo(function CameraDropdown({
         aria-haspopup="listbox"
         aria-expanded={isOpen}
         aria-controls={dropdownId}
-        aria-label={`Camera: ${displayText}`}
+        aria-label={`Lens: ${displayText}`}
       >
         <div className="flex items-center gap-2 min-w-0">
-          <Camera className="w-4 h-4 flex-shrink-0" style={{ color: themeColors.accent }} />
+          <Aperture className="w-4 h-4 flex-shrink-0" style={{ color: themeColors.accent }} />
           <span className="truncate text-left">{displayText}</span>
         </div>
         <ChevronDown
@@ -293,7 +296,7 @@ export const CameraDropdown = memo(function CameraDropdown({
               ref={listRef}
               id={dropdownId}
               role="listbox"
-              aria-label="Camera options"
+              aria-label="Lens options"
               className="max-h-[350px] overflow-y-auto"
             >
               {/* Custom option */}
@@ -306,41 +309,39 @@ export const CameraDropdown = memo(function CameraDropdown({
                 style={styles.customOption}
               >
                 <Edit3 className="w-4 h-4" style={{ color: themeColors.accent }} aria-hidden="true" />
-                <span className="font-medium">Custom Camera</span>
+                <span className="font-medium">Custom Lens</span>
               </li>
 
-              {/* Camera categories */}
+              {/* Lens categories */}
               {categoryOrder.map((category) => {
-                const cameras = camerasByCategory[category];
-                if (!cameras || cameras.length === 0) return null;
+                const lenses = lensesByCategory[category];
+                if (!lenses || lenses.length === 0) return null;
                 const CategoryIcon = getCategoryIcon(category);
 
                 return (
-                  <li key={category} role="group" aria-label={cameraCategoryNames[category]}>
+                  <li key={category} role="group" aria-label={lensCategoryNames[category]}>
                     {/* Category header */}
                     <div
                       className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider flex items-center gap-1.5 sticky top-0"
                       style={styles.categoryHeader}
                     >
                       <CategoryIcon className="w-3 h-3" />
-                      {cameraCategoryNames[category]}
+                      {lensCategoryNames[category]}
                     </div>
 
-                    {/* Camera items */}
-                    {cameras.map((camera) => {
-                      const isBlocked = blockedCameras.has(camera.label);
-                      const isSelected = selectedCamera === camera.label && !customCamera;
+                    {/* Lens items */}
+                    {lenses.map((lens) => {
+                      const isSelected = selectedLens === lens.value && !customLens;
 
                       return (
                         <div
-                          key={camera.label}
+                          key={lens.value}
                           role="option"
                           aria-selected={isSelected}
-                          aria-disabled={isBlocked}
-                          onClick={() => !isBlocked && handleCameraSelect(camera.label)}
+                          onClick={() => handleLensSelect(lens.value)}
                           className={`
                             w-full px-3 py-2 text-sm text-left cursor-pointer transition-all
-                            ${isBlocked ? 'opacity-40 cursor-not-allowed' : 'hover:bg-black/5'}
+                            hover:bg-black/5
                             ${isSelected ? 'font-medium' : ''}
                           `}
                           style={{
@@ -350,8 +351,7 @@ export const CameraDropdown = memo(function CameraDropdown({
                           }}
                         >
                           <span className="flex items-center gap-2">
-                            {camera.label}
-                            {isBlocked && <span className="text-xs">⚠️</span>}
+                            {lens.label}
                           </span>
                         </div>
                       );
@@ -371,13 +371,13 @@ export const CameraDropdown = memo(function CameraDropdown({
             <input
               ref={customInputRef}
               type="text"
-              value={customCamera}
+              value={customLens}
               onChange={handleCustomInputChange}
-              placeholder="Enter custom camera (e.g., Fujifilm X-T5)"
+              placeholder="Enter custom lens (e.g., Zeiss 55mm f/1.8)"
               disabled={isLocked}
               className="w-full rounded-lg px-3 py-2 text-sm transition-all focus:outline-none focus:ring-2"
               style={styles.customInput}
-              aria-label="Custom camera input"
+              aria-label="Custom lens input"
             />
           </motion.div>
         )}
@@ -386,4 +386,4 @@ export const CameraDropdown = memo(function CameraDropdown({
   );
 });
 
-CameraDropdown.displayName = 'CameraDropdown';
+LensDropdown.displayName = 'LensDropdown';

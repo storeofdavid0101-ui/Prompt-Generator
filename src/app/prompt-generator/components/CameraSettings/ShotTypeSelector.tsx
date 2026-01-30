@@ -1,19 +1,19 @@
 /**
  * Shot Type Selector Component
  *
- * Dropdown selector for cinematographic shot types
- * with custom shot input support.
+ * Stylish dropdown selector for cinematographic shot types
+ * with categories and custom shot input support.
  *
  * @module CameraSettings/ShotTypeSelector
  */
 
 'use client';
 
-import { memo, useMemo } from 'react';
-import { shotOptions, helpDescriptions } from '../../config';
-import { SelectWithCustomInput } from './components';
-import { ARIA_LABELS, PLACEHOLDERS } from './constants';
-import type { ShotTypeSelectorProps, SelectOption } from './types';
+import { memo } from 'react';
+import { helpDescriptions } from '../../config';
+import { ShotTypeDropdown } from './components';
+import { HelpLabel } from '../ui';
+import type { ShotTypeSelectorProps } from './types';
 
 /**
  * Shot type selector with custom input
@@ -38,32 +38,23 @@ export const ShotTypeSelector = memo(function ShotTypeSelector({
   isLocked,
   themeColors,
 }: ShotTypeSelectorProps) {
-  /**
-   * Transform shot options to SelectOption format
-   */
-  const options: SelectOption[] = useMemo(
-    () => shotOptions.map((shot) => ({
-      label: shot.label,
-      value: shot.label,
-    })),
-    []
-  );
-
   return (
-    <SelectWithCustomInput
-      label="Shot Type"
-      selectedValue={selectedShot}
-      customValue={customShot}
-      options={options}
-      customPlaceholder={PLACEHOLDERS.customShot}
-      onSelectChange={onShotChange}
-      onCustomChange={onCustomShotChange}
-      isLocked={isLocked}
-      themeColors={themeColors}
-      selectAriaLabel={ARIA_LABELS.shotSelect}
-      inputAriaLabel={ARIA_LABELS.shotCustom}
-      help={helpDescriptions.shotType}
-    />
+    <div>
+      <HelpLabel
+        label="Shot Type"
+        help={helpDescriptions.shotType}
+        themeColors={themeColors}
+        className="mb-2"
+      />
+      <ShotTypeDropdown
+        selectedShot={selectedShot}
+        customShot={customShot}
+        onShotChange={onShotChange}
+        onCustomShotChange={onCustomShotChange}
+        isLocked={isLocked}
+        themeColors={themeColors}
+      />
+    </div>
   );
 });
 

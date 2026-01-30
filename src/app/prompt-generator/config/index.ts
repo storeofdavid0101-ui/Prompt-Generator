@@ -21,12 +21,27 @@ export {
   camerasByCategory,
   cameraCategoryNames,
   lensOptions,
+  lensesByCategory,
+  lensCategoryNames,
   shotOptions,
+  shotsByCategory,
+  shotCategoryNames,
   dofOptions,
   aspectRatioOptions,
+  aspectRatioOptionsWithCategory,
+  aspectCategoryNames,
   cameraAspectRatios,
 } from './cameraOptions';
-export type { CameraCategory, CameraOptionWithCategory } from './cameraOptions';
+export type {
+  CameraCategory,
+  CameraOptionWithCategory,
+  LensCategory,
+  LensOptionWithCategory,
+  ShotCategory,
+  ShotOptionWithCategory,
+  AspectCategory,
+  AspectRatioOptionWithCategory,
+} from './cameraOptions';
 
 // Director styles
 export { directorStyles } from './directorStyles';
