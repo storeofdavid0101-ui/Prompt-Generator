@@ -12,7 +12,6 @@ import type { PromptPreviewProps, OutputBarViewState } from '../types';
 import {
   EXPANDED_PREVIEW_MAX_HEIGHT,
   TEXT_TRANSITION,
-  ICON_ANIMATION,
   ARIA_LABELS,
 } from '../constants';
 
@@ -67,8 +66,9 @@ export const PromptPreview = memo(function PromptPreview({
 
   // Handle icon click with event propagation stop
   const handleIconClick = useCallback(
-    (e: MouseEvent<HTMLDivElement>) => {
+    (e: MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
+      e.preventDefault();
       onToggleExpand();
     },
     [onToggleExpand]
@@ -97,19 +97,11 @@ export const PromptPreview = memo(function PromptPreview({
     >
       <div className="flex items-start gap-2">
         {/* Expand/Collapse Icon */}
-        <motion.div
-          {...ICON_ANIMATION}
-          className="flex-shrink-0 mt-0.5"
+        <button
+          type="button"
+          className="flex-shrink-0 mt-0.5 p-0.5 -m-0.5 rounded hover:bg-black/5 transition-colors"
           onClick={handleIconClick}
-          role="button"
-          tabIndex={0}
           aria-label={expanded ? ARIA_LABELS.collapsePrompt : ARIA_LABELS.expandPrompt}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              onToggleExpand();
-            }
-          }}
         >
           {expanded ? (
             <EyeOff
@@ -124,7 +116,7 @@ export const PromptPreview = memo(function PromptPreview({
               aria-hidden="true"
             />
           )}
-        </motion.div>
+        </button>
 
         {/* Prompt Text */}
         <AnimatePresence mode="wait">

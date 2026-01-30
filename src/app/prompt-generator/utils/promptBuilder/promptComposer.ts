@@ -102,19 +102,22 @@ export function composeNaturalPrompt(components: ResolvedComponents): string {
 
 /**
  * Builds the main subject/character/location sentence.
+ * Integrates character descriptions clearly with the subject.
  */
 function buildMainSentence(components: ResolvedComponents): string {
   let sentence = '';
 
-  if (components.subject) {
+  // Build subject with character descriptions integrated
+  if (components.subject && components.characters.length > 0) {
+    // Combine subject with character descriptions
+    const characterDescriptions = components.characters.join('; ');
+    sentence = `${components.subject}. The character: ${characterDescriptions}`;
+  } else if (components.subject) {
     sentence = components.subject;
-  }
-
-  if (components.characters.length > 0) {
-    const characterList = components.characters.join(' and ');
-    sentence = sentence
-      ? `${sentence} featuring ${characterList}`
-      : `A scene featuring ${characterList}`;
+  } else if (components.characters.length > 0) {
+    // Only characters, no subject
+    const characterDescriptions = components.characters.join('; ');
+    sentence = `Character description: ${characterDescriptions}`;
   }
 
   if (components.location) {
@@ -188,13 +191,16 @@ function buildTechnicalSentence(components: ResolvedComponents): string {
 export function composeTagPrompt(components: ResolvedComponents): string {
   const parts: string[] = [];
 
-  // Non-keyword parts (subject, characters, location) - add as-is
-  if (components.subject) {
+  // Subject and character descriptions - integrate clearly
+  if (components.subject && components.characters.length > 0) {
+    // Subject with explicit character description
     parts.push(components.subject);
-  }
-
-  if (components.characters.length > 0) {
-    parts.push(components.characters.join(', '));
+    parts.push(`[character: ${components.characters.join(', ')}]`);
+  } else if (components.subject) {
+    parts.push(components.subject);
+  } else if (components.characters.length > 0) {
+    // Only characters
+    parts.push(`[character: ${components.characters.join(', ')}]`);
   }
 
   if (components.location) {

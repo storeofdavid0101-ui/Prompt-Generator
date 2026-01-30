@@ -42,7 +42,7 @@ export function PromptGenerator() {
 
   return (
     <div
-      className="min-h-screen pb-52 transition-colors duration-300"
+      className="min-h-screen pb-80 transition-colors duration-300"
       style={{ backgroundColor: state.themeColors.background }}
     >
       <div className="max-w-[480px] mx-auto px-4 py-6 space-y-4">

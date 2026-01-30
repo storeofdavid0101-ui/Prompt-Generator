@@ -8,7 +8,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import type { OutputBarViewState } from '../types';
 import { useIsMobile } from './useMediaQuery';
-import { useAutoExpand } from './useAutoExpand';
 import { MOBILE_BREAKPOINT } from '../constants';
 
 interface UseOutputBarStateReturn {
@@ -86,21 +85,10 @@ export function useOutputBarState(): UseOutputBarStateReturn {
     }
   }, [isMobile, hasInitialized]);
 
-  // Auto-expand on scroll to bottom (desktop only)
-  const handleBottomReached = useCallback(() => {
-    setViewState((current) => {
-      // Only expand if currently minimized or collapsed
-      if (current === 'minimized' || current === 'collapsed') {
-        return 'expanded';
-      }
-      return current;
-    });
-  }, []);
-
-  useAutoExpand({
-    enabled: !isMobile,
-    onBottomReached: handleBottomReached,
-  });
+  // Auto-expand disabled - was causing layout jumping when scrolling to bottom
+  // The height change of the OutputBar would affect scroll position,
+  // creating a feedback loop of repeated expansions
+  // Users can manually expand the bar by clicking on it
 
   // Action handlers using state machine transitions
   const toggleMinimize = useCallback(() => {

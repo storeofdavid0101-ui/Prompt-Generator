@@ -12,7 +12,7 @@ import type { AIModel, ExpandedSections, LockedSections } from '../../config/typ
 /**
  * Default AI model selection
  */
-export const DEFAULT_MODEL: AIModel = 'midjourney';
+export const DEFAULT_MODEL: AIModel = 'chatgpt';
 
 /**
  * Creative controls defaults type
