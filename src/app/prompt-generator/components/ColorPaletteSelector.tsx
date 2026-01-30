@@ -1,12 +1,14 @@
 /**
  * Color palette selector component
  * Provides preset and custom color palette selection
+ * Includes visual color picker and hex input options
  */
 
 'use client';
 
+import { useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Palette, Check } from 'lucide-react';
+import { Palette, Check, Pipette } from 'lucide-react';
 import { SectionHeader } from './ui';
 import { colorPalettes, helpDescriptions } from '../config';
 import type { ThemeColors } from '../config/types';
@@ -26,6 +28,12 @@ interface ColorPaletteSelectorProps {
 
 function isValidHexColor(color: string): boolean {
   return /^#?[0-9A-Fa-f]{6}$/.test(color.trim());
+}
+
+/** Get display color value, ensuring proper hex format */
+function getDisplayColor(color: string): string {
+  if (!isValidHexColor(color)) return '';
+  return color.startsWith('#') ? color : `#${color}`;
 }
 
 export function ColorPaletteSelector({
@@ -181,45 +189,26 @@ export function ColorPaletteSelector({
                   >
                     <div className="pt-2 space-y-2">
                       <label
-                        className="block text-xs"
+                        className="block text-xs flex items-center gap-1.5"
                         style={{ color: themeColors.textTertiary }}
                       >
-                        Enter 6 hex color codes
+                        <Pipette className="w-3 h-3" />
+                        Click squares to pick colors or enter hex codes
                       </label>
                       <div className="grid grid-cols-3 gap-2">
                         {customColors.map((color, index) => (
-                          <div key={index} className="flex items-center gap-1.5">
-                            <div
-                              className="w-8 h-8 rounded-lg border flex-shrink-0"
-                              style={{
-                                backgroundColor: isValidHexColor(color)
-                                  ? color.startsWith('#')
-                                    ? color
-                                    : `#${color}`
-                                  : themeColors.inputBackground,
-                                borderColor: themeColors.borderColor,
-                              }}
-                            />
-                            <input
-                              type="text"
-                              value={color}
-                              onChange={(e) => handleCustomColorChange(index, e.target.value)}
-                              placeholder={`#${(index + 1).toString().padStart(2, '0')}...`}
-                              disabled={isLocked}
-                              maxLength={7}
-                              className="flex-1 min-w-0 rounded-lg px-2 py-1.5 text-xs transition-all focus:outline-none focus:ring-1"
-                              style={{
-                                backgroundColor: themeColors.inputBackground,
-                                border: `1px solid ${themeColors.inputBorder}`,
-                                color: themeColors.textPrimary,
-                                opacity: isLocked ? 0.6 : 1,
-                              }}
-                            />
-                          </div>
+                          <ColorPickerInput
+                            key={index}
+                            index={index}
+                            color={color}
+                            isLocked={isLocked}
+                            themeColors={themeColors}
+                            onChange={handleCustomColorChange}
+                          />
                         ))}
                       </div>
                       <p className="text-xs" style={{ color: themeColors.textTertiary }}>
-                        e.g. #FF5733 or FF5733
+                        Tip: Click the color square to open color picker
                       </p>
                     </div>
                   </motion.div>
@@ -229,6 +218,103 @@ export function ColorPaletteSelector({
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+/** Individual color picker input with clickable square */
+interface ColorPickerInputProps {
+  index: number;
+  color: string;
+  isLocked: boolean;
+  themeColors: ThemeColors;
+  onChange: (index: number, value: string) => void;
+}
+
+function ColorPickerInput({
+  index,
+  color,
+  isLocked,
+  themeColors,
+  onChange,
+}: ColorPickerInputProps) {
+  const colorInputRef = useRef<HTMLInputElement>(null);
+
+  const handleSquareClick = useCallback(() => {
+    if (!isLocked && colorInputRef.current) {
+      colorInputRef.current.click();
+    }
+  }, [isLocked]);
+
+  const handleColorPickerChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      onChange(index, e.target.value);
+    },
+    [index, onChange]
+  );
+
+  const handleTextChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      onChange(index, e.target.value);
+    },
+    [index, onChange]
+  );
+
+  const displayColor = getDisplayColor(color);
+  const hasValidColor = isValidHexColor(color);
+
+  return (
+    <div className="flex items-center gap-1.5">
+      {/* Clickable color square with hidden color input */}
+      <div className="relative">
+        <button
+          type="button"
+          onClick={handleSquareClick}
+          disabled={isLocked}
+          className="w-8 h-8 rounded-lg border flex-shrink-0 cursor-pointer transition-all hover:scale-105 active:scale-95 flex items-center justify-center"
+          style={{
+            backgroundColor: hasValidColor ? displayColor : themeColors.inputBackground,
+            borderColor: hasValidColor ? displayColor : themeColors.borderColor,
+            opacity: isLocked ? 0.6 : 1,
+          }}
+          title="Click to pick a color"
+        >
+          {!hasValidColor && (
+            <Pipette
+              className="w-3.5 h-3.5"
+              style={{ color: themeColors.textTertiary }}
+            />
+          )}
+        </button>
+        {/* Hidden native color input */}
+        <input
+          ref={colorInputRef}
+          type="color"
+          value={hasValidColor ? displayColor : '#6366f1'}
+          onChange={handleColorPickerChange}
+          disabled={isLocked}
+          className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+          style={{ visibility: 'hidden' }}
+          tabIndex={-1}
+        />
+      </div>
+
+      {/* Hex code text input */}
+      <input
+        type="text"
+        value={color}
+        onChange={handleTextChange}
+        placeholder={`#${(index + 1).toString().padStart(2, '0')}...`}
+        disabled={isLocked}
+        maxLength={7}
+        className="flex-1 min-w-0 rounded-lg px-2 py-1.5 text-xs transition-all focus:outline-none focus:ring-1"
+        style={{
+          backgroundColor: themeColors.inputBackground,
+          border: `1px solid ${themeColors.inputBorder}`,
+          color: themeColors.textPrimary,
+          opacity: isLocked ? 0.6 : 1,
+        }}
+      />
     </div>
   );
 }
