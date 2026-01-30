@@ -26,6 +26,7 @@ export function OutputBar({
   themeColors,
 }: OutputBarProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isFullyExpanded, setIsFullyExpanded] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
 
   // Auto-expand entire output bar and prompt preview when user scrolls to the bottom (desktop only)
@@ -122,18 +123,39 @@ export function OutputBar({
             >
               {/* Live Preview */}
               <div
-                className="rounded-xl p-3 mb-3 overflow-hidden cursor-pointer transition-all"
+                className="rounded-xl p-3 mb-3 cursor-pointer transition-all"
                 style={{
                   backgroundColor: themeColors.promptBg,
                   border: `1px solid ${themeColors.borderColor}`,
+                  maxHeight: isExpanded && !isFullyExpanded ? '30vh' : 'none',
+                  overflowY: isExpanded && !isFullyExpanded ? 'auto' : 'hidden',
                 }}
-                onClick={() => setIsExpanded(!isExpanded)}
+                onClick={() => {
+                  if (!isExpanded) {
+                    setIsExpanded(true);
+                  }
+                }}
               >
                 <div className="flex items-start gap-2">
                   <motion.div
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
                     className="flex-shrink-0 mt-0.5"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (isExpanded) {
+                        if (isFullyExpanded) {
+                          // Collapse back to single line
+                          setIsFullyExpanded(false);
+                          setIsExpanded(false);
+                        } else {
+                          // Fully expand (no height limit)
+                          setIsFullyExpanded(true);
+                        }
+                      } else {
+                        setIsExpanded(true);
+                      }
+                    }}
                   >
                     {isExpanded ? (
                       <EyeOff className="w-4 h-4" style={{ color: themeColors.accent }} />
