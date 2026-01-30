@@ -27,13 +27,13 @@ export function useTheme(darkMode: boolean): ThemeColors {
     }
 
     return {
-      background: '#FFFEF5',
-      cardBackground: 'rgba(255, 253, 245, 0.95)',
+      background: '#FFF9F0',
+      cardBackground: 'rgba(255, 249, 240, 0.95)',
       borderColor: 'rgba(139, 115, 85, 0.2)',
       textPrimary: '#1a1a1a',
       textSecondary: '#4a4a4a',
       textTertiary: '#6a6a6a',
-      inputBackground: 'rgba(255, 250, 240, 0.9)',
+      inputBackground: 'rgba(255, 247, 235, 0.9)',
       inputBorder: 'rgba(139, 115, 85, 0.3)',
       accent: '#6366f1',
       accentHover: '#818cf8',
