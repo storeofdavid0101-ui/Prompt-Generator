@@ -254,7 +254,7 @@ export const LocationDropdown = memo(function LocationDropdown({
             animate="visible"
             exit="exit"
             transition={{ duration: 0.15 }}
-            className="absolute z-[100] w-full mt-1 rounded-lg shadow-lg overflow-hidden"
+            className="absolute z-[9999] w-full mt-1 rounded-lg shadow-lg overflow-hidden"
             style={styles.dropdown}
           >
             <ul

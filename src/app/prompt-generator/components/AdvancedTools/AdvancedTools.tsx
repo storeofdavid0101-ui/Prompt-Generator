@@ -88,7 +88,7 @@ export const AdvancedTools = memo(function AdvancedTools({
 
   return (
     <motion.section
-      className={CSS_CLASSES.card}
+      className={`${CSS_CLASSES.card} relative z-0`}
       style={containerStyles}
       aria-labelledby="advanced-tools-header"
     >

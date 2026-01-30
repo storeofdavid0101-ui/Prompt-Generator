@@ -88,7 +88,7 @@ export function PromptGenerator() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-2xl border backdrop-blur-xl overflow-hidden"
+          className="rounded-2xl border backdrop-blur-xl relative z-10"
           style={{
             backgroundColor: state.themeColors.cardBackground,
             borderColor: state.themeColors.borderColor,
