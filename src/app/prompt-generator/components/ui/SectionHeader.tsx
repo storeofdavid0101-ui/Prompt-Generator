@@ -5,11 +5,18 @@
 
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Lock, Unlock, HelpCircle, X } from 'lucide-react';
 import type { ThemeColors } from '../../config/types';
 import type { HelpDescription } from '../../config/helpDescriptions';
+
+interface TooltipPosition {
+  top: number;
+  left: number;
+  width: number;
+}
 
 interface SectionHeaderProps {
   title: string;
@@ -37,23 +44,63 @@ export function SectionHeader({
   themeColors,
 }: SectionHeaderProps) {
   const [showHelp, setShowHelp] = useState(false);
-  const helpRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
+  const [position, setPosition] = useState<TooltipPosition>({ top: 0, left: 0, width: 300 });
+  const helpButtonRef = useRef<HTMLSpanElement>(null);
+  const tooltipRef = useRef<HTMLDivElement>(null);
+
+  // Track if component is mounted (for Portal)
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Calculate tooltip position
+  const updatePosition = useCallback(() => {
+    if (helpButtonRef.current) {
+      const rect = helpButtonRef.current.getBoundingClientRect();
+      const containerWidth = Math.min(320, window.innerWidth - 32);
+      setPosition({
+        top: rect.bottom + 8,
+        left: Math.max(16, Math.min(rect.left - 100, window.innerWidth - containerWidth - 16)),
+        width: containerWidth,
+      });
+    }
+  }, []);
+
+  // Update position when opening and on scroll/resize
+  useEffect(() => {
+    if (showHelp) {
+      updatePosition();
+      window.addEventListener('scroll', updatePosition, true);
+      window.addEventListener('resize', updatePosition);
+    }
+    return () => {
+      window.removeEventListener('scroll', updatePosition, true);
+      window.removeEventListener('resize', updatePosition);
+    };
+  }, [showHelp, updatePosition]);
 
   // Close help when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (helpRef.current && !helpRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      const isClickOnButton = helpButtonRef.current?.contains(target);
+      const isClickOnTooltip = tooltipRef.current?.contains(target);
+
+      if (!isClickOnButton && !isClickOnTooltip) {
         setShowHelp(false);
       }
     };
 
     if (showHelp) {
-      document.addEventListener('mousedown', handleClickOutside);
+      const timeoutId = setTimeout(() => {
+        document.addEventListener('mousedown', handleClickOutside);
+      }, 0);
+      return () => {
+        clearTimeout(timeoutId);
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
     }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
   }, [showHelp]);
 
   return (
@@ -72,6 +119,7 @@ export function SectionHeader({
           </span>
           {help && (
             <span
+              ref={helpButtonRef}
               role="button"
               tabIndex={0}
               onClick={(e) => {
@@ -138,74 +186,80 @@ export function SectionHeader({
         )}
       </div>
 
-      {/* Help Tooltip */}
-      <AnimatePresence>
-        {showHelp && help && (
-          <motion.div
-            ref={helpRef}
-            initial={{ opacity: 0, y: -4, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -4, scale: 0.95 }}
-            transition={{ duration: 0.15 }}
-            className="absolute z-50 left-0 right-0 mt-1 rounded-lg shadow-lg overflow-hidden"
-            style={{
-              backgroundColor: themeColors.cardBackground,
-              border: `1px solid ${themeColors.borderColor}`,
-            }}
-          >
-            {/* Header */}
-            <div
-              className="flex items-center justify-between px-3 py-2"
+      {/* Help Tooltip - rendered via Portal to avoid overflow clipping */}
+      {mounted && createPortal(
+        <AnimatePresence>
+          {showHelp && help && (
+            <motion.div
+              ref={tooltipRef}
+              initial={{ opacity: 0, y: -4, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -4, scale: 0.95 }}
+              transition={{ duration: 0.15 }}
+              className="fixed z-[9999] rounded-lg shadow-lg overflow-hidden"
               style={{
-                backgroundColor: `${themeColors.accent}10`,
-                borderBottom: `1px solid ${themeColors.borderColor}`,
+                top: position.top,
+                left: position.left,
+                width: position.width,
+                backgroundColor: themeColors.cardBackground,
+                border: `1px solid ${themeColors.borderColor}`,
               }}
             >
-              <span
-                className="text-xs font-semibold"
-                style={{ color: themeColors.accent }}
+              {/* Header */}
+              <div
+                className="flex items-center justify-between px-3 py-2"
+                style={{
+                  backgroundColor: `${themeColors.accent}10`,
+                  borderBottom: `1px solid ${themeColors.borderColor}`,
+                }}
               >
-                {help.title}
-              </span>
-              <button
-                type="button"
-                onClick={() => setShowHelp(false)}
-                className="p-0.5 rounded hover:bg-black/10 transition-colors"
-                aria-label="Close help"
-              >
-                <X className="w-3.5 h-3.5" style={{ color: themeColors.textTertiary }} />
-              </button>
-            </div>
-
-            {/* Content */}
-            <div className="px-3 py-2.5 space-y-2">
-              <p
-                className="text-xs leading-relaxed"
-                style={{ color: themeColors.textSecondary }}
-              >
-                {help.description}
-              </p>
-
-              {help.tip && (
-                <div
-                  className="flex items-start gap-2 px-2.5 py-2 rounded-md"
-                  style={{ backgroundColor: themeColors.inputBackground }}
+                <span
+                  className="text-xs font-semibold"
+                  style={{ color: themeColors.accent }}
                 >
-                  <span className="text-[10px]" role="img" aria-label="tip">
-                    💡
-                  </span>
-                  <p
-                    className="text-[11px] leading-relaxed"
-                    style={{ color: themeColors.textTertiary }}
+                  {help.title}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setShowHelp(false)}
+                  className="p-0.5 rounded hover:bg-black/10 transition-colors"
+                  aria-label="Close help"
+                >
+                  <X className="w-3.5 h-3.5" style={{ color: themeColors.textTertiary }} />
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="px-3 py-2.5 space-y-2">
+                <p
+                  className="text-xs leading-relaxed"
+                  style={{ color: themeColors.textSecondary }}
+                >
+                  {help.description}
+                </p>
+
+                {help.tip && (
+                  <div
+                    className="flex items-start gap-2 px-2.5 py-2 rounded-md"
+                    style={{ backgroundColor: themeColors.inputBackground }}
                   >
-                    {help.tip}
-                  </p>
-                </div>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                    <span className="text-[10px]" role="img" aria-label="tip">
+                      💡
+                    </span>
+                    <p
+                      className="text-[11px] leading-relaxed"
+                      style={{ color: themeColors.textTertiary }}
+                    >
+                      {help.tip}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   );
 }

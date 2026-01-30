@@ -78,7 +78,7 @@ export interface CharacterInputProps {
   isLocked: boolean;
   /** Callback when value changes */
   onChange: (value: string) => void;
-  /** Callback when Enter key is pressed */
+  /** Callback when Add button is clicked */
   onSubmit: () => void;
   /** Theme colors for styling */
   themeColors: ThemeColors;

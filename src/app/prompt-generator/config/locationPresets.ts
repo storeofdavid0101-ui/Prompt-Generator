@@ -15,6 +15,7 @@ export const locationPresets: LocationPreset[] = [
   { label: 'Neon-lit Alley', keywords: 'neon-lit alleyway at night, urban glow, wet pavement, atmospheric', category: 'urban' },
   { label: 'Rooftop', keywords: 'city rooftop, skyline view, urban landscape, overlooking the city', category: 'urban' },
   { label: 'Subway Station', keywords: 'underground subway station, fluorescent lights, train platform, urban transit', category: 'urban' },
+  { label: 'Parking Lot', keywords: 'parking lot, asphalt, parked cars, urban setting, outdoor parking', category: 'urban' },
 
   // Nature
   { label: 'Forest', keywords: 'dense forest, towering trees, dappled sunlight, natural woodland', category: 'nature' },
@@ -31,6 +32,7 @@ export const locationPresets: LocationPreset[] = [
   { label: 'Old Library', keywords: 'ancient library, towering bookshelves, dusty tomes, warm ambient light', category: 'interior' },
   { label: 'Neon Bar', keywords: 'neon-lit bar interior, moody atmosphere, colorful lights, nightlife', category: 'interior' },
   { label: 'Cathedral', keywords: 'grand cathedral interior, gothic architecture, stained glass windows, sacred space', category: 'interior' },
+  { label: 'Office', keywords: 'modern office interior, corporate environment, desks, computers, professional workspace', category: 'interior' },
 
   // Fantasy
   { label: 'Enchanted Forest', keywords: 'magical enchanted forest, glowing flora, mystical atmosphere, fantasy woodland', category: 'fantasy' },

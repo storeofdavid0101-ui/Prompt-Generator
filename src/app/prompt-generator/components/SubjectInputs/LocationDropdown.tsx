@@ -83,9 +83,11 @@ export const LocationDropdown = memo(function LocationDropdown({
   }, [presetsByCategory]);
 
   // Derive custom mode from location value
+  // Check forceCustomMode FIRST so clicking "Custom Location" works even when a preset is selected
   const isCustomMode = useMemo(() => {
+    if (forceCustomMode) return true;
     if (location && isLocationPreset(location, allOptions)) return false;
-    return forceCustomMode || !location;
+    return !location;
   }, [location, allOptions, forceCustomMode]);
 
   // Close dropdown when clicking outside

@@ -1,18 +1,18 @@
 /**
  * CharacterInput component
- * Text input for entering character descriptions with Enter key submission
- * Shows visual hint when content is present
+ * Textarea for entering character descriptions
+ * Content is automatically included in prompt - button is only for adding multiple characters
  */
 
 'use client';
 
 import { memo, useCallback, useMemo, useRef } from 'react';
-import { CornerDownLeft } from 'lucide-react';
+import { Plus, Check } from 'lucide-react';
 import type { CharacterInputProps } from './types';
-import { KeyboardCodes } from './types';
 
 /**
- * CharacterInput - Input field for character descriptions with submit hint
+ * CharacterInput - Textarea for character descriptions
+ * Text is auto-included in prompt, button saves it to add more
  */
 export const CharacterInput = memo(function CharacterInput({
   value,
@@ -21,76 +21,99 @@ export const CharacterInput = memo(function CharacterInput({
   onSubmit,
   themeColors,
 }: CharacterInputProps) {
-  const inputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Handle input value change
   const handleChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       onChange(e.target.value);
     },
     [onChange]
   );
 
-  // Handle keyboard events for Enter submission
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === KeyboardCodes.ENTER && value.trim()) {
-        e.preventDefault();
-        onSubmit();
-        // Keep focus on input for continuous entry
-        inputRef.current?.focus();
-      }
-    },
-    [value, onSubmit]
-  );
+  // Handle add button click
+  const handleAddClick = useCallback(() => {
+    if (value.trim()) {
+      onSubmit();
+      // Keep focus for continuous entry
+      textareaRef.current?.focus();
+    }
+  }, [value, onSubmit]);
 
-  // Memoized styles to prevent recreation on each render
+  // Memoized styles
   const styles = useMemo(
     () => ({
-      input: {
+      textarea: {
         backgroundColor: themeColors.inputBackground,
         border: `1px solid ${themeColors.inputBorder}`,
         color: themeColors.textPrimary,
         opacity: isLocked ? 0.6 : 1,
       },
-      hint: {
-        backgroundColor: `${themeColors.accent}20`,
-        color: themeColors.accent,
+      addButton: {
+        backgroundColor: 'transparent',
+        border: `1px solid ${themeColors.borderColor}`,
+        color: themeColors.textSecondary,
+        opacity: isLocked || !value.trim() ? 0.5 : 1,
+      },
+      indicator: {
+        backgroundColor: `${themeColors.success}15`,
+        color: themeColors.success,
+      },
+      helperText: {
+        color: themeColors.textTertiary,
       },
     }),
-    [themeColors, isLocked]
+    [themeColors, isLocked, value]
   );
 
   const hasValue = value.trim().length > 0;
 
   return (
-    <div className="relative">
-      <input
-        ref={inputRef}
-        type="text"
+    <div className="space-y-2">
+      {/* Textarea for character description */}
+      <textarea
+        ref={textareaRef}
         value={value}
         onChange={handleChange}
-        onKeyDown={handleKeyDown}
-        placeholder="e.g., tall woman with red hair, wearing armor"
+        placeholder="Describe your character: appearance, clothing, pose, expression..."
         disabled={isLocked}
         maxLength={500}
-        className="w-full rounded-lg pl-3 pr-16 py-2 text-sm transition-all focus:outline-none focus:ring-2"
-        style={styles.input}
+        rows={2}
+        className="w-full rounded-lg px-3 py-2.5 text-sm resize-none transition-all focus:outline-none focus:ring-2"
+        style={styles.textarea}
         aria-label="Character description"
-        aria-describedby={hasValue ? 'character-input-hint' : undefined}
       />
+
+      {/* Auto-include indicator when text is present */}
       {hasValue && (
         <div
-          id="character-input-hint"
-          className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] pointer-events-none"
-          style={styles.hint}
-          role="status"
-          aria-live="polite"
+          className="flex items-center gap-1.5 px-2 py-1 rounded text-[10px]"
+          style={styles.indicator}
         >
-          <CornerDownLeft className="w-3 h-3" aria-hidden="true" />
-          <span>Enter</span>
+          <Check className="w-3 h-3" />
+          <span>This character will be included in your prompt</span>
         </div>
       )}
+
+      {/* Add Another Character Button - for multiple characters */}
+      <button
+        type="button"
+        onClick={handleAddClick}
+        disabled={isLocked || !hasValue}
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+        style={styles.addButton}
+        aria-label="Save and add another character"
+      >
+        <Plus className="w-3.5 h-3.5" />
+        <span>Add Another Character</span>
+      </button>
+
+      {/* Helper text */}
+      <p className="text-[10px]" style={styles.helperText}>
+        {hasValue
+          ? 'Click the button above only if you want to add more characters'
+          : 'Describe your character above - it will be automatically included'}
+      </p>
     </div>
   );
 });
