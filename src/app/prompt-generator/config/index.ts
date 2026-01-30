@@ -42,20 +42,21 @@ export {
   categoryConflicts,
   cameraFixedLens,
   cameraZoomRange,
+  cameraLocationConflicts,
   atmosphereBlocksCategories,
-  presetBlocksCategories,
-  presetMutualExclusions,
+  atmosphereBlocksDOF,
   atmosphereLightingRedundancy,
+  atmosphereLightingExclusions,
+  atmosphereShotConflicts,
+  presetMutualExclusions,
+  presetBlocksCategories,
   lightingCategories,
   redundancyWarnings,
-  atmosphereBlocksDOF,
-  atmosphereLightingExclusions,
   directorLightingRedundancy,
   directorPresetRedundancy,
   directorAtmosphereRedundancy,
-  atmosphereShotConflicts,
-  cameraLocationConflicts,
 } from './conflicts';
+export type { RedundancyKey, DirectorWithConflicts } from './conflicts';
 
 // Help descriptions
 export { helpDescriptions } from './helpDescriptions';

@@ -53,7 +53,7 @@ export const lightingOptions: Record<string, LightingConfig> = {
   },
   practical: {
     name: 'Practical Light',
-    keywords: 'practical lighting, motivated light sources, in-scene light sources, diegetic lighting, realistic interior lighting',
+    keywords: 'practical lighting, motivated light sources, in-scene light sources, lamp light, realistic interior lighting',
     category: 'natural',
     gradient: 'linear-gradient(135deg, #d4a574 0%, #8b6914 50%, #3d2914 100%)',
   },
@@ -76,11 +76,5 @@ export const lightingOptions: Record<string, LightingConfig> = {
     keywords: 'studio lighting, softbox diffused light, fashion photography lighting, clean and even, professional portrait',
     category: 'stylized',
     gradient: 'linear-gradient(135deg, #546e7a 0%, #78909c 50%, #37474f 100%)',
-  },
-  bioluminescent: {
-    name: 'Bioluminescent',
-    keywords: 'bioluminescent glow, self-illuminating, fantasy lighting, glowing organisms, ethereal inner light',
-    category: 'stylized',
-    gradient: 'linear-gradient(135deg, #00d4ff 0%, #00ff88 50%, #7b2cbf 100%)',
   },
 };

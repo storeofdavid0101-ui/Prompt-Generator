@@ -32,7 +32,7 @@ export const atmosphereConfigs: Record<Atmosphere, AtmosphereConfig> = {
   },
   dreamy: {
     name: 'Dreamy',
-    keywords: 'dreamy atmosphere, soft focus, ethereal glow, pastel colors, bokeh, fantasy',
+    keywords: 'dreamy atmosphere, soft focus, ethereal glow, gentle light, bokeh, fantasy',
     gradient: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 50%, #d299c2 100%)',
     description: 'Soft ethereal fantasy look',
   },
@@ -50,7 +50,7 @@ export const atmosphereConfigs: Record<Atmosphere, AtmosphereConfig> = {
   },
   epic: {
     name: 'Epic',
-    keywords: 'epic scale, grand composition, dramatic sky, vast landscape, heroic, monumental, awe-inspiring',
+    keywords: 'epic scale, grand composition, dramatic sky, vast landscape, wide vista, monumental, sweeping view',
     gradient: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #4a69bd 100%)',
     description: 'Grand cinematic scale',
   },

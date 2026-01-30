@@ -4,7 +4,14 @@
  */
 
 import { useMemo } from 'react';
-import type { Atmosphere, CameraCategory, ConflictResult, EffectStackingWarning } from '../config/types';
+import type {
+  Atmosphere,
+  CameraCategory,
+  ConflictResult,
+  EffectStackingWarning,
+  LightingKey,
+  VisualPresetKey,
+} from '../config/types';
 import {
   cameraCategories,
   categoryConflicts,
@@ -30,6 +37,27 @@ interface UseConflictsParams {
   selectedLighting: string | null;
   depthOfField: string;
   selectedDirector: string;
+}
+
+/** Valid visual preset keys for type narrowing */
+const VISUAL_PRESET_KEYS: Set<string> = new Set([
+  'raw', 'highcontrast', 'desaturated', 'vivid', 'filmlook', 'bleachbypass',
+]);
+
+/** Valid lighting keys for type narrowing */
+const LIGHTING_KEYS: Set<string> = new Set([
+  'rembrandt', 'chiaroscuro', 'highkey', 'lowkey', 'goldenhour',
+  'bluehour', 'moonlit', 'practical', 'neon', 'godrays', 'softbox',
+]);
+
+/** Type guard for VisualPresetKey */
+function isVisualPresetKey(value: string | null): value is VisualPresetKey {
+  return value !== null && VISUAL_PRESET_KEYS.has(value);
+}
+
+/** Type guard for LightingKey */
+function isLightingKey(value: string | null): value is LightingKey {
+  return value !== null && LIGHTING_KEYS.has(value);
 }
 
 export function useConflicts({
@@ -73,18 +101,18 @@ export function useConflicts({
     }
 
     // Check reverse conflicts: preset blocks cameras
-    if (selectedVisualPreset && presetBlocksCategories[selectedVisualPreset]) {
+    if (isVisualPresetKey(selectedVisualPreset) && presetBlocksCategories[selectedVisualPreset]) {
       const blockedCategories = presetBlocksCategories[selectedVisualPreset];
       Object.entries(cameraCategories).forEach(([camera, category]) => {
-        if (blockedCategories.includes(category)) {
+        if (blockedCategories?.includes(category)) {
           blockedCameras.add(camera);
         }
       });
     }
 
     // Add preset mutual exclusions (e.g., vivid blocks desaturated)
-    if (selectedVisualPreset && presetMutualExclusions[selectedVisualPreset]) {
-      presetMutualExclusions[selectedVisualPreset].forEach((preset) => {
+    if (isVisualPresetKey(selectedVisualPreset) && presetMutualExclusions[selectedVisualPreset]) {
+      presetMutualExclusions[selectedVisualPreset]?.forEach((preset) => {
         blockedPresets.add(preset);
       });
     }
@@ -162,9 +190,9 @@ export function useConflicts({
     }
 
     // Check atmosphere-lighting redundancy
-    if (selectedAtmosphere && selectedLighting && atmosphereLightingRedundancy[selectedAtmosphere]) {
+    if (selectedAtmosphere && isLightingKey(selectedLighting) && atmosphereLightingRedundancy[selectedAtmosphere]) {
       const redundantLighting = atmosphereLightingRedundancy[selectedAtmosphere];
-      if (redundantLighting.includes(selectedLighting)) {
+      if (redundantLighting?.includes(selectedLighting)) {
         const warningKey = `${selectedAtmosphere}+${selectedLighting}` as keyof typeof redundancyWarnings;
         const warningMessage = redundancyWarnings[warningKey] ||
           `${atmosphereConfigs[selectedAtmosphere].name} atmosphere + ${lightingOptions[selectedLighting]?.name || selectedLighting} lighting may be redundant`;

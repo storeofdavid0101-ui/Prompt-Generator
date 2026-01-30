@@ -104,8 +104,8 @@ export const directorStyles: DirectorStyle[] = [
   },
   {
     name: 'David Fincher',
-    description: 'Dark, meticulous, green-yellow tint, noir shadows',
-    keywords: 'David Fincher style, dark and moody, green-yellow tint, meticulous, shadows, desaturated, noir',
+    description: 'Dark, meticulous, precise framing, noir shadows',
+    keywords: 'David Fincher style, dark and moody, meticulous framing, shadows, desaturated, noir, precise composition',
     blockedAtmospheres: ['dreamy', 'natural'],
     blockedPresets: ['vivid', 'raw'],
     // Fincher is known for precise digital (RED cameras)
@@ -129,8 +129,8 @@ export const directorStyles: DirectorStyle[] = [
   },
   {
     name: 'Andrei Tarkovsky',
-    description: 'Contemplative, water imagery, spiritual slow cinema',
-    keywords: 'Andrei Tarkovsky style, long contemplative shots, water imagery, spiritual, dreamlike, slow cinema',
+    description: 'Contemplative, water imagery, spiritual atmosphere',
+    keywords: 'Andrei Tarkovsky style, contemplative composition, water imagery, spiritual, dreamlike, poetic imagery',
     blockedAtmospheres: ['cyberpunk', 'studio'],
     blockedPresets: ['vivid', 'highcontrast'],
     // Tarkovsky was Soviet-era film - block modern and consumer

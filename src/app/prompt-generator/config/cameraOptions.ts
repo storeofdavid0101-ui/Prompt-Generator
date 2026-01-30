@@ -81,7 +81,7 @@ export const cameraOptions: CameraOption[] = [
 
 // Lens focal length options
 export const lensOptions = [
-  'Macro', 'Fish Eye', '14mm', '24mm', '35mm', '50mm', '85mm', '135mm', '200mm', '400mm', '600mm'
+  'Macro', 'Fisheye', '14mm', '18mm', '24mm', '28mm', '35mm', '50mm', '85mm', '135mm', '200mm', '400mm', '600mm'
 ];
 
 // Shot type options with AI-friendly keywords
@@ -94,14 +94,12 @@ export const shotOptions: ShotOption[] = [
   { label: 'Medium Close-Up (MCU)', keywords: 'medium close-up, chest up framing, emotional connection' },
   { label: 'Close-Up (CU)', keywords: 'close-up shot, face filling frame, intimate portrait' },
   { label: 'Extreme Close-Up (ECU)', keywords: 'extreme close-up, macro detail, eyes or single feature' },
-  { label: 'Low Angle', keywords: 'low angle shot, camera looking up, heroic perspective, powerful' },
+  { label: 'Low Angle', keywords: 'low angle shot, camera looking up, powerful perspective' },
   { label: 'High Angle', keywords: 'high angle shot, camera looking down, vulnerable perspective' },
   { label: 'Dutch Angle', keywords: 'dutch angle, tilted camera, canted frame, disorienting' },
   { label: "Bird's Eye View", keywords: "bird's eye view, top-down shot, overhead perspective, aerial view" },
   { label: 'POV', keywords: 'POV shot, point of view, first person perspective, subjective camera' },
-  { label: 'Over the Shoulder (OTS)', keywords: 'over the shoulder shot, OTS, back of head visible, looking at subject, two-shot composition' },
-  { label: 'Two Shot', keywords: 'two shot, two people in frame, side by side composition' },
-  { label: 'Insert Shot', keywords: 'insert shot, detail shot, object close-up, cutaway' },
+  { label: 'Over the Shoulder (OTS)', keywords: 'over the shoulder shot, OTS, back of head visible, looking at subject' },
 ];
 
 // Depth of field options

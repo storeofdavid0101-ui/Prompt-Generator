@@ -1,244 +1,77 @@
 /**
- * Core type definitions for the AI Prompt Generator
- * Defines all interfaces and type aliases used throughout the application
+ * Type Definitions - Re-export Module
+ *
+ * This file re-exports all types from the modular types/ directory
+ * for backward compatibility with existing imports.
+ *
+ * @module config/types
+ * @version 2.0.0
+ *
+ * @description
+ * Types have been reorganized into domain-specific modules:
+ * - types/core.ts: AI models, theme colors, base types
+ * - types/visual.ts: Atmosphere, presets, lighting, colors
+ * - types/camera.ts: Camera, lens, shot, DOF types
+ * - types/conflict.ts: Conflict detection types
+ * - types/state.ts: Application state types
+ * - types/ui.ts: UI component types
+ *
+ * For new code, prefer importing from specific modules:
+ * @example
+ * import type { AIModel } from './types/core';
+ * import type { Atmosphere } from './types/visual';
  */
 
-// AI model identifiers supported by the prompt generator
-export type AIModel =
-  | 'chatgpt'
-  | 'midjourney'
-  | 'nanobanano'
-  | 'flux'
-  | 'stable-diffusion'
-  | 'dalle3'
-  | 'imagen'
-  | 'ideogram'
-  | 'leonardo'
-  | 'firefly';
+// Re-export all types for backward compatibility
+export type {
+  // Core types
+  AIModel,
+  PromptStyle,
+  ModelConfig,
+  ThemeColors,
+  CharacterItem,
+  HelpDescription,
 
-// Available atmosphere presets for visual styling
-export type Atmosphere =
-  | 'cinematic'
-  | 'cyberpunk'
-  | 'studio'
-  | 'moody'
-  | 'dreamy'
-  | 'natural'
-  | 'vintage'
-  | 'epic'
-  | 'horror'
-  | 'romantic';
+  // Visual types
+  Atmosphere,
+  VisualPresetKey,
+  LightingKey,
+  LightingCategory,
+  AtmosphereConfig,
+  PresetConfig,
+  LightingConfig,
+  ColorPaletteConfig,
 
-// Camera categories for conflict detection and lens restrictions
-export type CameraCategory =
-  | 'vintage-lofi'
-  | 'antique'
-  | 'classic-film'
-  | 'epic-film'
-  | 'medium-format-classic'
-  | '35mm-classic'
-  | 'modern-cinema'
-  | 'modern-digital'
-  | 'consumer-mobile'
-  | 'none';
+  // Camera types
+  DOFValue,
+  CameraCategory,
+  CameraOption,
+  ShotOption,
+  DOFOption,
+  AspectRatioOption,
+  ZoomRange,
 
-// Configuration for each AI model's specific parameters
-export interface ModelConfig {
-  name: string;
-  icon: string;
-  maxCreativity: number;
-  creativityParam: string;
-  variationParam: string;
-  negativeParam: string;
-  aspectParam: string;
-  supportsNegativePrompt: boolean;
-  promptStyle: 'tags' | 'natural' | 'structured';
-}
+  // Conflict types
+  ConflictRules,
+  DirectorStyle,
+  EffectCategory,
+  EffectStackingWarning,
+  ConflictResult,
 
-// Atmosphere preset configuration
-export interface AtmosphereConfig {
-  name: string;
-  keywords: string;
-  gradient: string;
-  description: string;
-}
+  // State types
+  ExpandedSections,
+  ExpandedSectionKey,
+  LockedSections,
+  LockedSectionKey,
+  PromptGeneratorState,
 
-// Visual style preset configuration
-export interface PresetConfig {
-  name: string;
-  keywords: string;
-  gradient: string;
-}
-
-// Lighting option configuration
-export interface LightingConfig {
-  name: string;
-  keywords: string;
-  category: 'classic' | 'natural' | 'stylized';
-  gradient: string;
-}
-
-// Color palette configuration
-export interface ColorPaletteConfig {
-  name: string;
-  colors: string[];
-}
-
-// Camera option with AI-friendly keywords
-export interface CameraOption {
-  label: string;
-  keywords: string;
-}
-
-// Shot type option with AI-friendly keywords
-export interface ShotOption {
-  label: string;
-  keywords: string;
-}
-
-// Depth of field option
-export interface DOFOption {
-  value: string;
-  label: string;
-  keywords: string;
-}
-
-// Aspect ratio option
-export interface AspectRatioOption {
-  value: string;
-  label: string;
-  ratio: string;
-}
-
-// Director style configuration with conflict rules
-export interface DirectorStyle {
-  name: string;
-  description: string;
-  keywords: string;
-  blockedAtmospheres: Atmosphere[];
-  blockedPresets: string[];
-  blockedCameras: string[];
-}
-
-// Conflict rules for camera categories
-export interface ConflictRules {
-  blockedAtmospheres: Atmosphere[];
-  blockedPresets: string[];
-  blockedDOF: string[];
-  fixedLens?: string;
-  warningMessage?: string;
-}
-
-// Zoom range configuration for cameras with built-in zoom
-export interface ZoomRange {
-  range: string;
-  options: string[];
-}
-
-// Character item in the prompt
-export interface CharacterItem {
-  id: string;
-  content: string;
-}
-
-// Theme color configuration
-export interface ThemeColors {
-  background: string;
-  cardBackground: string;
-  borderColor: string;
-  textPrimary: string;
-  textSecondary: string;
-  textTertiary: string;
-  inputBackground: string;
-  inputBorder: string;
-  accent: string;
-  accentHover: string;
-  promptBg: string;
-  success: string;
-  warning: string;
-}
-
-// Effect stacking warning for blur/mood terms
-export interface EffectStackingWarning {
-  category: 'blur' | 'mood' | 'quality';
-  message: string;
-  includedTerms: string[];
-}
-
-// Conflict detection result
-export interface ConflictResult {
-  blockedAtmospheres: Set<Atmosphere>;
-  blockedPresets: Set<string>;
-  blockedDOF: Set<string>;
-  blockedCameras: Set<string>;
-  activeConflicts: string[];
-  effectStackingWarnings: EffectStackingWarning[];
-  warningMessage?: string;
-  fixedLens: string | null;
-  zoomRange: ZoomRange | null;
-  allowedAspectRatios: string[] | null;
-}
-
-// Expanded sections state
-export interface ExpandedSections {
-  model: boolean;
-  sliders: boolean;
-  atmosphere: boolean;
-  visual: boolean;
-  color: boolean;
-  camera: boolean;
-  lighting: boolean;
-}
-
-// Locked sections state - individual locks per section
-export interface LockedSections {
-  model: boolean;
-  subject: boolean;
-  director: boolean;
-  atmosphere: boolean;
-  visual: boolean;
-  color: boolean;
-  camera: boolean;
-  lighting: boolean;
-  advanced: boolean;
-}
-
-// Help description for UI labels
-export interface HelpDescription {
-  title: string;
-  description: string;
-  tip?: string;
-}
-
-// Main generator state
-export interface PromptGeneratorState {
-  darkMode: boolean;
-  copied: boolean;
-  selectedModel: AIModel;
-  creativity: number;
-  variation: number;
-  uniqueness: number;
-  subject: string;
-  characterItems: CharacterItem[];
-  currentCharacter: string;
-  location: string;
-  selectedAtmosphere: Atmosphere | null;
-  selectedVisualPreset: string | null;
-  selectedLighting: string | null;
-  selectedColorPalette: string | null;
-  customColors: string[];
-  selectedCamera: string;
-  customCamera: string;
-  selectedLens: string;
-  customLens: string;
-  selectedShot: string;
-  customShot: string;
-  depthOfField: string;
-  aspectRatio: string;
-  negativePrompt: string;
-  settingsLocked: boolean;
-  showAdvanced: boolean;
-  creativeControlsEnabled: boolean;
-  selectedDirector: string;
-  expandedSections: ExpandedSections;
-}
+  // UI types
+  GradientDirection,
+  SelectionState,
+  ToastType,
+  AnimationTiming,
+  CollapseState,
+  ButtonVariant,
+  InputSize,
+  BadgeStatus,
+} from './types/index';

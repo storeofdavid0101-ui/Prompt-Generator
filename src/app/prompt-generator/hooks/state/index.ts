@@ -7,8 +7,18 @@
  * @module hooks/state
  */
 
+// ============================================================================
 // Types
+// ============================================================================
+
 export type {
+  // Utility types
+  SliderValue,
+  Setter,
+  AsyncAction,
+  ResetAction,
+  ConflictHandlerParams,
+  // Domain state types
   ModelState,
   CreativeControlsState,
   ContentState,
@@ -19,12 +29,17 @@ export type {
   SectionState,
   ClipboardState,
   ThemeState,
+  // Hook parameter types
   UseCameraStateParams,
   UseDirectorStateParams,
+  // Composed state type
   PromptGeneratorStateReturn,
 } from './types';
 
+// ============================================================================
 // Constants
+// ============================================================================
+
 export {
   DEFAULT_MODEL,
   CREATIVE_CONTROLS_DEFAULTS,
@@ -37,7 +52,10 @@ export {
   THEME_DEFAULTS,
 } from './constants';
 
+// ============================================================================
 // Hooks
+// ============================================================================
+
 export { useModelState } from './useModelState';
 export { useCreativeControlsState } from './useCreativeControlsState';
 export { useContentState } from './useContentState';

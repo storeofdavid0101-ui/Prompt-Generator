@@ -6,6 +6,60 @@
 import type { ResolvedComponents } from './types';
 
 /**
+ * Deduplicates keywords across multiple comma-separated keyword strings.
+ * Removes exact duplicates and near-duplicates (e.g., "golden hour" vs "golden hour lighting").
+ *
+ * @param keywordStrings - Array of comma-separated keyword strings
+ * @returns Deduplicated comma-separated keyword string
+ */
+function deduplicateKeywords(keywordStrings: (string | null | undefined)[]): string {
+  const seen = new Map<string, string>(); // normalized -> original
+
+  for (const str of keywordStrings) {
+    if (!str) continue;
+
+    const keywords = str.split(',').map((k) => k.trim()).filter(Boolean);
+
+    for (const keyword of keywords) {
+      const normalized = keyword.toLowerCase().replace(/\s+/g, ' ');
+
+      // Check if this keyword or a similar one already exists
+      let shouldAdd = true;
+      let keyToRemove: string | null = null;
+
+      for (const [existingNorm, _existingOrig] of seen.entries()) {
+        if (existingNorm === normalized) {
+          // Exact duplicate - skip
+          shouldAdd = false;
+          break;
+        }
+        // Check if one contains the other
+        if (existingNorm.includes(normalized)) {
+          // Existing is more specific - skip new one
+          shouldAdd = false;
+          break;
+        }
+        if (normalized.includes(existingNorm)) {
+          // New one is more specific - remove old, add new
+          keyToRemove = existingNorm;
+          break;
+        }
+      }
+
+      if (keyToRemove) {
+        seen.delete(keyToRemove);
+      }
+
+      if (shouldAdd) {
+        seen.set(normalized, keyword);
+      }
+    }
+  }
+
+  return Array.from(seen.values()).join(', ');
+}
+
+/**
  * Builds a natural language prompt from resolved components.
  * Creates flowing, descriptive sentences suitable for models like
  * ChatGPT, DALL-E 3, Flux, and others that prefer prose.
@@ -126,6 +180,7 @@ function buildTechnicalSentence(components: ResolvedComponents): string {
  * Builds a tag-based prompt from resolved components.
  * Creates comma-separated keywords suitable for models like
  * Midjourney, Stable Diffusion, and Ideogram.
+ * Deduplicates overlapping keywords between director, lighting, and atmosphere.
  *
  * @param components - Resolved prompt components
  * @returns Tag-based prompt string
@@ -133,6 +188,7 @@ function buildTechnicalSentence(components: ResolvedComponents): string {
 export function composeTagPrompt(components: ResolvedComponents): string {
   const parts: string[] = [];
 
+  // Non-keyword parts (subject, characters, location) - add as-is
   if (components.subject) {
     parts.push(components.subject);
   }
@@ -145,26 +201,23 @@ export function composeTagPrompt(components: ResolvedComponents): string {
     parts.push(components.location);
   }
 
-  if (components.visualPreset) {
-    parts.push(components.visualPreset);
+  // Keyword-based parts - deduplicate across all of them
+  const keywordParts = deduplicateKeywords([
+    components.visualPreset,
+    components.atmosphere,
+    components.lighting,
+    components.director,
+  ]);
+
+  if (keywordParts) {
+    parts.push(keywordParts);
   }
 
   if (components.colorPalette) {
     parts.push(`color palette: ${components.colorPalette}`);
   }
 
-  if (components.atmosphere) {
-    parts.push(components.atmosphere);
-  }
-
-  if (components.lighting) {
-    parts.push(components.lighting);
-  }
-
-  if (components.director) {
-    parts.push(components.director);
-  }
-
+  // Technical parts - add as-is
   if (components.camera) {
     parts.push(components.camera);
   }

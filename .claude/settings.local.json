@@ -16,7 +16,11 @@
       "Bash(gh api:*)",
       "Bash(npm install:*)",
       "Bash(vercel deploy:*)",
-      "Bash(npx vercel deploy:*)"
+      "Bash(npx vercel deploy:*)",
+      "Bash(find:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npm run lint:*)"
     ]
   }
 }
