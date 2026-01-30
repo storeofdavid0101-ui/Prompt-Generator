@@ -32,7 +32,7 @@ export function Header({
         </h1>
       </div>
       <p className="text-sm" style={{ color: themeColors.textTertiary }}>
-        Direct your Prompt
+        Cinematic camera-logic tool
       </p>
 
       <div className="flex items-center justify-center gap-3 mt-4">
