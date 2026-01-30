@@ -29,6 +29,14 @@ export function OutputBar({
   const [isFullyExpanded, setIsFullyExpanded] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
 
+  // Start minimized on mobile
+  useEffect(() => {
+    const isMobile = window.innerWidth < 768;
+    if (isMobile) {
+      setIsMinimized(true);
+    }
+  }, []);
+
   // Auto-expand entire output bar and prompt preview when user scrolls to the bottom (desktop only)
   useEffect(() => {
     const handleScroll = () => {
@@ -107,7 +115,7 @@ export function OutputBar({
                   ) : (
                     <>
                       <Copy className="w-4 h-4" />
-                      Copy
+                      Copy Prompt
                     </>
                   )}
                 </motion.button>

@@ -1,355 +1,325 @@
 /**
- * Prompt Generator state management hook
- * Centralizes all state and handlers for the prompt generator
+ * Prompt Generator State Composition Hook
+ *
+ * Composes all domain-specific state hooks into a unified state object.
+ * This is the main entry point for components that need full state access.
+ *
+ * Architecture:
+ * - Each domain (model, creative, content, visual, camera, etc.) has its own hook
+ * - This hook composes them and handles cross-domain interactions
+ * - Provides backward-compatible API while internally being modular
+ *
+ * @module hooks/usePromptGeneratorState
  */
+
+'use client';
 
 import { useState, useCallback, useMemo } from 'react';
 import { useTheme } from './useTheme';
 import { useConflicts } from './useConflicts';
 import { generatePrompt } from '../utils';
 import {
-  cameraCategories,
-  categoryConflicts,
-  cameraAspectRatios,
-  directorStyles,
-} from '../config';
-import type {
-  AIModel,
-  Atmosphere,
-  CharacterItem,
-  ExpandedSections,
-  LockedSections,
-} from '../config/types';
+  useModelState,
+  useCreativeControlsState,
+  useContentState,
+  useVisualState,
+  useCameraState,
+  useDirectorState,
+  useAdvancedState,
+  useSectionState,
+  useClipboard,
+  THEME_DEFAULTS,
+} from './state';
+import type { PromptGeneratorStateReturn } from './state/types';
 
-const DEFAULT_EXPANDED_SECTIONS: ExpandedSections = {
-  model: true,
-  sliders: true,
-  atmosphere: true,
-  visual: false,
-  color: false,
-  camera: false,
-  lighting: false,
-};
-
-const DEFAULT_LOCKED_SECTIONS: LockedSections = {
-  model: false,
-  subject: false,
-  director: false,
-  atmosphere: false,
-  visual: false,
-  color: false,
-  camera: false,
-  lighting: false,
-  advanced: false,
-};
-
-export function usePromptGeneratorState() {
-  // Theme state
-  const [darkMode, setDarkMode] = useState(true);
-  const [copied, setCopied] = useState(false);
+/**
+ * Main state composition hook for the Prompt Generator
+ *
+ * Combines all domain-specific hooks and provides:
+ * - Unified state access for backward compatibility
+ * - Cross-domain conflict resolution (camera/director clearing visual state)
+ * - Memoized prompt generation
+ * - Section-aware reset functionality
+ *
+ * @returns Complete prompt generator state and handlers
+ *
+ * @example
+ * ```tsx
+ * function PromptGenerator() {
+ *   const state = usePromptGeneratorState();
+ *
+ *   return (
+ *     <div>
+ *       <ModelSelector
+ *         selectedModel={state.selectedModel}
+ *         onChange={state.setSelectedModel}
+ *       />
+ *       <OutputBar
+ *         prompt={state.prompt}
+ *         onCopy={state.copyToClipboard}
+ *       />
+ *     </div>
+ *   );
+ * }
+ * ```
+ */
+export function usePromptGeneratorState(): PromptGeneratorStateReturn {
+  // ============================================================
+  // Theme State
+  // ============================================================
+  const [darkMode, setDarkMode] = useState(THEME_DEFAULTS.darkMode);
   const themeColors = useTheme(darkMode);
 
-  // Model Selection
-  const [selectedModel, setSelectedModel] = useState<AIModel>('midjourney');
+  // ============================================================
+  // Domain State Hooks
+  // ============================================================
+  const model = useModelState();
+  const creative = useCreativeControlsState();
+  const content = useContentState();
+  const visual = useVisualState();
+  const advanced = useAdvancedState();
+  const sections = useSectionState();
+  const clipboard = useClipboard();
 
-  // Creative Controls
-  const [creativity, setCreativity] = useState(50);
-  const [variation, setVariation] = useState(50);
-  const [uniqueness, setUniqueness] = useState(50);
-
-  // Core Content
-  const [subject, setSubject] = useState('');
-  const [characterItems, setCharacterItems] = useState<CharacterItem[]>([]);
-  const [currentCharacter, setCurrentCharacter] = useState('');
-  const [location, setLocation] = useState('');
-
-  // Visual Presets
-  const [selectedAtmosphere, setSelectedAtmosphere] = useState<Atmosphere | null>(null);
-  const [selectedVisualPreset, setSelectedVisualPreset] = useState<string | null>(null);
-  const [selectedLighting, setSelectedLighting] = useState<string | null>(null);
-  const [selectedColorPalette, setSelectedColorPalette] = useState<string | null>(null);
-  const [customColors, setCustomColors] = useState<string[]>(['', '', '', '', '', '']);
-
-  // Camera Settings
-  const [selectedCamera, setSelectedCamera] = useState('');
-  const [customCamera, setCustomCamera] = useState('');
-  const [selectedLens, setSelectedLens] = useState('50mm');
-  const [customLens, setCustomLens] = useState('');
-  const [selectedShot, setSelectedShot] = useState('Medium Shot (MS)');
-  const [customShot, setCustomShot] = useState('');
-  const [depthOfField, setDepthOfField] = useState('normal');
-  const [aspectRatio, setAspectRatio] = useState('none');
-
-  // Advanced
-  const [negativePrompt, setNegativePrompt] = useState('');
-  const [showAdvanced, setShowAdvanced] = useState(false);
-  const [creativeControlsEnabled, setCreativeControlsEnabled] = useState(false);
-  const [selectedDirector, setSelectedDirector] = useState('');
-
-  // Section Locks
-  const [lockedSections, setLockedSections] = useState<LockedSections>(DEFAULT_LOCKED_SECTIONS);
-
-  // UI State
-  const [expandedSections, setExpandedSections] = useState<ExpandedSections>(
-    DEFAULT_EXPANDED_SECTIONS
-  );
-
-  // Conflict Detection
-  const conflicts = useConflicts({
-    selectedCamera,
-    selectedAtmosphere,
-    selectedVisualPreset,
-    depthOfField,
-    selectedDirector,
+  // ============================================================
+  // Camera State (depends on visual state for conflict clearing)
+  // ============================================================
+  const camera = useCameraState({
+    isLocked: sections.lockedSections.camera,
+    selectedAtmosphere: visual.selectedAtmosphere,
+    selectedVisualPreset: visual.selectedVisualPreset,
+    onClearAtmosphere: visual.resetAtmosphere,
+    onClearVisualPreset: visual.resetVisualPreset,
   });
 
-  // Section Toggle
-  const toggleSection = useCallback((key: string) => {
-    setExpandedSections((prev) => ({
-      ...prev,
-      [key]: !prev[key as keyof ExpandedSections],
-    }));
-  }, []);
+  // ============================================================
+  // Director State (depends on visual state for conflict clearing)
+  // ============================================================
+  const director = useDirectorState({
+    isLocked: sections.lockedSections.director,
+    selectedAtmosphere: visual.selectedAtmosphere,
+    selectedVisualPreset: visual.selectedVisualPreset,
+    onClearAtmosphere: visual.resetAtmosphere,
+    onClearVisualPreset: visual.resetVisualPreset,
+  });
 
-  // Lock Toggle
-  const toggleLock = useCallback((key: keyof LockedSections) => {
-    setLockedSections((prev) => ({
-      ...prev,
-      [key]: !prev[key],
-    }));
-  }, []);
+  // ============================================================
+  // Conflict Detection
+  // ============================================================
+  const conflicts = useConflicts({
+    selectedCamera: camera.selectedCamera,
+    selectedAtmosphere: visual.selectedAtmosphere,
+    selectedVisualPreset: visual.selectedVisualPreset,
+    depthOfField: camera.depthOfField,
+    selectedDirector: director.selectedDirector,
+  });
 
-  // Camera change handler with auto-clear
-  const handleCameraChange = useCallback(
-    (newCamera: string) => {
-      if (lockedSections.camera) return;
-
-      setSelectedCamera(newCamera);
-      setCustomCamera('');
-
-      const category = cameraCategories[newCamera] || 'none';
-      const rules = categoryConflicts[category];
-
-      if (selectedAtmosphere && rules.blockedAtmospheres.includes(selectedAtmosphere)) {
-        setSelectedAtmosphere(null);
-      }
-      if (selectedVisualPreset && rules.blockedPresets.includes(selectedVisualPreset)) {
-        setSelectedVisualPreset(null);
-      }
-      if (rules.blockedDOF.includes(depthOfField)) {
-        setDepthOfField('normal');
-      }
-      const allowedRatios = cameraAspectRatios[newCamera];
-      if (allowedRatios && aspectRatio !== 'none' && !allowedRatios.includes(aspectRatio)) {
-        setAspectRatio('none');
-      }
+  // ============================================================
+  // Section Toggle (with string key support for backward compat)
+  // ============================================================
+  const toggleSection = useCallback(
+    (key: string) => {
+      sections.toggleSection(key as keyof typeof sections.expandedSections);
     },
-    [lockedSections.camera, selectedAtmosphere, selectedVisualPreset, depthOfField, aspectRatio]
+    [sections]
   );
 
-  // Director change handler with auto-clear
-  const handleDirectorChange = useCallback(
-    (newDirector: string) => {
-      if (lockedSections.director) return;
-
-      setSelectedDirector(newDirector);
-
-      const directorConfig = directorStyles.find((d) => d.name === newDirector);
-      if (directorConfig) {
-        if (selectedAtmosphere && directorConfig.blockedAtmospheres.includes(selectedAtmosphere)) {
-          setSelectedAtmosphere(null);
-        }
-        if (selectedVisualPreset && directorConfig.blockedPresets.includes(selectedVisualPreset)) {
-          setSelectedVisualPreset(null);
-        }
-      }
-    },
-    [lockedSections.director, selectedAtmosphere, selectedVisualPreset]
-  );
-
-  // Character Management
+  // ============================================================
+  // Character Management (lock-aware wrappers)
+  // ============================================================
   const addCharacter = useCallback(() => {
-    if (currentCharacter.trim() && !lockedSections.subject) {
-      setCharacterItems((prev) => [
-        ...prev,
-        { id: crypto.randomUUID().slice(0, 9), content: currentCharacter.trim() },
-      ]);
-      setCurrentCharacter('');
+    if (!sections.lockedSections.subject) {
+      content.addCharacter();
     }
-  }, [currentCharacter, lockedSections.subject]);
+  }, [sections.lockedSections.subject, content]);
 
   const removeCharacter = useCallback(
     (id: string) => {
-      if (!lockedSections.subject) {
-        setCharacterItems((prev) => prev.filter((item) => item.id !== id));
+      if (!sections.lockedSections.subject) {
+        content.removeCharacter(id);
       }
     },
-    [lockedSections.subject]
+    [sections.lockedSections.subject, content]
   );
 
-  // Generate Prompt
+  // ============================================================
+  // Prompt Generation (memoized)
+  // ============================================================
   const prompt = useMemo(
     () =>
       generatePrompt({
-        subject,
-        characterItems,
-        currentCharacter,
-        location,
-        selectedVisualPreset,
-        selectedColorPalette,
-        customColors,
-        selectedAtmosphere,
-        selectedLighting,
-        selectedDirector,
-        selectedCamera,
-        customCamera,
-        selectedLens,
-        customLens,
-        selectedShot,
-        customShot,
-        depthOfField,
-        aspectRatio,
-        selectedModel,
-        negativePrompt,
-        creativeControlsEnabled,
-        creativity,
-        variation,
-        uniqueness,
+        subject: content.subject,
+        characterItems: content.characterItems,
+        currentCharacter: content.currentCharacter,
+        location: content.location,
+        selectedVisualPreset: visual.selectedVisualPreset,
+        selectedColorPalette: visual.selectedColorPalette,
+        customColors: visual.customColors,
+        selectedAtmosphere: visual.selectedAtmosphere,
+        selectedLighting: visual.selectedLighting,
+        selectedDirector: director.selectedDirector,
+        selectedCamera: camera.selectedCamera,
+        customCamera: camera.customCamera,
+        selectedLens: camera.selectedLens,
+        customLens: camera.customLens,
+        selectedShot: camera.selectedShot,
+        customShot: camera.customShot,
+        depthOfField: camera.depthOfField,
+        aspectRatio: camera.aspectRatio,
+        selectedModel: model.selectedModel,
+        negativePrompt: advanced.negativePrompt,
+        creativeControlsEnabled: creative.enabled,
+        creativity: creative.creativity,
+        variation: creative.variation,
+        uniqueness: creative.uniqueness,
       }),
     [
-      subject, characterItems, currentCharacter, location, selectedVisualPreset,
-      selectedColorPalette, customColors, selectedAtmosphere, selectedLighting,
-      selectedDirector, selectedCamera, customCamera, selectedLens, customLens,
-      selectedShot, customShot, depthOfField, aspectRatio, selectedModel,
-      negativePrompt, creativeControlsEnabled, creativity, variation, uniqueness,
+      content.subject,
+      content.characterItems,
+      content.currentCharacter,
+      content.location,
+      visual.selectedVisualPreset,
+      visual.selectedColorPalette,
+      visual.customColors,
+      visual.selectedAtmosphere,
+      visual.selectedLighting,
+      director.selectedDirector,
+      camera.selectedCamera,
+      camera.customCamera,
+      camera.selectedLens,
+      camera.customLens,
+      camera.selectedShot,
+      camera.customShot,
+      camera.depthOfField,
+      camera.aspectRatio,
+      model.selectedModel,
+      advanced.negativePrompt,
+      creative.enabled,
+      creative.creativity,
+      creative.variation,
+      creative.uniqueness,
     ]
   );
 
-  // Copy to Clipboard
+  // ============================================================
+  // Clipboard Action
+  // ============================================================
   const copyToClipboard = useCallback(async () => {
-    await navigator.clipboard.writeText(prompt);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }, [prompt]);
+    await clipboard.copy(prompt);
+  }, [clipboard, prompt]);
 
-  // Reset All (only resets unlocked sections)
+  // ============================================================
+  // Reset All (respects locked sections)
+  // ============================================================
   const resetAll = useCallback(() => {
-    if (!lockedSections.subject) {
-      setSubject('');
-      setCharacterItems([]);
-      setCurrentCharacter('');
-      setLocation('');
-    }
-    if (!lockedSections.atmosphere) {
-      setSelectedAtmosphere(null);
-    }
-    if (!lockedSections.visual) {
-      setSelectedVisualPreset(null);
-    }
-    if (!lockedSections.lighting) {
-      setSelectedLighting(null);
-    }
-    if (!lockedSections.color) {
-      setSelectedColorPalette(null);
-      setCustomColors(['', '', '', '', '', '']);
-    }
-    if (!lockedSections.camera) {
-      setSelectedCamera('');
-      setCustomCamera('');
-      setSelectedLens('50mm');
-      setCustomLens('');
-      setSelectedShot('Medium Shot (MS)');
-      setCustomShot('');
-      setDepthOfField('normal');
-      setAspectRatio('none');
-    }
-    if (!lockedSections.advanced) {
-      setNegativePrompt('');
-      setCreativity(50);
-      setVariation(50);
-      setUniqueness(50);
-    }
-    if (!lockedSections.director) {
-      setSelectedDirector('');
-    }
-  }, [lockedSections]);
+    const locks = sections.lockedSections;
 
+    if (!locks.subject) {
+      content.reset();
+    }
+    if (!locks.atmosphere) {
+      visual.resetAtmosphere();
+    }
+    if (!locks.visual) {
+      visual.resetVisualPreset();
+    }
+    if (!locks.lighting) {
+      visual.resetLighting();
+    }
+    if (!locks.color) {
+      visual.resetColors();
+    }
+    if (!locks.camera) {
+      camera.reset();
+    }
+    if (!locks.advanced) {
+      advanced.reset();
+      creative.reset();
+    }
+    if (!locks.director) {
+      director.reset();
+    }
+  }, [sections.lockedSections, content, visual, camera, advanced, creative, director]);
+
+  // ============================================================
+  // Return Unified State Object
+  // ============================================================
   return {
     // Theme
     darkMode,
     setDarkMode,
-    copied,
+    copied: clipboard.copied,
     themeColors,
 
     // Model
-    selectedModel,
-    setSelectedModel,
+    selectedModel: model.selectedModel,
+    setSelectedModel: model.setSelectedModel,
 
     // Creative Controls
-    creativity,
-    setCreativity,
-    variation,
-    setVariation,
-    uniqueness,
-    setUniqueness,
-    creativeControlsEnabled,
-    setCreativeControlsEnabled,
+    creativity: creative.creativity,
+    setCreativity: creative.setCreativity,
+    variation: creative.variation,
+    setVariation: creative.setVariation,
+    uniqueness: creative.uniqueness,
+    setUniqueness: creative.setUniqueness,
+    creativeControlsEnabled: creative.enabled,
+    setCreativeControlsEnabled: creative.setEnabled,
 
     // Content
-    subject,
-    setSubject,
-    characterItems,
-    currentCharacter,
-    setCurrentCharacter,
-    location,
-    setLocation,
+    subject: content.subject,
+    setSubject: content.setSubject,
+    characterItems: content.characterItems,
+    currentCharacter: content.currentCharacter,
+    setCurrentCharacter: content.setCurrentCharacter,
+    location: content.location,
+    setLocation: content.setLocation,
     addCharacter,
     removeCharacter,
 
     // Visual
-    selectedAtmosphere,
-    setSelectedAtmosphere,
-    selectedVisualPreset,
-    setSelectedVisualPreset,
-    selectedLighting,
-    setSelectedLighting,
-    selectedColorPalette,
-    setSelectedColorPalette,
-    customColors,
-    setCustomColors,
+    selectedAtmosphere: visual.selectedAtmosphere,
+    setSelectedAtmosphere: visual.setSelectedAtmosphere,
+    selectedVisualPreset: visual.selectedVisualPreset,
+    setSelectedVisualPreset: visual.setSelectedVisualPreset,
+    selectedLighting: visual.selectedLighting,
+    setSelectedLighting: visual.setSelectedLighting,
+    selectedColorPalette: visual.selectedColorPalette,
+    setSelectedColorPalette: visual.setSelectedColorPalette,
+    customColors: visual.customColors,
+    setCustomColors: visual.setCustomColors,
 
     // Camera
-    selectedCamera,
-    customCamera,
-    setCustomCamera,
-    selectedLens,
-    setSelectedLens,
-    customLens,
-    setCustomLens,
-    selectedShot,
-    setSelectedShot,
-    customShot,
-    setCustomShot,
-    depthOfField,
-    setDepthOfField,
-    aspectRatio,
-    setAspectRatio,
-    handleCameraChange,
+    selectedCamera: camera.selectedCamera,
+    customCamera: camera.customCamera,
+    setCustomCamera: camera.setCustomCamera,
+    selectedLens: camera.selectedLens,
+    setSelectedLens: camera.setSelectedLens,
+    customLens: camera.customLens,
+    setCustomLens: camera.setCustomLens,
+    selectedShot: camera.selectedShot,
+    setSelectedShot: camera.setSelectedShot,
+    customShot: camera.customShot,
+    setCustomShot: camera.setCustomShot,
+    depthOfField: camera.depthOfField,
+    setDepthOfField: camera.setDepthOfField,
+    aspectRatio: camera.aspectRatio,
+    setAspectRatio: camera.setAspectRatio,
+    handleCameraChange: camera.setCamera,
 
     // Director
-    selectedDirector,
-    handleDirectorChange,
+    selectedDirector: director.selectedDirector,
+    handleDirectorChange: director.setDirector,
 
     // Advanced
-    negativePrompt,
-    setNegativePrompt,
-    showAdvanced,
-    setShowAdvanced,
+    negativePrompt: advanced.negativePrompt,
+    setNegativePrompt: advanced.setNegativePrompt,
+    showAdvanced: advanced.showAdvanced,
+    setShowAdvanced: advanced.setShowAdvanced,
 
     // UI
-    lockedSections,
-    toggleLock,
-    expandedSections,
+    lockedSections: sections.lockedSections,
+    toggleLock: sections.toggleLock,
+    expandedSections: sections.expandedSections,
     toggleSection,
     conflicts,
 
