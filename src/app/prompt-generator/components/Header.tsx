@@ -1,12 +1,13 @@
 /**
  * Application header component
- * Contains title and theme toggle
+ * Contains logo and theme toggle
  */
 
 'use client';
 
+import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { Zap, Sun, Moon } from 'lucide-react';
+import { Sun, Moon } from 'lucide-react';
 import type { ThemeColors } from '../config/types';
 
 interface HeaderProps {
@@ -22,14 +23,15 @@ export function Header({
 }: HeaderProps) {
   return (
     <div className="text-center mb-6">
-      <div className="flex items-center justify-center gap-3 mb-2">
-        <Zap className="w-6 h-6" style={{ color: themeColors.accent }} />
-        <h1
-          className="text-xl font-semibold tracking-tight"
-          style={{ color: themeColors.textPrimary }}
-        >
-          PromptCine Studio
-        </h1>
+      <div className="flex items-center justify-center mb-2">
+        <Image
+          src="/logo.png"
+          alt="PromptCine Studio"
+          width={200}
+          height={50}
+          className="h-12 w-auto"
+          priority
+        />
       </div>
       <p className="text-sm" style={{ color: themeColors.textTertiary }}>
         Cinematic camera-logic tool

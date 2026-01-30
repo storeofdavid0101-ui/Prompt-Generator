@@ -66,7 +66,7 @@ export function ConflictBanner({ conflicts, themeColors }: ConflictBannerProps) 
         </motion.div>
       )}
 
-      {/* Effect Stacking Warnings (info) */}
+      {/* Effect Stacking Warnings (red warning) */}
       {hasStackingWarnings && (
         <motion.div
           initial={{ opacity: 0, height: 0 }}
@@ -74,37 +74,30 @@ export function ConflictBanner({ conflicts, themeColors }: ConflictBannerProps) 
           exit={{ opacity: 0, height: 0 }}
           className="rounded-xl p-3 border"
           style={{
-            backgroundColor: themeColors.accent + '10',
-            borderColor: themeColors.accent + '30',
+            backgroundColor: '#ef444415',
+            borderColor: '#ef444440',
           }}
         >
           <div className="flex items-start gap-2">
-            <Info
+            <AlertTriangle
               className="w-4 h-4 flex-shrink-0 mt-0.5"
-              style={{ color: themeColors.accent }}
+              style={{ color: '#ef4444' }}
             />
             <div>
               <p
                 className="text-xs font-medium mb-1"
-                style={{ color: themeColors.accent }}
+                style={{ color: '#ef4444' }}
               >
                 Effect Stacking Notice
               </p>
               {conflicts.effectStackingWarnings.map((warning, i) => (
-                <div key={i} className="mb-2 last:mb-0">
-                  <p
-                    className="text-xs"
-                    style={{ color: themeColors.textSecondary }}
-                  >
-                    {warning.message}
-                  </p>
-                  <p
-                    className="text-[10px] mt-0.5"
-                    style={{ color: themeColors.textTertiary }}
-                  >
-                    Already includes: {warning.includedTerms.join(', ')}
-                  </p>
-                </div>
+                <p
+                  key={i}
+                  className="text-xs mb-1 last:mb-0"
+                  style={{ color: themeColors.textSecondary }}
+                >
+                  {warning.message}
+                </p>
               ))}
             </div>
           </div>

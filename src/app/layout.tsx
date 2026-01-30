@@ -26,6 +26,10 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: "PromptCine Studio",
   description: "AI-powered cinematic prompt generator",
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({
