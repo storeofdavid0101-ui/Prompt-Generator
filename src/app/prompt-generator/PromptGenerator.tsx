@@ -6,7 +6,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import {
   Header,
@@ -52,46 +52,35 @@ export function PromptGenerator() {
           themeColors={state.themeColors}
         />
 
-        {/* Scroll Indicator - Fixed position, follows user */}
-        <AnimatePresence>
-          {showScrollHint && (
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              className="fixed right-4 top-1/2 -translate-y-1/2 z-40"
+        {/* Scroll Indicator - Fixed position */}
+        {showScrollHint && (
+          <div
+            className="fixed right-4 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center gap-1 px-2 py-3 rounded-full backdrop-blur-sm animate-pulse"
+            style={{
+              backgroundColor: `${state.themeColors.cardBackground}cc`,
+              border: `1px solid ${state.themeColors.borderColor}`,
+            }}
+          >
+            <ChevronDown
+              className="w-4 h-4"
+              style={{ color: state.themeColors.accent }}
+            />
+            <span
+              className="text-[10px] font-medium"
+              style={{
+                color: state.themeColors.textTertiary,
+                writingMode: 'vertical-rl',
+                textOrientation: 'mixed',
+              }}
             >
-              <motion.div
-                animate={{ y: [0, 8, 0] }}
-                transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-                className="flex flex-col items-center gap-1 px-2 py-3 rounded-full backdrop-blur-sm"
-                style={{
-                  backgroundColor: `${state.themeColors.cardBackground}cc`,
-                  border: `1px solid ${state.themeColors.borderColor}`,
-                }}
-              >
-                <ChevronDown
-                  className="w-4 h-4"
-                  style={{ color: state.themeColors.accent }}
-                />
-                <span
-                  className="text-[10px] font-medium writing-mode-vertical"
-                  style={{
-                    color: state.themeColors.textTertiary,
-                    writingMode: 'vertical-rl',
-                    textOrientation: 'mixed',
-                  }}
-                >
-                  More
-                </span>
-                <ChevronDown
-                  className="w-4 h-4"
-                  style={{ color: state.themeColors.accent }}
-                />
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              More
+            </span>
+            <ChevronDown
+              className="w-4 h-4"
+              style={{ color: state.themeColors.accent }}
+            />
+          </div>
+        )}
 
         <ConflictBanner conflicts={state.conflicts} themeColors={state.themeColors} />
 
