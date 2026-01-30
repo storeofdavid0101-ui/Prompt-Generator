@@ -23,17 +23,17 @@ export const visualPresets: Record<string, PresetConfig> = {
   },
   vivid: {
     name: 'Vivid',
-    keywords: 'vivid colors, saturated, vibrant, color-graded, punchy',
+    keywords: 'vivid colors, color-graded, punchy, bold color separation, rich tones',
     gradient: 'linear-gradient(135deg, #f5af19 0%, #f12711 100%)',
   },
   filmlook: {
     name: 'Film Look',
-    keywords: 'film color grade, lifted blacks, crushed highlights, cinematic color',
+    keywords: 'film color grade, lifted blacks, crushed highlights, celluloid texture',
     gradient: 'linear-gradient(135deg, #d4a574 0%, #8b7355 100%)',
   },
   bleachbypass: {
     name: 'Bleach Bypass',
-    keywords: 'bleach bypass look, desaturated, high contrast, silver retention, gritty',
+    keywords: 'bleach bypass look, silver retention, gritty, metallic tones, skip bleach process',
     gradient: 'linear-gradient(135deg, #606c88 0%, #3f4c6b 100%)',
   },
 };

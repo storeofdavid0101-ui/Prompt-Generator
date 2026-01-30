@@ -12,17 +12,22 @@ import {
   cameraZoomRange,
   atmosphereBlocksCategories,
   presetBlocksCategories,
+  presetMutualExclusions,
+  atmosphereLightingRedundancy,
+  redundancyWarnings,
   atmosphereConfigs,
   visualPresets,
   dofOptions,
   cameraAspectRatios,
   directorStyles,
+  lightingOptions,
 } from '../config';
 
 interface UseConflictsParams {
   selectedCamera: string;
   selectedAtmosphere: Atmosphere | null;
   selectedVisualPreset: string | null;
+  selectedLighting: string | null;
   depthOfField: string;
   selectedDirector: string;
 }
@@ -31,6 +36,7 @@ export function useConflicts({
   selectedCamera,
   selectedAtmosphere,
   selectedVisualPreset,
+  selectedLighting,
   depthOfField,
   selectedDirector,
 }: UseConflictsParams): ConflictResult {
@@ -73,6 +79,13 @@ export function useConflicts({
         if (blockedCategories.includes(category)) {
           blockedCameras.add(camera);
         }
+      });
+    }
+
+    // Add preset mutual exclusions (e.g., vivid blocks desaturated)
+    if (selectedVisualPreset && presetMutualExclusions[selectedVisualPreset]) {
+      presetMutualExclusions[selectedVisualPreset].forEach((preset) => {
+        blockedPresets.add(preset);
       });
     }
 
@@ -148,6 +161,21 @@ export function useConflicts({
       });
     }
 
+    // Check atmosphere-lighting redundancy
+    if (selectedAtmosphere && selectedLighting && atmosphereLightingRedundancy[selectedAtmosphere]) {
+      const redundantLighting = atmosphereLightingRedundancy[selectedAtmosphere];
+      if (redundantLighting.includes(selectedLighting)) {
+        const warningKey = `${selectedAtmosphere}+${selectedLighting}` as keyof typeof redundancyWarnings;
+        const warningMessage = redundancyWarnings[warningKey] ||
+          `${atmosphereConfigs[selectedAtmosphere].name} atmosphere + ${lightingOptions[selectedLighting]?.name || selectedLighting} lighting may be redundant`;
+        effectStackingWarnings.push({
+          category: 'mood',
+          message: warningMessage,
+          includedTerms: [],
+        });
+      }
+    }
+
     return {
       blockedAtmospheres,
       blockedPresets,
@@ -165,6 +193,7 @@ export function useConflicts({
     selectedCamera,
     selectedAtmosphere,
     selectedVisualPreset,
+    selectedLighting,
     depthOfField,
     selectedDirector,
   ]);

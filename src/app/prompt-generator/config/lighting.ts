@@ -9,25 +9,25 @@ export const lightingOptions: Record<string, LightingConfig> = {
   // Classic Cinematic
   rembrandt: {
     name: 'Rembrandt',
-    keywords: 'Rembrandt lighting, dramatic portrait lighting, triangle light on cheek, single light source, classic portrait',
+    keywords: 'Rembrandt lighting, dramatic portrait lighting, single light source, classic portrait',
     category: 'classic',
     gradient: 'linear-gradient(135deg, #8B7355 0%, #2C1810 100%)',
   },
   chiaroscuro: {
     name: 'Chiaroscuro',
-    keywords: 'chiaroscuro lighting, extreme contrast, deep shadows, dramatic light and dark, Caravaggio style, film noir lighting',
+    keywords: 'chiaroscuro lighting, extreme contrast, Caravaggio style, Renaissance painting light, bold light and shadow',
     category: 'classic',
     gradient: 'linear-gradient(135deg, #1a1a1a 0%, #4a4a4a 50%, #1a1a1a 100%)',
   },
   highkey: {
     name: 'High Key',
-    keywords: 'high key lighting, bright and soft, minimal shadows, clean white background, airy, optimistic mood',
+    keywords: 'high key lighting, bright and soft, minimal shadows, even illumination, airy, optimistic mood',
     category: 'classic',
     gradient: 'linear-gradient(135deg, #64748b 0%, #94a3b8 50%, #475569 100%)',
   },
   lowkey: {
     name: 'Low Key',
-    keywords: 'low key lighting, mostly dark, selective highlights, moody shadows, noir atmosphere, dramatic tension',
+    keywords: 'low key lighting, mostly dark, selective highlights, single key light, underexposed fill, dark exposure',
     category: 'classic',
     gradient: 'linear-gradient(135deg, #0d0d0d 0%, #1a1a1a 50%, #2d2d2d 100%)',
   },
@@ -53,7 +53,7 @@ export const lightingOptions: Record<string, LightingConfig> = {
   },
   practical: {
     name: 'Practical Light',
-    keywords: 'practical lighting, motivated light sources, table lamp glow, candlelight, TV screen light, realistic interior lighting',
+    keywords: 'practical lighting, motivated light sources, in-scene light sources, diegetic lighting, realistic interior lighting',
     category: 'natural',
     gradient: 'linear-gradient(135deg, #d4a574 0%, #8b6914 50%, #3d2914 100%)',
   },
@@ -61,7 +61,7 @@ export const lightingOptions: Record<string, LightingConfig> = {
   // Stylized / Modern
   neon: {
     name: 'Cyberpunk Neon',
-    keywords: 'neon lighting, cyberpunk colors, pink and blue neon, reflective surfaces, wet streets, futuristic glow',
+    keywords: 'neon lighting, glowing tubes, reflective surfaces, wet streets, electric color spill',
     category: 'stylized',
     gradient: 'linear-gradient(135deg, #ff006e 0%, #8338ec 50%, #3a86ff 100%)',
   },
@@ -79,7 +79,7 @@ export const lightingOptions: Record<string, LightingConfig> = {
   },
   bioluminescent: {
     name: 'Bioluminescent',
-    keywords: 'bioluminescent glow, self-illuminating, avatar style, fantasy lighting, glowing organisms, ethereal inner light',
+    keywords: 'bioluminescent glow, self-illuminating, fantasy lighting, glowing organisms, ethereal inner light',
     category: 'stylized',
     gradient: 'linear-gradient(135deg, #00d4ff 0%, #00ff88 50%, #7b2cbf 100%)',
   },

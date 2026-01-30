@@ -36,7 +36,6 @@ export const cameraCategories: Record<string, CameraCategory> = {
   '65mm Film': 'epic-film',
   '70mm IMAX': 'epic-film',
   'Panavision Panaflex': 'epic-film',
-  'IMAX Camera': 'epic-film',
 
   // Medium Format Classic
   'Hasselblad 500C': 'medium-format-classic',
@@ -187,4 +186,92 @@ export const atmosphereBlocksCategories: Partial<Record<Atmosphere, CameraCatego
 export const presetBlocksCategories: Record<string, CameraCategory[]> = {
   vivid: ['vintage-lofi', 'antique'],
   highcontrast: ['vintage-lofi', 'antique'],
+};
+
+// Visual preset mutual exclusions (direct opposites that conflict)
+export const presetMutualExclusions: Record<string, string[]> = {
+  vivid: ['desaturated'],
+  desaturated: ['vivid'],
+  raw: ['filmlook', 'bleachbypass'],
+  filmlook: ['raw'],
+  bleachbypass: ['raw'],
+};
+
+// Atmosphere + Lighting redundancy warnings (selecting both is redundant)
+export const atmosphereLightingRedundancy: Record<string, string[]> = {
+  // Atmosphere key -> lighting keys that are redundant with it
+  cyberpunk: ['neon'], // Cyberpunk already implies neon aesthetic
+  moody: ['lowkey', 'chiaroscuro'], // Moody already implies dark lighting
+  studio: ['softbox', 'highkey'], // Studio already implies studio lighting
+};
+
+// Lighting mutual exclusions (only one lighting style at a time recommended)
+export const lightingCategories: Record<string, string> = {
+  rembrandt: 'classic',
+  chiaroscuro: 'classic',
+  highkey: 'classic',
+  lowkey: 'classic',
+  goldenhour: 'natural',
+  bluehour: 'natural',
+  moonlit: 'natural',
+  practical: 'natural',
+  neon: 'stylized',
+  godrays: 'stylized',
+  softbox: 'stylized',
+  bioluminescent: 'stylized',
+};
+
+// Warning message for redundant selections
+export const redundancyWarnings: Record<string, string> = {
+  'cyberpunk+neon': 'Cyberpunk atmosphere already includes neon aesthetic',
+  'moody+lowkey': 'Moody atmosphere already implies dark, low-key lighting',
+  'moody+chiaroscuro': 'Moody atmosphere already implies dramatic shadows',
+  'studio+softbox': 'Studio atmosphere already includes softbox lighting',
+  'studio+highkey': 'Studio atmosphere already implies bright, even lighting',
+  'vivid+desaturated': 'Vivid and Desaturated are opposite styles',
+};
+
+// 1B: Atmosphere blocks DOF (Dreamy already has soft focus/bokeh)
+export const atmosphereBlocksDOF: Partial<Record<string, string[]>> = {
+  dreamy: ['shallow'], // Dreamy already includes bokeh/soft focus effect
+};
+
+// 1D: Atmosphere + Lighting mutual exclusions (pick one, not both)
+export const atmosphereLightingExclusions: Record<string, string[]> = {
+  studio: ['softbox', 'highkey'], // Studio atmosphere and studio lighting are redundant
+};
+
+// Director + Lighting redundancy warnings (6C, 6E, 8A, 8B, 8C)
+export const directorLightingRedundancy: Record<string, string[]> = {
+  'Wong Kar-wai': ['neon', 'goldenhour'], // His style already includes neon nights and warm tones
+  'Terrence Malick': ['goldenhour'], // His style IS golden hour
+};
+
+// Director + Preset redundancy warnings (6F)
+export const directorPresetRedundancy: Record<string, string[]> = {
+  'David Fincher': ['desaturated'], // His style already includes desaturated look
+};
+
+// Director + Atmosphere redundancy warnings (8I)
+export const directorAtmosphereRedundancy: Record<string, string[]> = {
+  'David Lynch': ['moody'], // Lynch style already includes moody/dark atmosphere
+};
+
+// 8E: Atmosphere + Shot type conflicts (scale mismatches)
+export const atmosphereShotConflicts: Record<string, string[]> = {
+  epic: ['Insert Shot', 'Extreme Close-Up (ECU)'], // Epic scale conflicts with small detail shots
+};
+
+// 8H: Camera category + Location category conflicts
+export const cameraLocationConflicts: Record<CameraCategory, string[]> = {
+  antique: ['fantasy'], // 1800s cameras don't fit fantasy realms
+  'vintage-lofi': [],
+  'classic-film': [],
+  'epic-film': [],
+  'medium-format-classic': [],
+  '35mm-classic': [],
+  'modern-cinema': [],
+  'modern-digital': [],
+  'consumer-mobile': [],
+  'none': [],
 };

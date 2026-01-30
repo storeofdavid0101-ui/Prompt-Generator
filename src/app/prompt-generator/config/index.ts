@@ -28,6 +28,14 @@ export {
 // Director styles
 export { directorStyles } from './directorStyles';
 
+// Location presets
+export {
+  locationPresets,
+  locationPresetsByCategory,
+  locationCategoryNames,
+} from './locationPresets';
+export type { LocationPreset } from './locationPresets';
+
 // Conflict detection
 export {
   cameraCategories,
@@ -36,4 +44,15 @@ export {
   cameraZoomRange,
   atmosphereBlocksCategories,
   presetBlocksCategories,
+  presetMutualExclusions,
+  atmosphereLightingRedundancy,
+  lightingCategories,
+  redundancyWarnings,
+  atmosphereBlocksDOF,
+  atmosphereLightingExclusions,
+  directorLightingRedundancy,
+  directorPresetRedundancy,
+  directorAtmosphereRedundancy,
+  atmosphereShotConflicts,
+  cameraLocationConflicts,
 } from './conflicts';

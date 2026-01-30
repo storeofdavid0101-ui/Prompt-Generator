@@ -110,6 +110,7 @@ export function usePromptGeneratorState(): PromptGeneratorStateReturn {
     selectedCamera: camera.selectedCamera,
     selectedAtmosphere: visual.selectedAtmosphere,
     selectedVisualPreset: visual.selectedVisualPreset,
+    selectedLighting: visual.selectedLighting,
     depthOfField: camera.depthOfField,
     selectedDirector: director.selectedDirector,
   });
