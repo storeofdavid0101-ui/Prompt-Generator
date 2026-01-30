@@ -198,12 +198,12 @@ export function HelpLabel({
           {Icon && (
             <Icon
               className="w-3 h-3 flex-shrink-0"
-              style={{ color: themeColors.textTertiary }}
+              style={{ color: themeColors.accent }}
             />
           )}
           <span
             className="text-xs font-medium"
-            style={{ color: themeColors.textTertiary }}
+            style={{ color: themeColors.accent }}
           >
             {label}
           </span>

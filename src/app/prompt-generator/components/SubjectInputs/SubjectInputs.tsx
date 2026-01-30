@@ -77,7 +77,7 @@ export const SubjectInputs = memo(function SubjectInputs({
   const styles = useMemo(
     () => ({
       sectionLabel: {
-        color: themeColors.textTertiary,
+        color: themeColors.accent,
       },
       subjectTextarea: {
         backgroundColor: themeColors.inputBackground,

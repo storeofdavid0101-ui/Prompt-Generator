@@ -157,7 +157,7 @@ export function SectionHeader({
           >
             <ChevronDown
               className="w-4 h-4"
-              style={{ color: themeColors.textTertiary }}
+              style={{ color: themeColors.accent }}
             />
           </motion.div>
         </button>
