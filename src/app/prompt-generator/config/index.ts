@@ -18,12 +18,15 @@ export { colorPalettes } from './colorPalettes';
 // Camera and cinematography
 export {
   cameraOptions,
+  camerasByCategory,
+  cameraCategoryNames,
   lensOptions,
   shotOptions,
   dofOptions,
   aspectRatioOptions,
   cameraAspectRatios,
 } from './cameraOptions';
+export type { CameraCategory, CameraOptionWithCategory } from './cameraOptions';
 
 // Director styles
 export { directorStyles } from './directorStyles';
