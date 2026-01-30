@@ -8,7 +8,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sun } from 'lucide-react';
 import { SectionHeader } from './ui';
-import { lightingOptions } from '../config';
+import { lightingOptions, helpDescriptions } from '../config';
 import type { ThemeColors } from '../config/types';
 
 interface LightingSelectorProps {
@@ -81,6 +81,7 @@ export function LightingSelector({
         sectionKey="lighting"
         isExpanded={isExpanded}
         isLocked={isLocked}
+        help={helpDescriptions.lighting}
         onToggle={onToggleSection}
         onToggleLock={onToggleLock}
         themeColors={themeColors}

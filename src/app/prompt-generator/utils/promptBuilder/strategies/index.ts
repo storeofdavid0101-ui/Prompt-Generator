@@ -5,11 +5,12 @@
 
 import type { AIModel } from '../types';
 import type { ModelStrategy } from './BaseModelStrategy';
+import { ChatGPTStrategy } from './ChatGPTStrategy';
 import { MidjourneyStrategy } from './MidjourneyStrategy';
+import { NanoBananoStrategy } from './NanoBananoStrategy';
 import { FluxStrategy } from './FluxStrategy';
 import { StableDiffusionStrategy } from './StableDiffusionStrategy';
 import { DallE3Strategy } from './DallE3Strategy';
-import { ChatGPTStrategy } from './ChatGPTStrategy';
 import { ImagenStrategy } from './ImagenStrategy';
 import { IdeogramStrategy } from './IdeogramStrategy';
 import { LeonardoStrategy } from './LeonardoStrategy';
@@ -20,11 +21,12 @@ import { FireflyStrategy } from './FireflyStrategy';
  * Each strategy encapsulates model-specific formatting logic.
  */
 const strategyRegistry: Record<AIModel, ModelStrategy> = {
+  chatgpt: ChatGPTStrategy,
   midjourney: MidjourneyStrategy,
+  nanobanano: NanoBananoStrategy,
   flux: FluxStrategy,
   'stable-diffusion': StableDiffusionStrategy,
   dalle3: DallE3Strategy,
-  chatgpt: ChatGPTStrategy,
   imagen: ImagenStrategy,
   ideogram: IdeogramStrategy,
   leonardo: LeonardoStrategy,

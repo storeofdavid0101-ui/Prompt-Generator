@@ -8,9 +8,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Layers, ChevronDown, Check } from 'lucide-react';
-import { modelConfigs } from '../config';
+import { modelConfigs, helpDescriptions } from '../config';
 import type { AIModel, ThemeColors } from '../config/types';
 import { SectionLock } from './SectionLock';
+import { HelpLabel } from './ui';
 
 interface ModelSelectorProps {
   selectedModel: AIModel;
@@ -45,18 +46,15 @@ export function ModelSelector({
 
   return (
     <div className="py-3">
-      <div className="flex items-center justify-between mb-1.5">
-        <label
-          className="text-xs font-medium flex items-center gap-1.5"
-          style={{ color: themeColors.textTertiary }}
-        >
-          <Layers className="w-3 h-3" /> AI Model
-        </label>
+      <div className="flex items-center justify-between mb-2">
+        <HelpLabel
+          icon={Layers}
+          label="AI Model"
+          help={helpDescriptions.model}
+          themeColors={themeColors}
+        />
         <SectionLock isLocked={isLocked} onToggle={onToggleLock} themeColors={themeColors} />
       </div>
-      <p className="text-[10px] mb-2" style={{ color: themeColors.textTertiary }}>
-        Select target AI image generator
-      </p>
 
       <div ref={dropdownRef} className="relative">
         {/* Dropdown Trigger */}

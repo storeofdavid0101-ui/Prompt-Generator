@@ -5,11 +5,12 @@
 
 // AI model identifiers supported by the prompt generator
 export type AIModel =
+  | 'chatgpt'
   | 'midjourney'
+  | 'nanobanano'
   | 'flux'
   | 'stable-diffusion'
   | 'dalle3'
-  | 'chatgpt'
   | 'imagen'
   | 'ideogram'
   | 'leonardo'
@@ -200,6 +201,13 @@ export interface LockedSections {
   camera: boolean;
   lighting: boolean;
   advanced: boolean;
+}
+
+// Help description for UI labels
+export interface HelpDescription {
+  title: string;
+  description: string;
+  tip?: string;
 }
 
 // Main generator state

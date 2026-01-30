@@ -178,8 +178,9 @@ export function OutputBar({
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.15 }}
-                      className={`text-xs font-mono leading-relaxed ${isExpanded ? '' : 'line-clamp-1'}`}
-                      style={{ color: themeColors.textPrimary }}
+                      className={`text-xs font-mono leading-relaxed select-none ${isExpanded ? '' : 'line-clamp-1'}`}
+                      style={{ color: themeColors.textPrimary, userSelect: 'none', WebkitUserSelect: 'none' }}
+                      onCopy={(e) => e.preventDefault()}
                     >
                       {prompt}
                     </motion.p>

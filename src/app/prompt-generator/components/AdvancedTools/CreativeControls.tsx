@@ -11,8 +11,9 @@
 'use client';
 
 import { memo, useMemo } from 'react';
-import { UniversalSlider } from '../ui';
-import { modelConfigs } from '../../config';
+import { Sliders } from 'lucide-react';
+import { UniversalSlider, HelpLabel } from '../ui';
+import { modelConfigs, helpDescriptions } from '../../config';
 import { Toggle } from './Toggle';
 import { CREATIVE_SLIDERS, CSS_CLASSES, OPACITY, ARIA_LABELS } from './constants';
 import type { CreativeControlsProps } from './types';
@@ -108,21 +109,12 @@ export const CreativeControls = memo(function CreativeControls({
     >
       {/* Header with toggle */}
       <div className="flex items-center justify-between">
-        <div>
-          <h3
-            id="creative-controls-title"
-            className="text-sm font-medium"
-            style={{ color: themeColors.textPrimary }}
-          >
-            Creative Controls
-          </h3>
-          <p
-            className="text-xs"
-            style={{ color: themeColors.textTertiary }}
-          >
-            Add stylize, chaos, CFG params to prompt
-          </p>
-        </div>
+        <HelpLabel
+          icon={Sliders}
+          label="Creative Controls"
+          help={helpDescriptions.creativeControls}
+          themeColors={themeColors}
+        />
         <Toggle
           checked={enabled}
           disabled={isLocked}

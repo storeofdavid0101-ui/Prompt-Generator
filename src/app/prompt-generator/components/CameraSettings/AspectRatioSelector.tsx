@@ -12,8 +12,9 @@
 
 import { memo, useMemo } from 'react';
 import { Camera } from 'lucide-react';
-import { aspectRatioOptions } from '../../config';
+import { aspectRatioOptions, helpDescriptions } from '../../config';
 import { StyledSelect, InfoBanner } from './components';
+import { HelpLabel } from '../ui';
 import { CSS_CLASSES, ARIA_LABELS } from './constants';
 import type { AspectRatioSelectorProps, SelectOption } from './types';
 
@@ -81,9 +82,12 @@ export const AspectRatioSelector = memo(function AspectRatioSelector({
   if (allowedAspectRatios) {
     return (
       <div>
-        <label className={CSS_CLASSES.label} style={labelStyles}>
-          Aspect Ratio
-        </label>
+        <HelpLabel
+          label="Aspect Ratio"
+          help={helpDescriptions.aspectRatio}
+          themeColors={themeColors}
+          className="mb-2"
+        />
         <InfoBanner
           icon={Camera}
           text={`Limited to authentic ${selectedCamera} ratios`}
@@ -105,9 +109,12 @@ export const AspectRatioSelector = memo(function AspectRatioSelector({
   // Standard mode - all aspect ratios available
   return (
     <div>
-      <label className={CSS_CLASSES.label} style={labelStyles}>
-        Aspect Ratio
-      </label>
+      <HelpLabel
+        label="Aspect Ratio"
+        help={helpDescriptions.aspectRatio}
+        themeColors={themeColors}
+        className="mb-2"
+      />
       <StyledSelect
         value={aspectRatio}
         options={allOptions}

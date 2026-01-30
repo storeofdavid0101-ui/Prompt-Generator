@@ -11,8 +11,9 @@
 'use client';
 
 import { memo, useCallback, useMemo } from 'react';
-import { AlertTriangle } from 'lucide-react';
-import { dofOptions } from '../../config';
+import { AlertTriangle, Focus } from 'lucide-react';
+import { dofOptions, helpDescriptions } from '../../config';
+import { HelpLabel } from '../ui';
 import { CSS_CLASSES, OPACITY, DOF_GRID_COLUMNS } from './constants';
 import type { DepthOfFieldSelectorProps } from './types';
 
@@ -126,13 +127,13 @@ export const DepthOfFieldSelector = memo(function DepthOfFieldSelector({
 
   return (
     <section aria-labelledby="dof-label">
-      <label
-        id="dof-label"
-        className={CSS_CLASSES.label}
-        style={{ color: themeColors.textTertiary }}
-      >
-        Depth of Field
-      </label>
+      <HelpLabel
+        icon={Focus}
+        label="Depth of Field"
+        help={helpDescriptions.depthOfField}
+        themeColors={themeColors}
+        className="mb-2"
+      />
       <div
         className={`grid gap-2`}
         style={{ gridTemplateColumns: `repeat(${DOF_GRID_COLUMNS}, minmax(0, 1fr))` }}

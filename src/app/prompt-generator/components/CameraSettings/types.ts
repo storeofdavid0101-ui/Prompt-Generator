@@ -7,7 +7,7 @@
  * @module CameraSettings/types
  */
 
-import type { ThemeColors, ConflictResult, ZoomRange } from '../../config/types';
+import type { ThemeColors, ConflictResult, ZoomRange, HelpDescription } from '../../config/types';
 
 /**
  * Base props shared across all camera sub-components
@@ -71,6 +71,8 @@ export interface SelectWithCustomInputProps extends BaseCameraProps {
   selectAriaLabel?: string;
   /** Optional aria-label for the custom input */
   inputAriaLabel?: string;
+  /** Optional help description for the label */
+  help?: HelpDescription;
 }
 
 /**

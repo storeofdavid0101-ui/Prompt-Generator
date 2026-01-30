@@ -4,3 +4,4 @@
 
 export { SectionHeader } from './SectionHeader';
 export { UniversalSlider } from './UniversalSlider';
+export { HelpLabel } from './HelpLabel';

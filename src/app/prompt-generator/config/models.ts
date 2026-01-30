@@ -7,6 +7,18 @@
 import type { AIModel, ModelConfig } from './types';
 
 export const modelConfigs: Record<AIModel, ModelConfig> = {
+  // Primary models (ordered by priority)
+  chatgpt: {
+    name: 'ChatGPT',
+    icon: '💬',
+    maxCreativity: 100,
+    creativityParam: '',
+    variationParam: '',
+    negativeParam: 'without',
+    aspectParam: '',
+    supportsNegativePrompt: true,
+    promptStyle: 'natural',
+  },
   midjourney: {
     name: 'Midjourney',
     icon: '🎨',
@@ -18,6 +30,18 @@ export const modelConfigs: Record<AIModel, ModelConfig> = {
     supportsNegativePrompt: true,
     promptStyle: 'tags',
   },
+  nanobanano: {
+    name: 'Nano Banano',
+    icon: '🍌',
+    maxCreativity: 100,
+    creativityParam: '',
+    variationParam: '',
+    negativeParam: '',
+    aspectParam: 'aspect_ratio:',
+    supportsNegativePrompt: false,
+    promptStyle: 'natural',
+  },
+  // Other models
   flux: {
     name: 'Flux',
     icon: '⚡',
@@ -49,17 +73,6 @@ export const modelConfigs: Record<AIModel, ModelConfig> = {
     negativeParam: '',
     aspectParam: 'size:',
     supportsNegativePrompt: false,
-    promptStyle: 'natural',
-  },
-  chatgpt: {
-    name: 'ChatGPT',
-    icon: '💬',
-    maxCreativity: 100,
-    creativityParam: '',
-    variationParam: '',
-    negativeParam: 'without',
-    aspectParam: '',
-    supportsNegativePrompt: true,
     promptStyle: 'natural',
   },
   imagen: {

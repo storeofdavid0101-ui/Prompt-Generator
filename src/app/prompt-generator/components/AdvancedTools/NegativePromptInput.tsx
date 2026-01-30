@@ -10,7 +10,9 @@
 'use client';
 
 import { memo, useCallback, useMemo, type ChangeEvent } from 'react';
-import { modelConfigs } from '../../config';
+import { Ban } from 'lucide-react';
+import { modelConfigs, helpDescriptions } from '../../config';
+import { HelpLabel } from '../ui';
 import { NEGATIVE_PROMPT_CONFIG, CSS_CLASSES, OPACITY } from './constants';
 import type { NegativePromptInputProps } from './types';
 
@@ -102,13 +104,13 @@ export const NegativePromptInput = memo(function NegativePromptInput({
 
   return (
     <div>
-      <label
-        htmlFor="negative-prompt-input"
-        className={CSS_CLASSES.label}
-        style={{ color: themeColors.textTertiary }}
-      >
-        Negative Prompt (Things to Avoid)
-      </label>
+      <HelpLabel
+        icon={Ban}
+        label="Negative Prompt (Things to Avoid)"
+        help={helpDescriptions.negativePrompt}
+        themeColors={themeColors}
+        className="mb-2"
+      />
       <textarea
         id="negative-prompt-input"
         value={value}

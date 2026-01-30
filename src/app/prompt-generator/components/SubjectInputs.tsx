@@ -7,10 +7,11 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, MapPin, X, FileText, CornerDownLeft, ChevronDown, Edit3 } from 'lucide-react';
+import { User, MapPin, X, FileText, CornerDownLeft, ChevronDown, Edit3, Target } from 'lucide-react';
 import type { CharacterItem, ThemeColors } from '../config/types';
 import { SectionLock } from './SectionLock';
-import { locationPresetsByCategory, locationCategoryNames } from '../config';
+import { locationPresetsByCategory, locationCategoryNames, helpDescriptions } from '../config';
+import { HelpLabel } from './ui';
 
 interface SubjectInputsProps {
   subject: string;
@@ -88,12 +89,13 @@ export function SubjectInputs({
 
       {/* Subject Input */}
       <div>
-        <label
-          className="block text-xs font-medium mb-2"
-          style={{ color: themeColors.textTertiary }}
-        >
-          Subject (Main Focus)
-        </label>
+        <HelpLabel
+          icon={Target}
+          label="Subject (Main Focus)"
+          help={helpDescriptions.subject}
+          themeColors={themeColors}
+          className="mb-2"
+        />
         <textarea
           value={subject}
           onChange={(e) => onSubjectChange(e.target.value)}
@@ -110,12 +112,13 @@ export function SubjectInputs({
 
       {/* Character Input */}
       <div>
-        <label
-          className="block text-xs font-medium mb-2 flex items-center gap-1.5"
-          style={{ color: themeColors.textTertiary }}
-        >
-          <User className="w-3 h-3" /> Character Description
-        </label>
+        <HelpLabel
+          icon={User}
+          label="Character Description"
+          help={helpDescriptions.character}
+          themeColors={themeColors}
+          className="mb-2"
+        />
         <div className="relative">
           <input
             type="text"
@@ -177,12 +180,13 @@ export function SubjectInputs({
 
       {/* Location Input with Dropdown */}
       <div ref={dropdownRef}>
-        <label
-          className="block text-xs font-medium mb-2 flex items-center gap-1.5"
-          style={{ color: themeColors.textTertiary }}
-        >
-          <MapPin className="w-3 h-3" /> Location
-        </label>
+        <HelpLabel
+          icon={MapPin}
+          label="Location"
+          help={helpDescriptions.location}
+          themeColors={themeColors}
+          className="mb-2"
+        />
 
         <div className="relative">
           {/* Dropdown Toggle Button */}

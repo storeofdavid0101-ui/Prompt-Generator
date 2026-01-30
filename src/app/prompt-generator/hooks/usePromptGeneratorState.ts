@@ -18,6 +18,7 @@ import { useState, useCallback, useMemo } from 'react';
 import { useTheme } from './useTheme';
 import { useConflicts } from './useConflicts';
 import { generatePrompt } from '../utils';
+import { analytics } from '../services';
 import {
   useModelState,
   useCreativeControlsState,
@@ -203,11 +204,30 @@ export function usePromptGeneratorState(): PromptGeneratorStateReturn {
   );
 
   // ============================================================
-  // Clipboard Action
+  // Clipboard Action (with analytics tracking)
   // ============================================================
   const copyToClipboard = useCallback(async () => {
     await clipboard.copy(prompt);
-  }, [clipboard, prompt]);
+
+    // Track copy event with prompt metadata
+    analytics.trackPromptCopy({
+      model: model.selectedModel,
+      promptLength: prompt.length,
+      hasDirector: !!director.selectedDirector,
+      director: director.selectedDirector || undefined,
+      hasAtmosphere: !!visual.selectedAtmosphere,
+      aspectRatio: camera.aspectRatio || undefined,
+      creativeControlsEnabled: creative.enabled,
+    });
+  }, [
+    clipboard,
+    prompt,
+    model.selectedModel,
+    director.selectedDirector,
+    visual.selectedAtmosphere,
+    camera.aspectRatio,
+    creative.enabled,
+  ]);
 
   // ============================================================
   // Reset All (respects locked sections)
@@ -240,6 +260,9 @@ export function usePromptGeneratorState(): PromptGeneratorStateReturn {
     if (!locks.director) {
       director.reset();
     }
+
+    // Track reset action
+    analytics.trackReset();
   }, [sections.lockedSections, content, visual, camera, advanced, creative, director]);
 
   // ============================================================

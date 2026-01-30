@@ -13,8 +13,9 @@
 
 import { memo, useMemo } from 'react';
 import { Lock, Camera } from 'lucide-react';
-import { lensOptions } from '../../config';
+import { lensOptions, helpDescriptions } from '../../config';
 import { StyledSelect, StyledInput, InfoBanner } from './components';
+import { HelpLabel } from '../ui';
 import { CSS_CLASSES, ARIA_LABELS, PLACEHOLDERS } from './constants';
 import type { LensSelectorProps, SelectOption } from './types';
 
@@ -73,9 +74,12 @@ export const LensSelector = memo(function LensSelector({
   if (fixedLens) {
     return (
       <div>
-        <label className={CSS_CLASSES.label} style={labelStyles}>
-          Lens
-        </label>
+        <HelpLabel
+          label="Lens"
+          help={helpDescriptions.lens}
+          themeColors={themeColors}
+          className="mb-2"
+        />
         <InfoBanner
           icon={Lock}
           text={fixedLens}
@@ -91,9 +95,12 @@ export const LensSelector = memo(function LensSelector({
   if (zoomRange) {
     return (
       <div>
-        <label className={CSS_CLASSES.label} style={labelStyles}>
-          Lens
-        </label>
+        <HelpLabel
+          label="Lens"
+          help={helpDescriptions.lens}
+          themeColors={themeColors}
+          className="mb-2"
+        />
         <InfoBanner
           icon={Camera}
           text={`Built-in zoom: ${zoomRange.range}`}
@@ -115,9 +122,12 @@ export const LensSelector = memo(function LensSelector({
   // Standard mode - full lens selection with custom input
   return (
     <div>
-      <label className={CSS_CLASSES.label} style={labelStyles}>
-        Lens
-      </label>
+      <HelpLabel
+        label="Lens"
+        help={helpDescriptions.lens}
+        themeColors={themeColors}
+        className="mb-2"
+      />
       <div className="mb-2">
         <StyledSelect
           value={selectedLens}

@@ -10,7 +10,7 @@
 'use client';
 
 import { memo, useMemo } from 'react';
-import { shotOptions } from '../../config';
+import { shotOptions, helpDescriptions } from '../../config';
 import { SelectWithCustomInput } from './components';
 import { ARIA_LABELS, PLACEHOLDERS } from './constants';
 import type { ShotTypeSelectorProps, SelectOption } from './types';
@@ -62,6 +62,7 @@ export const ShotTypeSelector = memo(function ShotTypeSelector({
       themeColors={themeColors}
       selectAriaLabel={ARIA_LABELS.shotSelect}
       inputAriaLabel={ARIA_LABELS.shotCustom}
+      help={helpDescriptions.shotType}
     />
   );
 });

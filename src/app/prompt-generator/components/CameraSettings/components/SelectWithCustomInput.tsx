@@ -12,6 +12,7 @@
 import { memo, useMemo } from 'react';
 import { StyledSelect } from './StyledSelect';
 import { StyledInput } from './StyledInput';
+import { HelpLabel } from '../../ui';
 import { CSS_CLASSES } from '../constants';
 import type { SelectWithCustomInputProps } from '../types';
 
@@ -45,6 +46,7 @@ export const SelectWithCustomInput = memo(function SelectWithCustomInput({
   themeColors,
   selectAriaLabel,
   inputAriaLabel,
+  help,
 }: SelectWithCustomInputProps) {
   /**
    * Memoized label styles
@@ -56,12 +58,21 @@ export const SelectWithCustomInput = memo(function SelectWithCustomInput({
 
   return (
     <div>
-      <label
-        className={CSS_CLASSES.label}
-        style={labelStyles}
-      >
-        {label}
-      </label>
+      {help ? (
+        <HelpLabel
+          label={label}
+          help={help}
+          themeColors={themeColors}
+          className="mb-2"
+        />
+      ) : (
+        <label
+          className={CSS_CLASSES.label}
+          style={labelStyles}
+        >
+          {label}
+        </label>
+      )}
       <div className="mb-2">
         <StyledSelect
           value={selectedValue}

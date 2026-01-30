@@ -9,7 +9,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sliders, Check, AlertTriangle } from 'lucide-react';
 import { SectionHeader } from './ui';
-import { visualPresets } from '../config';
+import { visualPresets, helpDescriptions } from '../config';
 import type { ThemeColors, ConflictResult } from '../config/types';
 import { SectionLock } from './SectionLock';
 
@@ -43,6 +43,7 @@ export function VisualStyleSelector({
         badge={selectedVisualPreset ? visualPresets[selectedVisualPreset].name : undefined}
         isExpanded={isExpanded}
         isLocked={isLocked}
+        help={helpDescriptions.colorGrade}
         onToggle={onToggleSection}
         onToggleLock={onToggleLock}
         themeColors={themeColors}
@@ -55,12 +56,6 @@ export function VisualStyleSelector({
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
           >
-            <p
-              className="text-[10px] mb-2 px-1"
-              style={{ color: themeColors.textTertiary }}
-            >
-              Color treatment and contrast style
-            </p>
             <div className="grid grid-cols-2 gap-2 pb-4">
               {Object.entries(visualPresets).map(([key, config]) => {
                 const isBlocked = conflicts.blockedPresets.has(key);

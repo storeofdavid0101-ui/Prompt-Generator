@@ -9,9 +9,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Cloud, ChevronDown, Check, AlertTriangle, X } from 'lucide-react';
-import { atmosphereConfigs } from '../config';
+import { atmosphereConfigs, helpDescriptions } from '../config';
 import type { Atmosphere, ThemeColors, ConflictResult } from '../config/types';
 import { SectionLock } from './SectionLock';
+import { HelpLabel } from './ui';
 
 interface AtmosphereSelectorProps {
   selectedAtmosphere: Atmosphere | null;
@@ -48,18 +49,15 @@ export function AtmosphereSelector({
 
   return (
     <div className="py-3">
-      <div className="flex items-center justify-between mb-1.5">
-        <label
-          className="text-xs font-medium flex items-center gap-1.5"
-          style={{ color: themeColors.textTertiary }}
-        >
-          <Cloud className="w-3 h-3" /> Atmosphere
-        </label>
+      <div className="flex items-center justify-between mb-2">
+        <HelpLabel
+          icon={Cloud}
+          label="Atmosphere"
+          help={helpDescriptions.atmosphere}
+          themeColors={themeColors}
+        />
         <SectionLock isLocked={isLocked} onToggle={onToggleLock} themeColors={themeColors} />
       </div>
-      <p className="text-[10px] mb-2" style={{ color: themeColors.textTertiary }}>
-        Scene mood and environment feel
-      </p>
 
       <div ref={dropdownRef} className="relative">
         {/* Dropdown Trigger */}

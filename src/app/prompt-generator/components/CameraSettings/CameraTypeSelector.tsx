@@ -10,7 +10,7 @@
 'use client';
 
 import { memo, useMemo } from 'react';
-import { cameraOptions } from '../../config';
+import { cameraOptions, helpDescriptions } from '../../config';
 import { SelectWithCustomInput } from './components';
 import { ARIA_LABELS, PLACEHOLDERS } from './constants';
 import type { CameraTypeSelectorProps, SelectOption } from './types';
@@ -77,6 +77,7 @@ export const CameraTypeSelector = memo(function CameraTypeSelector({
       themeColors={themeColors}
       selectAriaLabel={ARIA_LABELS.cameraSelect}
       inputAriaLabel={ARIA_LABELS.cameraCustom}
+      help={helpDescriptions.cameraType}
     />
   );
 });

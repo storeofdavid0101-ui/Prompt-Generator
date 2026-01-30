@@ -8,7 +8,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Palette, Check } from 'lucide-react';
 import { SectionHeader } from './ui';
-import { colorPalettes } from '../config';
+import { colorPalettes, helpDescriptions } from '../config';
 import type { ThemeColors } from '../config/types';
 import { SectionLock } from './SectionLock';
 
@@ -62,6 +62,7 @@ export function ColorPaletteSelector({
         badge={getBadge()}
         isExpanded={isExpanded}
         isLocked={isLocked}
+        help={helpDescriptions.colorPalette}
         onToggle={onToggleSection}
         onToggleLock={onToggleLock}
         themeColors={themeColors}

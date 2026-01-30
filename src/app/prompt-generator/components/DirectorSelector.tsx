@@ -8,9 +8,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, ChevronDown, Check, X } from 'lucide-react';
-import { directorStyles } from '../config';
+import { directorStyles, helpDescriptions } from '../config';
 import type { ThemeColors } from '../config/types';
 import { SectionLock } from './SectionLock';
+import { HelpLabel } from './ui';
 
 interface DirectorSelectorProps {
   selectedDirector: string;
@@ -45,18 +46,15 @@ export function DirectorSelector({
 
   return (
     <div className="py-3">
-      <div className="flex items-center justify-between mb-1.5">
-        <label
-          className="text-xs font-medium flex items-center gap-1.5"
-          style={{ color: themeColors.textTertiary }}
-        >
-          <Sparkles className="w-3 h-3" /> Director Style
-        </label>
+      <div className="flex items-center justify-between mb-2">
+        <HelpLabel
+          icon={Sparkles}
+          label="Director Style"
+          help={helpDescriptions.director}
+          themeColors={themeColors}
+        />
         <SectionLock isLocked={isLocked} onToggle={onToggleLock} themeColors={themeColors} />
       </div>
-      <p className="text-[10px] mb-2" style={{ color: themeColors.textTertiary }}>
-        Apply a famous director&apos;s visual signature
-      </p>
 
       <div ref={dropdownRef} className="relative">
         {/* Dropdown Trigger */}

@@ -18,6 +18,7 @@ import { LensSelector } from './LensSelector';
 import { ShotTypeSelector } from './ShotTypeSelector';
 import { AspectRatioSelector } from './AspectRatioSelector';
 import { COLLAPSE_ANIMATION, SECTION_KEY } from './constants';
+import { helpDescriptions } from '../../config';
 import type { CameraSettingsProps } from './types';
 
 /**
@@ -86,6 +87,7 @@ export const CameraSettings = memo(function CameraSettings({
         sectionKey={SECTION_KEY}
         isExpanded={isExpanded}
         isLocked={isLocked}
+        help={helpDescriptions.camera}
         onToggle={onToggleSection}
         onToggleLock={onToggleLock}
         themeColors={themeColors}

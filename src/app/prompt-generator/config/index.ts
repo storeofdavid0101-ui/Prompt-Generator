@@ -56,3 +56,7 @@ export {
   atmosphereShotConflicts,
   cameraLocationConflicts,
 } from './conflicts';
+
+// Help descriptions
+export { helpDescriptions } from './helpDescriptions';
+export type { HelpDescription } from './helpDescriptions';
