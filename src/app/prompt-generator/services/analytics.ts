@@ -31,8 +31,13 @@ export interface PromptCopyEventData {
  * Send event to Google Analytics
  */
 function sendGAEvent(eventName: string, params: Record<string, string | number | boolean>): void {
-  if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag('event', eventName, params);
+  if (typeof window !== 'undefined') {
+    if (window.gtag) {
+      window.gtag('event', eventName, params);
+      console.log('[Analytics] Event sent:', eventName, params);
+    } else {
+      console.warn('[Analytics] gtag not available - GA script may not be loaded');
+    }
   }
 }
 
