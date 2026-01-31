@@ -12,6 +12,7 @@
 
 import { useState, useCallback } from 'react';
 import { directorStyles } from '../../config';
+import { analytics } from '../../services';
 import type { DirectorState, UseDirectorStateParams } from './types';
 
 /**
@@ -52,6 +53,7 @@ export function useDirectorState({
       if (isLocked) return;
 
       setSelectedDirectorInternal(newDirector);
+      analytics.trackDirectorSelect(newDirector);
 
       // Find director config to check for conflicts
       const directorConfig = directorStyles.find((d) => d.name === newDirector);

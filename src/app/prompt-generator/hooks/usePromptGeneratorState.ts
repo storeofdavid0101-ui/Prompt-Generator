@@ -68,8 +68,13 @@ export function usePromptGeneratorState(): PromptGeneratorStateReturn {
   // ============================================================
   // Theme State
   // ============================================================
-  const [darkMode, setDarkMode] = useState(THEME_DEFAULTS.darkMode);
+  const [darkMode, setDarkModeInternal] = useState(THEME_DEFAULTS.darkMode);
   const themeColors = useTheme(darkMode);
+
+  const setDarkMode = useCallback((value: boolean) => {
+    setDarkModeInternal(value);
+    analytics.trackThemeToggle(value);
+  }, []);
 
   // ============================================================
   // Domain State Hooks

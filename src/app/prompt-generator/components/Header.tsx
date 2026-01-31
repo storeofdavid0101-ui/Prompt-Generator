@@ -34,7 +34,7 @@ export function Header({
         />
       </div>
       <p className="text-sm" style={{ color: themeColors.textTertiary }}>
-        Cinematic camera-logic tool
+        Cinematic Prompt Studio
       </p>
 
       <div className="flex items-center justify-center gap-3 mt-4">

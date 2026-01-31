@@ -12,6 +12,7 @@
 import { useState, useCallback } from 'react';
 import type { CreativeControlsState } from './types';
 import { CREATIVE_CONTROLS_DEFAULTS } from './constants';
+import { analytics } from '../../services';
 
 /**
  * Hook for managing creative control sliders state
@@ -33,7 +34,12 @@ import { CREATIVE_CONTROLS_DEFAULTS } from './constants';
  * ```
  */
 export function useCreativeControlsState(): CreativeControlsState {
-  const [enabled, setEnabled] = useState(CREATIVE_CONTROLS_DEFAULTS.enabled);
+  const [enabled, setEnabledInternal] = useState(CREATIVE_CONTROLS_DEFAULTS.enabled);
+
+  const setEnabled = useCallback((value: boolean) => {
+    setEnabledInternal(value);
+    analytics.trackCreativeControlsToggle(value);
+  }, []);
   const [creativity, setCreativityInternal] = useState(CREATIVE_CONTROLS_DEFAULTS.creativity);
   const [variation, setVariationInternal] = useState(CREATIVE_CONTROLS_DEFAULTS.variation);
   const [uniqueness, setUniquenessInternal] = useState(CREATIVE_CONTROLS_DEFAULTS.uniqueness);
@@ -51,7 +57,7 @@ export function useCreativeControlsState(): CreativeControlsState {
   }, []);
 
   const reset = useCallback(() => {
-    setEnabled(CREATIVE_CONTROLS_DEFAULTS.enabled);
+    setEnabledInternal(CREATIVE_CONTROLS_DEFAULTS.enabled);
     setCreativityInternal(CREATIVE_CONTROLS_DEFAULTS.creativity);
     setVariationInternal(CREATIVE_CONTROLS_DEFAULTS.variation);
     setUniquenessInternal(CREATIVE_CONTROLS_DEFAULTS.uniqueness);

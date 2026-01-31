@@ -9,10 +9,11 @@
 
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import type { AIModel } from '../../config/types';
 import type { ModelState } from './types';
 import { DEFAULT_MODEL } from './constants';
+import { analytics } from '../../services';
 
 /**
  * Hook for managing AI model selection state
@@ -29,8 +30,11 @@ import { DEFAULT_MODEL } from './constants';
  */
 export function useModelState(): ModelState {
   const [selectedModel, setSelectedModelInternal] = useState<AIModel>(DEFAULT_MODEL);
+  const previousModelRef = useRef<AIModel | undefined>(undefined);
 
   const setSelectedModel = useCallback((model: AIModel) => {
+    analytics.trackModelSelect(previousModelRef.current, model);
+    previousModelRef.current = model;
     setSelectedModelInternal(model);
   }, []);
 
