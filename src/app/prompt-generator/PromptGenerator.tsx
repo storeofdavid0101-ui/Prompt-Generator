@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import {
@@ -24,6 +24,8 @@ import {
   SectionLock,
 } from './components';
 import { usePromptGeneratorState } from './hooks';
+import { analytics } from './services';
+import type { AIModel, Atmosphere } from './config/types';
 
 export function PromptGenerator() {
   const state = usePromptGeneratorState();
@@ -39,6 +41,77 @@ export function PromptGenerator() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Wrapped handlers with analytics tracking
+  const handleModelSelect = useCallback((model: AIModel) => {
+    if (!state.lockedSections.model) {
+      analytics.trackModelSelect(state.selectedModel, model);
+      state.setSelectedModel(model);
+    }
+  }, [state]);
+
+  const handleDirectorChange = useCallback((director: string) => {
+    analytics.trackDirectorSelect(director);
+    state.handleDirectorChange(director);
+  }, [state]);
+
+  const handleAtmosphereSelect = useCallback((atm: Atmosphere | null) => {
+    if (!state.lockedSections.atmosphere) {
+      analytics.trackAtmosphereSelect(atm || '');
+      state.setSelectedAtmosphere(atm);
+    }
+  }, [state]);
+
+  const handleVisualPresetSelect = useCallback((preset: string | null) => {
+    if (!state.lockedSections.visual) {
+      analytics.trackVisualPresetSelect(preset || '');
+      state.setSelectedVisualPreset(preset);
+    }
+  }, [state]);
+
+  const handleColorPaletteSelect = useCallback((palette: string | null) => {
+    if (!state.lockedSections.color) {
+      analytics.trackColorPaletteSelect(palette || '');
+      state.setSelectedColorPalette(palette);
+    }
+  }, [state]);
+
+  const handleLightingSelect = useCallback((lighting: string | null) => {
+    if (!state.lockedSections.lighting) {
+      analytics.trackLightingSelect(lighting || '');
+      state.setSelectedLighting(lighting);
+    }
+  }, [state]);
+
+  const handleLensChange = useCallback((lens: string) => {
+    if (!state.lockedSections.camera) {
+      analytics.trackLensSelect(lens);
+      state.setSelectedLens(lens);
+      state.setCustomLens('');
+    }
+  }, [state]);
+
+  const handleShotChange = useCallback((shot: string) => {
+    if (!state.lockedSections.camera) {
+      analytics.trackShotSelect(shot);
+      state.setSelectedShot(shot);
+      state.setCustomShot('');
+    }
+  }, [state]);
+
+  const handleAspectRatioChange = useCallback((ratio: string) => {
+    if (!state.lockedSections.camera) {
+      analytics.trackAspectRatioSelect(ratio);
+      state.setAspectRatio(ratio);
+    }
+  }, [state]);
+
+  const handleDepthOfFieldChange = useCallback((dof: string) => {
+    if (!state.lockedSections.advanced) {
+      analytics.trackDOFSelect(dof);
+      state.setDepthOfField(dof);
+    }
+  }, [state]);
 
   return (
     <div
@@ -102,7 +175,7 @@ export function PromptGenerator() {
               selectedModel={state.selectedModel}
               isLocked={state.lockedSections.model}
               onToggleLock={() => state.toggleLock('model')}
-              onSelectModel={(model) => !state.lockedSections.model && state.setSelectedModel(model)}
+              onSelectModel={handleModelSelect}
               themeColors={state.themeColors}
             />
 
@@ -129,7 +202,7 @@ export function PromptGenerator() {
               selectedDirector={state.selectedDirector}
               isLocked={state.lockedSections.director}
               onToggleLock={() => state.toggleLock('director')}
-              onDirectorChange={state.handleDirectorChange}
+              onDirectorChange={handleDirectorChange}
               themeColors={state.themeColors}
             />
 
@@ -140,7 +213,7 @@ export function PromptGenerator() {
               isLocked={state.lockedSections.atmosphere}
               onToggleLock={() => state.toggleLock('atmosphere')}
               conflicts={state.conflicts}
-              onSelectAtmosphere={(atm) => !state.lockedSections.atmosphere && state.setSelectedAtmosphere(atm)}
+              onSelectAtmosphere={handleAtmosphereSelect}
               themeColors={state.themeColors}
             />
 
@@ -152,7 +225,7 @@ export function PromptGenerator() {
               isLocked={state.lockedSections.visual}
               onToggleLock={() => state.toggleLock('visual')}
               conflicts={state.conflicts}
-              onSelectPreset={(preset) => !state.lockedSections.visual && state.setSelectedVisualPreset(preset)}
+              onSelectPreset={handleVisualPresetSelect}
               onToggleSection={state.toggleSection}
               themeColors={state.themeColors}
             />
@@ -165,7 +238,7 @@ export function PromptGenerator() {
               isExpanded={state.expandedSections.color}
               isLocked={state.lockedSections.color}
               onToggleLock={() => state.toggleLock('color')}
-              onSelectPalette={(palette) => !state.lockedSections.color && state.setSelectedColorPalette(palette)}
+              onSelectPalette={handleColorPaletteSelect}
               onCustomColorsChange={(colors) => !state.lockedSections.color && state.setCustomColors(colors)}
               onToggleSection={state.toggleSection}
               themeColors={state.themeColors}
@@ -187,21 +260,11 @@ export function PromptGenerator() {
               conflicts={state.conflicts}
               onCameraChange={state.handleCameraChange}
               onCustomCameraChange={(v) => !state.lockedSections.camera && state.setCustomCamera(v)}
-              onLensChange={(v) => {
-                if (!state.lockedSections.camera) {
-                  state.setSelectedLens(v);
-                  state.setCustomLens('');
-                }
-              }}
+              onLensChange={handleLensChange}
               onCustomLensChange={(v) => !state.lockedSections.camera && state.setCustomLens(v)}
-              onShotChange={(v) => {
-                if (!state.lockedSections.camera) {
-                  state.setSelectedShot(v);
-                  state.setCustomShot('');
-                }
-              }}
+              onShotChange={handleShotChange}
               onCustomShotChange={(v) => !state.lockedSections.camera && state.setCustomShot(v)}
-              onAspectRatioChange={(v) => !state.lockedSections.camera && state.setAspectRatio(v)}
+              onAspectRatioChange={handleAspectRatioChange}
               onToggleSection={state.toggleSection}
               themeColors={state.themeColors}
             />
@@ -213,7 +276,7 @@ export function PromptGenerator() {
               isExpanded={state.expandedSections.lighting}
               isLocked={state.lockedSections.lighting}
               onToggleLock={() => state.toggleLock('lighting')}
-              onSelectLighting={(lighting) => !state.lockedSections.lighting && state.setSelectedLighting(lighting)}
+              onSelectLighting={handleLightingSelect}
               onToggleSection={state.toggleSection}
               themeColors={state.themeColors}
             />
@@ -239,7 +302,7 @@ export function PromptGenerator() {
           onCreativityChange={(v) => !state.lockedSections.advanced && state.setCreativity(v)}
           onVariationChange={(v) => !state.lockedSections.advanced && state.setVariation(v)}
           onUniquenessChange={(v) => !state.lockedSections.advanced && state.setUniqueness(v)}
-          onDepthOfFieldChange={(v) => !state.lockedSections.advanced && state.setDepthOfField(v)}
+          onDepthOfFieldChange={handleDepthOfFieldChange}
           onToggleAdvanced={() => state.setShowAdvanced(!state.showAdvanced)}
           themeColors={state.themeColors}
         />
