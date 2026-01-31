@@ -97,3 +97,120 @@ export type {
   InputSize,
   BadgeStatus,
 } from './ui';
+
+// =============================================================================
+// Character Creator Types
+// =============================================================================
+
+export type {
+  CharacterType,
+  FaceFeatures,
+  FaceFeatureKey,
+  FeatureThreshold,
+  FeatureConfig,
+  FaceFeatureConfigs,
+} from './characterCreator';
+
+// =============================================================================
+// Color Grading Types
+// =============================================================================
+
+export type {
+  TonalRange,
+  ColorWheelPosition,
+  ColorWheelState,
+  ColorWheelsState,
+  TemperatureTintState,
+  SplitToningState,
+  GlobalAdjustmentsState,
+  ColorGradingState,
+  ColorGradingPreset,
+  ColorGradingPresetValues,
+  ColorGradingCategory,
+} from './colorGrading';
+
+export { colorGradingCategoryNames } from './colorGrading';
+
+// =============================================================================
+// Output Format Types
+// =============================================================================
+
+export type {
+  OutputMode,
+  OutputModeConfig,
+  OutputFormatState,
+} from './outputFormat';
+
+// =============================================================================
+// Film Stock Types
+// =============================================================================
+
+export type {
+  FilmStockCategory,
+  ProcessingType,
+  PushPullValue,
+  ColorBalance,
+  FilmStockPreset,
+  FilmStockState,
+} from './filmStock';
+
+// =============================================================================
+// Grain Engine Types
+// =============================================================================
+
+export type {
+  GrainType,
+  GrainSize,
+  DustScratchesConfig,
+  GrainEngineState,
+  GrainTypePreset,
+  GrainSizePreset,
+} from './grainEngine';
+
+// =============================================================================
+// Lens Physics Types
+// =============================================================================
+
+export type {
+  DistortionType,
+  DOFControl,
+  BokehShape,
+  Aperture,
+  LensPhysicsState,
+  AperturePreset,
+  FocalLengthPreset,
+  DistortionPreset,
+  DOFControlPreset,
+  BokehShapePreset,
+} from './lensPhysics';
+
+// =============================================================================
+// Advanced Lighting Types
+// =============================================================================
+
+export type {
+  KeyLightPosition,
+  KeyFillRatio,
+  RimLightPosition,
+  LightQuality,
+  RimLightConfig,
+  AdvancedLightingState,
+  KeyLightPositionPreset,
+  KeyFillRatioPreset,
+  LightQualityPreset,
+} from './advancedLighting';
+
+// =============================================================================
+// Composition Engine Types
+// =============================================================================
+
+export type {
+  RuleOfThirdsPosition,
+  VanishingPointType,
+  FrameBalance,
+  SubjectPlacement,
+  NegativeSpace,
+  CompositionPreset,
+  CompositionPresetConfig,
+  CompositionEngineState,
+} from './compositionEngine';

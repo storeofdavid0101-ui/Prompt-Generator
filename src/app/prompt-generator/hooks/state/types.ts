@@ -29,6 +29,8 @@ export type {
   SectionState,
   ClipboardState,
   ThemeState,
+  CharacterCreatorState,
+  ColorGradingStateReturn,
   // Composed state type
   PromptGeneratorStateReturn,
 } from './types/index';

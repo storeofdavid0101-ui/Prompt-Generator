@@ -25,6 +25,7 @@ import {
   DISCLAIMER_TEXT,
 } from './constants';
 import { FeedbackButton } from '../FeedbackButton';
+import { OutputFormatToggle } from '../OutputFormatToggle';
 
 /**
  * OutputBar component - Sticky bottom bar with prompt preview and action buttons
@@ -41,6 +42,8 @@ export const OutputBar = memo(function OutputBar({
   onReset,
   onCopy,
   themeColors,
+  outputMode,
+  onOutputModeChange,
 }: OutputBarProps) {
   // Get view state and handlers from custom hook
   const {
@@ -126,16 +129,30 @@ export const OutputBar = memo(function OutputBar({
                 themeColors={themeColors}
               />
 
-              {/* Action Buttons */}
-              <ActionButtons
-                copied={copied}
-                onReset={stableOnReset}
-                onCopy={stableOnCopy}
-                themeColors={themeColors}
-              />
+              {/* Action Buttons Row */}
+              <div className="flex items-center justify-between gap-4 mb-3">
+                {/* Output Format Toggle */}
+                {outputMode && onOutputModeChange && (
+                  <OutputFormatToggle
+                    mode={outputMode}
+                    onModeChange={onOutputModeChange}
+                    themeColors={themeColors}
+                  />
+                )}
+
+                {/* Action Buttons */}
+                <div className="flex-1">
+                  <ActionButtons
+                    copied={copied}
+                    onReset={stableOnReset}
+                    onCopy={stableOnCopy}
+                    themeColors={themeColors}
+                  />
+                </div>
+              </div>
 
               {/* Disclaimer and Feedback */}
-              <div className="flex items-center justify-center gap-3 mt-3">
+              <div className="flex items-center justify-center gap-3">
                 <FeedbackButton themeColors={themeColors} />
                 <p
                   className="text-[10px] opacity-60"

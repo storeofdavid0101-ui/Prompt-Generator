@@ -30,6 +30,8 @@ export interface MagicSubject {
   themes?: SubjectTheme[];
   /** Safe alternative for models with strict content policies (ChatGPT, DALL-E) */
   safeSubject?: string;
+  /** If true, the subject description already includes a location - don't add another */
+  hasEmbeddedLocation?: boolean;
 }
 
 export interface MagicCharacter {
@@ -46,141 +48,168 @@ export const magicSubjects: MagicSubject[] = [
     subject: 'A futuristic soldier standing in a sandstorm on a desolate planet',
     category: 'character',
     themes: ['scifi', 'military', 'action'],
+    hasEmbeddedLocation: true,
   },
   {
     subject: 'A high-fashion model wearing a dress made of liquid gold in a brutalist concrete hall',
     category: 'character',
     themes: ['modern', 'elegant'],
+    hasEmbeddedLocation: true,
   },
   {
     subject: 'A jazz musician playing the saxophone under a single streetlamp in 1950s New York',
     category: 'character',
     themes: ['vintage', 'urban', 'noir'],
+    hasEmbeddedLocation: true,
   },
   {
     subject: 'A cybernetic monk meditating inside a high-tech forest',
     category: 'character',
     themes: ['scifi', 'asian', 'cyberpunk'],
+    hasEmbeddedLocation: true,
   },
   {
     subject: 'A cyberpunk mercenary in a neon alley, rain dripping from their worn leather jacket',
     category: 'character',
     themes: ['cyberpunk', 'urban', 'action'],
     safeSubject: 'A cyberpunk courier in a neon alley, rain dripping from their worn leather jacket',
+    hasEmbeddedLocation: true,
   },
   {
     subject: 'An elderly fisherman at dawn, mending nets on a weathered wooden dock',
     category: 'character',
     themes: ['nature', 'vintage'],
+    hasEmbeddedLocation: true,
   },
   {
     subject: 'A Victorian-era detective examining evidence under gaslight in a foggy London street',
     category: 'character',
     themes: ['historical', 'noir', 'gothic'],
+    hasEmbeddedLocation: true,
   },
   {
     subject: 'A samurai warrior standing alone in a field of tall grass, wind in their hair',
     category: 'character',
     themes: ['asian', 'historical', 'action'],
+    hasEmbeddedLocation: true,
   },
   {
     subject: 'A street artist spray-painting a massive mural on a graffiti-covered wall at midnight',
     category: 'character',
     themes: ['urban', 'modern'],
+    hasEmbeddedLocation: true,
   },
   {
     subject: 'A ballet dancer mid-leap in an abandoned theater, dust particles catching the spotlight',
     category: 'character',
     themes: ['elegant', 'vintage'],
+    hasEmbeddedLocation: true,
   },
   {
     subject: 'A weary astronaut removing their helmet inside a cramped spacecraft',
     category: 'character',
     themes: ['scifi', 'modern'],
+    hasEmbeddedLocation: true,
   },
   {
     subject: 'A mysterious fortune teller in a dimly lit caravan surrounded by crystal balls and candles',
     category: 'character',
     themes: ['gothic', 'fantasy'],
+    hasEmbeddedLocation: true,
   },
   {
     subject: 'A punk rock guitarist smashing their instrument on stage, sparks flying everywhere',
     category: 'character',
     themes: ['modern', 'urban', 'action'],
     safeSubject: 'A punk rock guitarist performing intensely on stage, dramatic stage lighting and energy',
+    hasEmbeddedLocation: true,
   },
   {
     subject: 'A scientist in a hazmat suit examining a glowing specimen in a sterile laboratory',
     category: 'character',
     themes: ['scifi', 'modern'],
+    hasEmbeddedLocation: true,
   },
   {
     subject: 'A lone cowboy silhouetted against a burning sunset in the Arizona desert',
     category: 'character',
     themes: ['western', 'nature'],
+    hasEmbeddedLocation: true,
   },
 
-  // Scene-focused (12)
+  // Scene-focused (12) - All scenes ARE locations, so hasEmbeddedLocation is always true
   {
     subject: 'An abandoned amusement park at twilight, rusted ferris wheel against a purple sky',
     category: 'scene',
     themes: ['gothic', 'urban'],
+    hasEmbeddedLocation: true,
   },
   {
     subject: 'A massive ancient library with towering bookshelves and floating lanterns',
     category: 'scene',
     themes: ['fantasy', 'historical'],
+    hasEmbeddedLocation: true,
   },
   {
     subject: 'A rain-soaked Tokyo street at 3am, vending machines glowing in the mist',
     category: 'scene',
     themes: ['asian', 'cyberpunk', 'urban', 'noir'],
+    hasEmbeddedLocation: true,
   },
   {
     subject: 'A frozen lake reflecting the northern lights in the Arctic wilderness',
     category: 'scene',
     themes: ['nature'],
+    hasEmbeddedLocation: true,
   },
   {
     subject: 'An overgrown post-apocalyptic highway with nature reclaiming the concrete',
     category: 'scene',
     themes: ['scifi', 'nature'],
     safeSubject: 'An overgrown abandoned highway with nature reclaiming the concrete, vines and wildflowers',
+    hasEmbeddedLocation: true,
   },
   {
     subject: 'A cozy bookshop interior on a rainy afternoon, warm light through foggy windows',
     category: 'scene',
     themes: ['vintage', 'urban'],
+    hasEmbeddedLocation: true,
   },
   {
     subject: 'A grand cathedral interior with dramatic light streaming through stained glass',
     category: 'scene',
     themes: ['historical', 'gothic'],
+    hasEmbeddedLocation: true,
   },
   {
     subject: 'A bustling night market in Southeast Asia with hanging lanterns and steam rising from food stalls',
     category: 'scene',
     themes: ['asian', 'urban'],
+    hasEmbeddedLocation: true,
   },
   {
     subject: 'An underwater coral reef teeming with bioluminescent creatures',
     category: 'scene',
     themes: ['nature', 'fantasy'],
+    hasEmbeddedLocation: true,
   },
   {
     subject: 'A vintage 1960s diner at night, neon signs reflecting on wet pavement',
     category: 'scene',
     themes: ['vintage', 'urban', 'noir'],
+    hasEmbeddedLocation: true,
   },
   {
     subject: 'A misty bamboo forest at sunrise with a single stone path',
     category: 'scene',
     themes: ['asian', 'nature'],
+    hasEmbeddedLocation: true,
   },
   {
     subject: 'A massive steampunk clocktower interior with gears and brass mechanisms',
     category: 'scene',
     themes: ['steampunk', 'historical'],
+    hasEmbeddedLocation: true,
   },
 
   // Portrait-focused (10)
@@ -244,73 +273,86 @@ export const magicSubjects: MagicSubject[] = [
     category: 'action',
     themes: ['modern', 'action'],
     safeSubject: 'A motorcycle racer leaning into a sharp turn, motion blur and dynamic angle',
+    // No embedded location - could be any racetrack
   },
   {
     subject: 'A cliff diver suspended in mid-air above turquoise waters',
     category: 'action',
     themes: ['nature', 'action'],
+    hasEmbeddedLocation: true, // Above turquoise waters implies coastal setting
   },
   {
     subject: 'A boxer throwing a knockout punch, sweat and determination frozen in time',
     category: 'action',
     themes: ['modern', 'action'],
     safeSubject: 'A boxer in a powerful stance, sweat glistening, intense determination in their eyes',
+    // No embedded location - could be any boxing ring
   },
   {
     subject: 'A parkour athlete leaping between rooftops against a city skyline',
     category: 'action',
     themes: ['urban', 'modern', 'action'],
+    hasEmbeddedLocation: true, // Rooftops + city skyline
   },
   {
     subject: 'A matador in the moment of truth, red cape flowing dramatically',
     category: 'action',
     themes: ['historical', 'action', 'elegant'],
     safeSubject: 'A flamenco dancer in dramatic pose, red fabric flowing elegantly in motion',
+    // No embedded location - could be any arena
   },
   {
     subject: 'A snowboarder carving through fresh powder with mountain peaks behind',
     category: 'action',
     themes: ['nature', 'action', 'modern'],
+    hasEmbeddedLocation: true, // Mountain peaks behind
   },
   {
     subject: 'A Formula 1 car exploding through a rain spray at 200mph',
     category: 'action',
     themes: ['modern', 'action'],
     safeSubject: 'A Formula 1 car racing through rain spray at high speed, dramatic water mist',
+    // No embedded location - could be any race circuit
   },
   {
     subject: 'A knight in full armor charging on horseback, lance lowered',
     category: 'action',
     themes: ['fantasy', 'historical', 'action', 'military'],
     safeSubject: 'A knight in shining armor riding majestically on horseback, banner flowing in the wind',
+    // No embedded location - could be any battlefield or jousting ground
   },
 
-  // Atmospheric (5)
+  // Atmospheric (5) - All atmospheric subjects ARE locations
   {
     subject: 'A solitary lighthouse on a stormy cliff, waves crashing below',
     category: 'atmospheric',
     themes: ['nature', 'gothic'],
+    hasEmbeddedLocation: true,
   },
   {
     subject: 'A forgotten train station platform shrouded in morning fog',
     category: 'atmospheric',
     themes: ['vintage', 'urban', 'noir'],
+    hasEmbeddedLocation: true,
   },
   {
     subject: 'A moonlit cemetery with ancient tombstones and a single mourner',
     category: 'atmospheric',
     themes: ['gothic', 'historical'],
     safeSubject: 'A moonlit historic garden with ancient stone monuments and a solitary figure',
+    hasEmbeddedLocation: true,
   },
   {
     subject: 'A volcanic landscape with rivers of lava and a dark ash-filled sky',
     category: 'atmospheric',
     themes: ['nature', 'fantasy'],
+    hasEmbeddedLocation: true,
   },
   {
     subject: 'A serene Japanese garden in autumn, maple leaves floating on still water',
     category: 'atmospheric',
     themes: ['asian', 'nature'],
+    hasEmbeddedLocation: true,
   },
 ];
 

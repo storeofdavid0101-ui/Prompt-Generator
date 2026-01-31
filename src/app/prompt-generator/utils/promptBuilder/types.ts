@@ -3,7 +3,13 @@
  * Defines all interfaces and types used across the prompt generation pipeline.
  */
 
-import type { AIModel, CharacterItem } from '../../config/types';
+import type { AIModel, CharacterItem, ColorGradingState, CharacterType, FaceFeatures } from '../../config/types';
+import type { OutputMode } from '../../config/types/outputFormat';
+import type { FilmStockState } from '../../config/types/filmStock';
+import type { GrainEngineState } from '../../config/types/grainEngine';
+import type { LensPhysicsState } from '../../config/types/lensPhysics';
+import type { AdvancedLightingState } from '../../config/types/advancedLighting';
+import type { CompositionEngineState } from '../../config/types/compositionEngine';
 
 /**
  * Input parameters for prompt generation.
@@ -90,6 +96,39 @@ export interface PromptBuilderParams {
 
   /** Uniqueness slider value (0-100) */
   uniqueness: number;
+
+  /** Color grading state (optional) */
+  colorGrading?: ColorGradingState;
+
+  /** Character type (human or other) */
+  characterType?: CharacterType;
+
+  /** Custom species for non-human characters */
+  customSpecies?: string;
+
+  /** Face feature slider values */
+  faceFeatures?: FaceFeatures;
+
+  /** Clothing/attire description */
+  clothing?: string;
+
+  /** Output format mode (prose, machine, or hybrid) */
+  outputMode?: OutputMode;
+
+  /** Film stock emulation state */
+  filmStock?: FilmStockState;
+
+  /** Grain engine state */
+  grainEngine?: GrainEngineState;
+
+  /** Lens physics state */
+  lensPhysics?: LensPhysicsState;
+
+  /** Advanced lighting state */
+  advancedLighting?: AdvancedLightingState;
+
+  /** Composition engine state */
+  compositionEngine?: CompositionEngineState;
 }
 
 /**
@@ -156,6 +195,27 @@ export interface ResolvedComponents {
 
   /** Depth of field keywords or null */
   dof: string | null;
+
+  /** Color grading keywords or null */
+  colorGrading: string | null;
+
+  /** Character creator description or null */
+  characterCreator: string | null;
+
+  /** Film stock keywords or null */
+  filmStock: string | null;
+
+  /** Grain engine keywords or null */
+  grainEngine: string | null;
+
+  /** Lens physics keywords or null */
+  lensPhysics: string | null;
+
+  /** Advanced lighting keywords or null */
+  advancedLighting: string | null;
+
+  /** Composition engine keywords or null */
+  compositionEngine: string | null;
 }
 
 /**

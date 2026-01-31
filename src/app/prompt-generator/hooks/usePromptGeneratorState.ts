@@ -29,6 +29,14 @@ import {
   useAdvancedState,
   useSectionState,
   useClipboard,
+  useCharacterCreatorState,
+  useColorGradingState,
+  useOutputFormatState,
+  useFilmStockState,
+  useGrainEngineState,
+  useLensPhysicsState,
+  useAdvancedLightingState,
+  useCompositionEngineState,
   THEME_DEFAULTS,
 } from './state';
 import type { PromptGeneratorStateReturn } from './state/types';
@@ -86,6 +94,14 @@ export function usePromptGeneratorState(): PromptGeneratorStateReturn {
   const advanced = useAdvancedState();
   const sections = useSectionState();
   const clipboard = useClipboard();
+  const characterCreator = useCharacterCreatorState();
+  const colorGrading = useColorGradingState();
+  const outputFormat = useOutputFormatState();
+  const filmStock = useFilmStockState();
+  const grainEngine = useGrainEngineState();
+  const lensPhysics = useLensPhysicsState();
+  const advancedLighting = useAdvancedLightingState();
+  const compositionEngine = useCompositionEngineState();
 
   // ============================================================
   // Camera State (depends on visual state for conflict clearing)
@@ -186,6 +202,60 @@ export function usePromptGeneratorState(): PromptGeneratorStateReturn {
         creativity: creative.creativity,
         variation: creative.variation,
         uniqueness: creative.uniqueness,
+        colorGrading: colorGrading.enabled ? {
+          enabled: colorGrading.enabled,
+          selectedPreset: colorGrading.selectedPreset,
+          colorWheels: colorGrading.colorWheels,
+          temperatureTint: colorGrading.temperatureTint,
+          splitToning: colorGrading.splitToning,
+          globalAdjustments: colorGrading.globalAdjustments,
+        } : undefined,
+        characterType: characterCreator.characterType,
+        customSpecies: characterCreator.customSpecies,
+        faceFeatures: characterCreator.faceFeatures,
+        clothing: characterCreator.clothing,
+        outputMode: outputFormat.mode,
+        filmStock: filmStock.enabled ? {
+          enabled: filmStock.enabled,
+          selectedStock: filmStock.selectedStock,
+          pushPull: filmStock.pushPull,
+          processingType: filmStock.processingType,
+        } : undefined,
+        grainEngine: grainEngine.enabled ? {
+          enabled: grainEngine.enabled,
+          grainType: grainEngine.grainType,
+          grainSize: grainEngine.grainSize,
+          intensity: grainEngine.intensity,
+          dustScratches: grainEngine.dustScratches,
+          gateWeave: grainEngine.gateWeave,
+        } : undefined,
+        lensPhysics: lensPhysics.enabled ? {
+          enabled: lensPhysics.enabled,
+          focalLength: lensPhysics.focalLength,
+          aperture: lensPhysics.aperture,
+          distortion: lensPhysics.distortion,
+          dofControl: lensPhysics.dofControl,
+          bokehShape: lensPhysics.bokehShape,
+        } : undefined,
+        advancedLighting: advancedLighting.enabled ? {
+          enabled: advancedLighting.enabled,
+          keyLightPosition: advancedLighting.keyLightPosition,
+          keyFillRatio: advancedLighting.keyFillRatio,
+          colorTemperature: advancedLighting.colorTemperature,
+          shadowStop: advancedLighting.shadowStop,
+          rimLight: advancedLighting.rimLight,
+          lightQuality: advancedLighting.lightQuality,
+        } : undefined,
+        compositionEngine: compositionEngine.enabled ? {
+          enabled: compositionEngine.enabled,
+          preset: compositionEngine.preset,
+          subjectPlacement: compositionEngine.subjectPlacement,
+          frameOccupancy: compositionEngine.frameOccupancy,
+          negativeSpace: compositionEngine.negativeSpace,
+          vanishingPoint: compositionEngine.vanishingPoint,
+          ruleOfThirds: compositionEngine.ruleOfThirds,
+          frameBalance: compositionEngine.frameBalance,
+        } : undefined,
       }),
     [
       content.subject,
@@ -215,6 +285,48 @@ export function usePromptGeneratorState(): PromptGeneratorStateReturn {
       creative.creativity,
       creative.variation,
       creative.uniqueness,
+      colorGrading.enabled,
+      colorGrading.selectedPreset,
+      colorGrading.colorWheels,
+      colorGrading.temperatureTint,
+      colorGrading.splitToning,
+      colorGrading.globalAdjustments,
+      characterCreator.characterType,
+      characterCreator.customSpecies,
+      characterCreator.faceFeatures,
+      characterCreator.clothing,
+      outputFormat.mode,
+      filmStock.enabled,
+      filmStock.selectedStock,
+      filmStock.pushPull,
+      filmStock.processingType,
+      grainEngine.enabled,
+      grainEngine.grainType,
+      grainEngine.grainSize,
+      grainEngine.intensity,
+      grainEngine.dustScratches,
+      grainEngine.gateWeave,
+      lensPhysics.enabled,
+      lensPhysics.focalLength,
+      lensPhysics.aperture,
+      lensPhysics.distortion,
+      lensPhysics.dofControl,
+      lensPhysics.bokehShape,
+      advancedLighting.enabled,
+      advancedLighting.keyLightPosition,
+      advancedLighting.keyFillRatio,
+      advancedLighting.colorTemperature,
+      advancedLighting.shadowStop,
+      advancedLighting.rimLight,
+      advancedLighting.lightQuality,
+      compositionEngine.enabled,
+      compositionEngine.preset,
+      compositionEngine.subjectPlacement,
+      compositionEngine.frameOccupancy,
+      compositionEngine.negativeSpace,
+      compositionEngine.vanishingPoint,
+      compositionEngine.ruleOfThirds,
+      compositionEngine.frameBalance,
     ]
   );
 
@@ -291,10 +403,31 @@ export function usePromptGeneratorState(): PromptGeneratorStateReturn {
     if (!locks.director) {
       director.reset();
     }
+    if (!locks.characterCreator) {
+      characterCreator.reset();
+    }
+    if (!locks.colorGrading) {
+      colorGrading.reset();
+    }
+    if (!locks.filmStock) {
+      filmStock.reset();
+    }
+    if (!locks.grainEngine) {
+      grainEngine.reset();
+    }
+    if (!locks.lensPhysics) {
+      lensPhysics.reset();
+    }
+    if (!locks.advancedLighting) {
+      advancedLighting.reset();
+    }
+    if (!locks.compositionEngine) {
+      compositionEngine.reset();
+    }
 
     // Track reset action
     analytics.trackReset();
-  }, [sections.lockedSections, content, visual, camera, advanced, creative, director]);
+  }, [sections.lockedSections, content, visual, camera, advanced, creative, director, characterCreator, colorGrading, filmStock, grainEngine, lensPhysics, advancedLighting, compositionEngine]);
 
   // ============================================================
   // Return Unified State Object
@@ -336,6 +469,17 @@ export function usePromptGeneratorState(): PromptGeneratorStateReturn {
     setLocation: content.setLocation,
     addCharacter,
     removeCharacter,
+
+    // Character Creator
+    characterType: characterCreator.characterType,
+    setCharacterType: characterCreator.setCharacterType,
+    customSpecies: characterCreator.customSpecies,
+    setCustomSpecies: characterCreator.setCustomSpecies,
+    faceFeatures: characterCreator.faceFeatures,
+    setFaceFeature: characterCreator.setFaceFeature,
+    clothing: characterCreator.clothing,
+    setClothing: characterCreator.setClothing,
+    resetCharacterCreator: characterCreator.reset,
 
     // Visual
     selectedAtmosphere: visual.selectedAtmosphere,
@@ -383,6 +527,28 @@ export function usePromptGeneratorState(): PromptGeneratorStateReturn {
     expandedSections: sections.expandedSections,
     toggleSection,
     conflicts,
+
+    // Color Grading
+    colorGrading,
+
+    // Output Format
+    outputMode: outputFormat.mode,
+    setOutputMode: outputFormat.setMode,
+
+    // Film Stock
+    filmStock,
+
+    // Grain Engine
+    grainEngine,
+
+    // Lens Physics
+    lensPhysics,
+
+    // Advanced Lighting
+    advancedLighting,
+
+    // Composition Engine
+    compositionEngine,
 
     // Actions
     prompt,

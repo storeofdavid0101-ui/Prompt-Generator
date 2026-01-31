@@ -3,7 +3,13 @@
  * Centralizes all interfaces and type aliases for the subject input module
  */
 
-import type { CharacterItem, ThemeColors } from '../../config/types';
+import type {
+  CharacterItem,
+  ThemeColors,
+  CharacterType,
+  FaceFeatures,
+  FaceFeatureKey,
+} from '../../config/types';
 import type { LocationPreset } from '../../config/locationPresets';
 
 /**
@@ -12,6 +18,7 @@ import type { LocationPreset } from '../../config/locationPresets';
 export interface MagicFieldState {
   subject: boolean;
   character: boolean;
+  characterCreator: boolean;
   gaze: boolean;
   pose: boolean;
   position: boolean;
@@ -49,6 +56,14 @@ export interface SubjectInputsProps {
   characterPosition: string;
   /** Location description or preset keywords */
   location: string;
+  /** Character creator - character type (human or other) */
+  characterCreatorType: CharacterType;
+  /** Character creator - custom species for non-human */
+  customSpecies: string;
+  /** Character creator - face feature values */
+  faceFeatures: FaceFeatures;
+  /** Character creator - clothing description */
+  clothing: string;
   /** Whether the subject section is locked from editing */
   isSubjectLocked: boolean;
   /** Whether the character section is locked from editing */
@@ -61,6 +76,8 @@ export interface SubjectInputsProps {
   isPositionLocked: boolean;
   /** Whether the location is locked from editing */
   isLocationLocked: boolean;
+  /** Whether the character creator is locked from editing */
+  isCharacterCreatorLocked: boolean;
   /** Callback to toggle subject lock state */
   onToggleSubjectLock: () => void;
   /** Callback to toggle character lock state */
@@ -73,6 +90,8 @@ export interface SubjectInputsProps {
   onTogglePositionLock: () => void;
   /** Callback to toggle location lock state */
   onToggleLocationLock: () => void;
+  /** Callback to toggle character creator lock state */
+  onToggleCharacterCreatorLock: () => void;
   /** Callback when subject text changes */
   onSubjectChange: (value: string) => void;
   /** Callback when character input changes */
@@ -89,6 +108,14 @@ export interface SubjectInputsProps {
   onPositionChange: (position: string) => void;
   /** Callback when location changes */
   onLocationChange: (value: string) => void;
+  /** Callback when character type changes */
+  onCharacterTypeChange: (value: CharacterType) => void;
+  /** Callback when custom species changes */
+  onCustomSpeciesChange: (value: string) => void;
+  /** Callback when face feature changes */
+  onFaceFeatureChange: (feature: FaceFeatureKey, value: number) => void;
+  /** Callback when clothing changes */
+  onClothingChange: (value: string) => void;
   /** Theme colors for consistent styling */
   themeColors: ThemeColors;
   /** Magic state for glow effects (optional) */

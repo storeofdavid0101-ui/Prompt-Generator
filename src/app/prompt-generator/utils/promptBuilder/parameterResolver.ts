@@ -5,6 +5,14 @@
 
 import type { PromptBuilderParams, ResolvedComponents, AIModel } from './types';
 import { filterValidColors, formatColorPalette } from './colorUtils';
+import { resolveColorGrading } from './colorGradingBuilder';
+import { resolveCharacterCreator } from './characterDescriptionBuilder';
+import { resolveFilmStock } from './filmStockBuilder';
+import { resolveGrainEngine } from './grainEngineBuilder';
+import { resolveLensPhysics } from './lensPhysicsBuilder';
+import { resolveAdvancedLighting } from './advancedLightingBuilder';
+import { resolveComposition } from './compositionBuilder';
+import { DEFAULT_FACE_FEATURES } from '../../config';
 import {
   atmosphereConfigs,
   visualPresets,
@@ -84,6 +92,20 @@ export function resolveComponents(params: PromptBuilderParams, model: AIModel): 
     lens: cameraResult.lens,
     shot: resolveShot(params.selectedShot, params.customShot),
     dof: resolveDof(params.depthOfField, params.selectedCamera),
+    colorGrading: params.colorGrading ? resolveColorGrading(params.colorGrading, useSafeMode) : null,
+    characterCreator: resolveCharacterCreator(
+      params.characterType || 'human',
+      params.customSpecies || '',
+      params.faceFeatures || DEFAULT_FACE_FEATURES,
+      params.clothing || ''
+    ),
+    filmStock: params.filmStock ? resolveFilmStock(params.filmStock, useSafeMode) : null,
+    grainEngine: params.grainEngine ? resolveGrainEngine(params.grainEngine, useSafeMode) : null,
+    lensPhysics: params.lensPhysics ? resolveLensPhysics(params.lensPhysics, useSafeMode) : null,
+    advancedLighting: params.advancedLighting ? resolveAdvancedLighting(params.advancedLighting, useSafeMode) : null,
+    compositionEngine: params.compositionEngine?.enabled
+      ? resolveComposition(params.compositionEngine).prose
+      : null,
   };
 }
 

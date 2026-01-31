@@ -1,9 +1,11 @@
 /**
  * @fileoverview Prompt composition strategies.
  * Provides functions for building prompts in natural language or tag-based formats.
+ * Supports three output modes: prose, machine, and hybrid.
  */
 
 import type { ResolvedComponents } from './types';
+import type { OutputMode } from '../../config/types/outputFormat';
 
 /**
  * Deduplicates keywords across multiple comma-separated keyword strings.
@@ -94,6 +96,30 @@ export function composeNaturalPrompt(components: ResolvedComponents, useSafeMode
     sentences.push(`Using a color palette of ${components.colorPalette}.`);
   }
 
+  if (components.colorGrading) {
+    sentences.push(`Color grading: ${components.colorGrading}.`);
+  }
+
+  if (components.filmStock) {
+    sentences.push(`Shot on ${components.filmStock}.`);
+  }
+
+  if (components.grainEngine) {
+    sentences.push(`Film grain: ${components.grainEngine}.`);
+  }
+
+  if (components.lensPhysics) {
+    sentences.push(`Lens: ${components.lensPhysics}.`);
+  }
+
+  if (components.advancedLighting) {
+    sentences.push(`Lighting: ${components.advancedLighting}.`);
+  }
+
+  if (components.compositionEngine) {
+    sentences.push(`Composition: ${components.compositionEngine}.`);
+  }
+
   const technicalSentence = buildTechnicalSentence(components);
   if (technicalSentence) {
     sentences.push(technicalSentence);
@@ -125,6 +151,11 @@ function composeSafePrompt(components: ResolvedComponents): string {
   // Character descriptions integrated
   if (components.characters.length > 0) {
     parts.push(components.characters.join(', '));
+  }
+
+  // Character creator (face features, species, clothing)
+  if (components.characterCreator) {
+    parts.push(components.characterCreator);
   }
 
   // Gaze and pose - simpler integration
@@ -163,6 +194,36 @@ function composeSafePrompt(components: ResolvedComponents): string {
   // Color palette
   if (components.colorPalette) {
     parts.push(`Color palette: ${components.colorPalette}`);
+  }
+
+  // Color grading
+  if (components.colorGrading) {
+    parts.push(components.colorGrading);
+  }
+
+  // Film stock
+  if (components.filmStock) {
+    parts.push(components.filmStock);
+  }
+
+  // Grain engine
+  if (components.grainEngine) {
+    parts.push(components.grainEngine);
+  }
+
+  // Lens physics
+  if (components.lensPhysics) {
+    parts.push(components.lensPhysics);
+  }
+
+  // Advanced lighting
+  if (components.advancedLighting) {
+    parts.push(components.advancedLighting);
+  }
+
+  // Composition engine
+  if (components.compositionEngine) {
+    parts.push(components.compositionEngine);
   }
 
   // Camera/technical
@@ -211,6 +272,13 @@ function buildMainSentence(components: ResolvedComponents): string {
     // Only characters, no subject
     const characterDescriptions = components.characters.join('; ');
     sentence = `Character description: ${characterDescriptions}`;
+  }
+
+  // Add character creator description (face features, species, clothing)
+  if (components.characterCreator) {
+    sentence = sentence
+      ? `${sentence}, ${components.characterCreator}`
+      : components.characterCreator;
   }
 
   // Add gaze direction if specified
@@ -323,6 +391,11 @@ export function composeTagPrompt(components: ResolvedComponents): string {
     parts.push(`[character: ${components.characters.join(', ')}]`);
   }
 
+  // Character creator (face features, species, clothing)
+  if (components.characterCreator) {
+    parts.push(components.characterCreator);
+  }
+
   // Add gaze direction if specified
   if (components.gaze) {
     parts.push(components.gaze);
@@ -358,6 +431,36 @@ export function composeTagPrompt(components: ResolvedComponents): string {
     parts.push(`color palette: ${components.colorPalette}`);
   }
 
+  // Color grading - add after color palette
+  if (components.colorGrading) {
+    parts.push(components.colorGrading);
+  }
+
+  // Film stock
+  if (components.filmStock) {
+    parts.push(components.filmStock);
+  }
+
+  // Grain engine
+  if (components.grainEngine) {
+    parts.push(components.grainEngine);
+  }
+
+  // Lens physics
+  if (components.lensPhysics) {
+    parts.push(components.lensPhysics);
+  }
+
+  // Advanced lighting
+  if (components.advancedLighting) {
+    parts.push(components.advancedLighting);
+  }
+
+  // Composition engine
+  if (components.compositionEngine) {
+    parts.push(components.compositionEngine);
+  }
+
   // Technical parts - add as-is
   if (components.camera) {
     parts.push(components.camera);
@@ -376,4 +479,206 @@ export function composeTagPrompt(components: ResolvedComponents): string {
   }
 
   return parts.filter(Boolean).join(', ');
+}
+
+/**
+ * Builds a machine-readable prompt from resolved components.
+ * Creates structured sections with labels for parsing by AI models.
+ * Format inspired by professional "machine-to-machine" prompts.
+ *
+ * @param components - Resolved prompt components
+ * @returns Machine-readable structured prompt string
+ */
+export function composeMachinePrompt(components: ResolvedComponents): string {
+  const sections: string[] = [];
+
+  // Subject section
+  if (components.subject || components.characters.length > 0) {
+    const subjectParts: string[] = [];
+    if (components.subject) {
+      subjectParts.push(`subject: ${stripTrailingPunctuation(components.subject)}`);
+    }
+    if (components.characters.length > 0) {
+      subjectParts.push(`characters: ${components.characters.join('; ')}`);
+    }
+    if (components.characterCreator) {
+      subjectParts.push(`character_details: ${components.characterCreator}`);
+    }
+    if (components.gaze) {
+      subjectParts.push(`gaze: ${components.gaze}`);
+    }
+    if (components.pose) {
+      subjectParts.push(`pose: ${components.pose}`);
+    }
+    if (components.position) {
+      subjectParts.push(`position: ${components.position}`);
+    }
+    if (components.location) {
+      subjectParts.push(`location: ${components.location}`);
+    }
+    sections.push(`[SUBJECT_DATA]\n${subjectParts.join('\n')}`);
+  }
+
+  // Visual style section
+  const styleParts: string[] = [];
+  if (components.atmosphere) {
+    styleParts.push(`atmosphere: ${components.atmosphere}`);
+  }
+  if (components.visualPreset) {
+    styleParts.push(`visual_preset: ${components.visualPreset}`);
+  }
+  if (components.director) {
+    styleParts.push(`director_style: ${components.director}`);
+  }
+  if (styleParts.length > 0) {
+    sections.push(`[STYLE_DATA]\n${styleParts.join('\n')}`);
+  }
+
+  // Lighting section
+  if (components.lighting) {
+    sections.push(`[LIGHTING]\nlighting: ${components.lighting}`);
+  }
+
+  // Color section
+  const colorParts: string[] = [];
+  if (components.colorPalette) {
+    colorParts.push(`palette: ${components.colorPalette}`);
+  }
+  if (components.colorGrading) {
+    colorParts.push(`grading: ${components.colorGrading}`);
+  }
+  if (colorParts.length > 0) {
+    sections.push(`[COLOR_DATA]\n${colorParts.join('\n')}`);
+  }
+
+  // Film stock section
+  if (components.filmStock) {
+    sections.push(`[FILM_STOCK]\nstock: ${components.filmStock}`);
+  }
+
+  // Grain engine section
+  if (components.grainEngine) {
+    sections.push(`[GRAIN]\ngrain: ${components.grainEngine}`);
+  }
+
+  // Lens physics section
+  if (components.lensPhysics) {
+    sections.push(`[LENS]\nlens_physics: ${components.lensPhysics}`);
+  }
+
+  // Advanced lighting section
+  if (components.advancedLighting) {
+    sections.push(`[ADVANCED_LIGHTING]\nlighting: ${components.advancedLighting}`);
+  }
+
+  // Composition section
+  if (components.compositionEngine) {
+    sections.push(`[COMPOSITION]\ncomposition: ${components.compositionEngine}`);
+  }
+
+  // Technical/camera section
+  const techParts: string[] = [];
+  if (components.camera) {
+    techParts.push(`camera: ${components.camera}`);
+  }
+  if (components.lens) {
+    techParts.push(`lens: ${components.lens}`);
+  }
+  if (components.shot) {
+    techParts.push(`shot: ${components.shot}`);
+  }
+  if (components.dof) {
+    techParts.push(`dof: ${components.dof}`);
+  }
+  if (techParts.length > 0) {
+    sections.push(`[TECHNICAL_DATA]\n${techParts.join('\n')}`);
+  }
+
+  return sections.join('\n\n');
+}
+
+/**
+ * Builds a hybrid prompt combining natural language and machine-readable sections.
+ * Best of both worlds: flowing prose for creative interpretation,
+ * structured data for precise technical control.
+ *
+ * @param components - Resolved prompt components
+ * @param useSafeMode - Whether to use safe mode for strict content policy models
+ * @returns Hybrid prompt with prose and technical sections
+ */
+export function composeHybridPrompt(components: ResolvedComponents, useSafeMode: boolean = false): string {
+  // First, compose the prose part
+  const prose = useSafeMode
+    ? composeSafePrompt(components)
+    : composeNaturalPrompt(components, false);
+
+  // Then build technical metadata section
+  const techParts: string[] = [];
+
+  // Only include non-empty technical data
+  if (components.camera) {
+    techParts.push(`camera: ${components.camera}`);
+  }
+  if (components.lens) {
+    techParts.push(`lens: ${components.lens}`);
+  }
+  if (components.shot) {
+    techParts.push(`shot: ${components.shot}`);
+  }
+  if (components.dof) {
+    techParts.push(`dof: ${components.dof}`);
+  }
+  if (components.lighting) {
+    techParts.push(`lighting: ${components.lighting}`);
+  }
+  if (components.colorGrading) {
+    techParts.push(`color_grading: ${components.colorGrading}`);
+  }
+  if (components.filmStock) {
+    techParts.push(`film_stock: ${components.filmStock}`);
+  }
+  if (components.grainEngine) {
+    techParts.push(`grain: ${components.grainEngine}`);
+  }
+  if (components.lensPhysics) {
+    techParts.push(`lens_physics: ${components.lensPhysics}`);
+  }
+  if (components.advancedLighting) {
+    techParts.push(`advanced_lighting: ${components.advancedLighting}`);
+  }
+  if (components.compositionEngine) {
+    techParts.push(`composition: ${components.compositionEngine}`);
+  }
+
+  // If no technical data, just return prose
+  if (techParts.length === 0) {
+    return prose;
+  }
+
+  // Combine prose with technical section
+  return `${prose}\n\n[TECHNICAL_DATA]\n${techParts.join('\n')}`;
+}
+
+/**
+ * Main composition function that routes to the appropriate composer based on output mode.
+ *
+ * @param components - Resolved prompt components
+ * @param mode - Output mode (prose, machine, or hybrid)
+ * @param useSafeMode - Whether to use safe mode for strict content policy models
+ * @returns Composed prompt string in the specified format
+ */
+export function composePrompt(
+  components: ResolvedComponents,
+  mode: OutputMode,
+  useSafeMode: boolean = false
+): string {
+  switch (mode) {
+    case 'machine':
+      return composeMachinePrompt(components);
+    case 'hybrid':
+      return composeHybridPrompt(components, useSafeMode);
+    case 'prose':
+    default:
+      return composeNaturalPrompt(components, useSafeMode);
+  }
 }

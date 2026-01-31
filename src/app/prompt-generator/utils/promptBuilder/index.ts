@@ -21,7 +21,8 @@
 
 import type { PromptBuilderParams, ModelContext } from './types';
 import { resolveComponents, resolveAspectRatio } from './parameterResolver';
-import { composeNaturalPrompt, composeTagPrompt } from './promptComposer';
+import { composeNaturalPrompt, composeTagPrompt, composePrompt } from './promptComposer';
+import { DEFAULT_OUTPUT_MODE } from '../../config/outputFormat';
 import { getModelStrategy } from './strategies';
 import { modelConfigs } from '../../config';
 
@@ -89,10 +90,15 @@ export function generatePrompt(params: PromptBuilderParams): string {
   // Check if model has strict content policies (ChatGPT, DALL-E, Firefly)
   const useSafeMode = modelConfigs[params.selectedModel]?.strictContentPolicy === true;
 
-  // Build base prompt using model's preferred style
+  // Get output mode (default to hybrid if not specified)
+  const outputMode = params.outputMode || DEFAULT_OUTPUT_MODE;
+
+  // Build base prompt using model's preferred style and output mode
+  // For tag-based models (Midjourney, SD), always use tag format regardless of output mode
+  // For natural language models, use the selected output mode
   // Safe mode uses simplified structure to avoid trigger phrases
   const basePrompt = strategy.promptStyle === 'natural'
-    ? composeNaturalPrompt(components, useSafeMode)
+    ? composePrompt(components, outputMode, useSafeMode)
     : composeTagPrompt(components);
 
   // Handle empty prompt case
@@ -134,3 +140,13 @@ export type {
 // Re-export utilities that may be useful externally
 export { isValidHexColor, formatHexColor } from './colorUtils';
 export { getModelStrategy, isModelSupported, getSupportedModels } from './strategies';
+
+// Character description builder
+export {
+  buildCharacterDescription,
+  resolveCharacterCreator,
+} from './characterDescriptionBuilder';
+export type { BuildCharacterParams } from './characterDescriptionBuilder';
+
+// Color grading builder
+export { resolveColorGrading } from './colorGradingBuilder';

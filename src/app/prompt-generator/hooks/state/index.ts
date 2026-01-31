@@ -29,12 +29,22 @@ export type {
   SectionState,
   ClipboardState,
   ThemeState,
+  CharacterCreatorState,
+  ColorGradingStateReturn,
   // Hook parameter types
   UseCameraStateParams,
   UseDirectorStateParams,
   // Composed state type
   PromptGeneratorStateReturn,
 } from './types';
+
+// Direct exports from specific type files
+export type { OutputFormatStateReturn } from './types/outputFormat.types';
+export type { FilmStockStateReturn } from './types/filmStock.types';
+export type { GrainEngineStateReturn } from './types/grainEngine.types';
+export type { LensPhysicsStateReturn } from './types/lensPhysics.types';
+export type { AdvancedLightingStateReturn } from './types/advancedLighting.types';
+export type { CompositionEngineStateReturn } from './types/compositionEngine.types';
 
 // ============================================================================
 // Constants
@@ -65,3 +75,11 @@ export { useDirectorState } from './useDirectorState';
 export { useAdvancedState } from './useAdvancedState';
 export { useSectionState } from './useSectionState';
 export { useClipboard } from './useClipboard';
+export { useCharacterCreatorState } from './useCharacterCreatorState';
+export { useColorGradingState } from './useColorGradingState';
+export { useOutputFormatState } from './useOutputFormatState';
+export { useFilmStockState } from './useFilmStockState';
+export { useGrainEngineState } from './useGrainEngineState';
+export { useLensPhysicsState } from './useLensPhysicsState';
+export { useAdvancedLightingState } from './useAdvancedLightingState';
+export { useCompositionEngineState } from './useCompositionEngineState';

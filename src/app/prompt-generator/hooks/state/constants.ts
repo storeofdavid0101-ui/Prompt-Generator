@@ -94,8 +94,14 @@ export const DEFAULT_EXPANDED_SECTIONS: ExpandedSections = {
   atmosphere: true,
   visual: false,
   color: false,
+  colorGrading: false,
   camera: false,
   lighting: false,
+  filmStock: false,
+  grainEngine: false,
+  lensPhysics: false,
+  advancedLighting: false,
+  compositionEngine: false,
 };
 
 /**
@@ -114,9 +120,16 @@ export const DEFAULT_LOCKED_SECTIONS: LockedSections = {
   atmosphere: false,
   visual: false,
   color: false,
+  colorGrading: false,
   camera: false,
   lighting: false,
   advanced: false,
+  characterCreator: false,
+  filmStock: false,
+  grainEngine: false,
+  lensPhysics: false,
+  advancedLighting: false,
+  compositionEngine: false,
 };
 
 /**

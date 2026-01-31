@@ -32,11 +32,29 @@ export interface ExpandedSections {
   /** Color palette section */
   readonly color: boolean;
 
+  /** Color grading section */
+  readonly colorGrading: boolean;
+
   /** Camera settings section */
   readonly camera: boolean;
 
   /** Lighting selection section */
   readonly lighting: boolean;
+
+  /** Film stock section */
+  readonly filmStock: boolean;
+
+  /** Grain engine section */
+  readonly grainEngine: boolean;
+
+  /** Lens physics section */
+  readonly lensPhysics: boolean;
+
+  /** Advanced lighting section */
+  readonly advancedLighting: boolean;
+
+  /** Composition engine section */
+  readonly compositionEngine: boolean;
 }
 
 /**
@@ -92,6 +110,27 @@ export interface LockedSections {
 
   /** Advanced settings locked */
   readonly advanced: boolean;
+
+  /** Character creator locked */
+  readonly characterCreator: boolean;
+
+  /** Color grading locked */
+  readonly colorGrading: boolean;
+
+  /** Film stock locked */
+  readonly filmStock: boolean;
+
+  /** Grain engine locked */
+  readonly grainEngine: boolean;
+
+  /** Lens physics locked */
+  readonly lensPhysics: boolean;
+
+  /** Advanced lighting locked */
+  readonly advancedLighting: boolean;
+
+  /** Composition engine locked */
+  readonly compositionEngine: boolean;
 }
 
 /**

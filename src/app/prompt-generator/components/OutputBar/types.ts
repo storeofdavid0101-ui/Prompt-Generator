@@ -4,6 +4,7 @@
  */
 
 import type { ThemeColors } from '../../config/types';
+import type { OutputMode } from '../../config/types/outputFormat';
 
 /**
  * View state enumeration for OutputBar
@@ -29,6 +30,10 @@ export interface OutputBarProps {
   onCopy: () => void;
   /** Theme colors for consistent styling */
   themeColors: ThemeColors;
+  /** Current output format mode */
+  outputMode?: OutputMode;
+  /** Callback to change output format mode */
+  onOutputModeChange?: (mode: OutputMode) => void;
 }
 
 /**

@@ -74,4 +74,27 @@ export type {
   ButtonVariant,
   InputSize,
   BadgeStatus,
+
+  // Character Creator types
+  CharacterType,
+  FaceFeatures,
+  FaceFeatureKey,
+  FeatureThreshold,
+  FeatureConfig,
+  FaceFeatureConfigs,
+
+  // Color Grading types
+  TonalRange,
+  ColorWheelPosition,
+  ColorWheelState,
+  ColorWheelsState,
+  TemperatureTintState,
+  SplitToningState,
+  GlobalAdjustmentsState,
+  ColorGradingState,
+  ColorGradingPreset,
+  ColorGradingPresetValues,
+  ColorGradingCategory,
 } from './types/index';
+
+export { colorGradingCategoryNames } from './types/index';

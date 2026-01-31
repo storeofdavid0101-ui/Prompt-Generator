@@ -25,6 +25,7 @@ import { CharacterTag } from './CharacterTag';
 import { GazeDirection } from './GazeDirection';
 import { PoseAction } from './PoseAction';
 import { CharacterPosition } from './CharacterPosition';
+import { CharacterCreator } from '../CharacterCreator';
 
 /**
  * SubjectInputs - Unified input section for scene content
@@ -37,18 +38,24 @@ export const SubjectInputs = memo(function SubjectInputs({
   poseAction,
   characterPosition,
   location,
+  characterCreatorType,
+  customSpecies,
+  faceFeatures,
+  clothing,
   isSubjectLocked,
   isCharacterLocked,
   isGazeLocked,
   isPoseLocked,
   isPositionLocked,
   isLocationLocked,
+  isCharacterCreatorLocked,
   onToggleSubjectLock,
   onToggleCharacterLock,
   onToggleGazeLock,
   onTogglePoseLock,
   onTogglePositionLock,
   onToggleLocationLock,
+  onToggleCharacterCreatorLock,
   onSubjectChange,
   onCurrentCharacterChange,
   onAddCharacter,
@@ -57,6 +64,10 @@ export const SubjectInputs = memo(function SubjectInputs({
   onPoseChange,
   onPositionChange,
   onLocationChange,
+  onCharacterTypeChange,
+  onCustomSpeciesChange,
+  onFaceFeatureChange,
+  onClothingChange,
   themeColors,
   magicState,
   magicHandlers,
@@ -171,6 +182,24 @@ export const SubjectInputs = memo(function SubjectInputs({
           />
         </MagicGlow>
       </div>
+
+      {/* Character Creator */}
+      <MagicGlow isActive={magicState?.characterCreator ?? false} themeColors={themeColors}>
+        <CharacterCreator
+          characterType={characterCreatorType}
+          customSpecies={customSpecies}
+          faceFeatures={faceFeatures}
+          clothing={clothing}
+          isLocked={isCharacterCreatorLocked}
+          onToggleLock={onToggleCharacterCreatorLock}
+          onCharacterTypeChange={onCharacterTypeChange}
+          onCustomSpeciesChange={onCustomSpeciesChange}
+          onFaceFeatureChange={onFaceFeatureChange}
+          onClothingChange={onClothingChange}
+          themeColors={themeColors}
+          magicState={magicState?.characterCreator}
+        />
+      </MagicGlow>
 
       {/* Character Input */}
       <div>

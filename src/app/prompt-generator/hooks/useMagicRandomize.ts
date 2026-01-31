@@ -375,6 +375,7 @@ export function useMagicRandomize({
     // Track if subject is human-like (can have gaze/pose)
     let isHumanSubject = false;
     let selectedSubjectText = '';
+    let subjectHasEmbeddedLocation = false;
 
     if (!lockedSections.subject) {
       const subjectMeta = getRandomSubjectWithMeta();
@@ -385,28 +386,39 @@ export function useMagicRandomize({
 
       // Only 'character' and 'portrait' categories are human-like
       isHumanSubject = subjectMeta.category === 'character' || subjectMeta.category === 'portrait';
+
+      // Check if subject already contains a location (e.g., "...in 1950s New York")
+      subjectHasEmbeddedLocation = subjectMeta.hasEmbeddedLocation === true;
     }
 
     // === STEP 2: Pick location compatible with subject (avoids physics conflicts) ===
+    // SKIP if subject already has an embedded location (e.g., "...under a streetlamp in 1950s New York")
     let selectedLocationLabel = '';
     if (!lockedSections.location) {
-      // Filter locations to those compatible with the subject
-      // e.g., F1 car can't be in Crystal Cave
-      const compatibleLocations = selectedSubjectText
-        ? filterCompatibleLocations(
-            locationPresets,
-            selectedSubjectText,
-            undefined // themes are analyzed from text
-          )
-        : locationPresets;
+      if (subjectHasEmbeddedLocation) {
+        // Subject already describes where it is - clear location to avoid conflict
+        // e.g., "jazz musician...in 1950s New York" should NOT add "set in ancient library"
+        setLocation('');
+        // Don't trigger glow - no location was added
+      } else {
+        // Filter locations to those compatible with the subject
+        // e.g., F1 car can't be in Crystal Cave
+        const compatibleLocations = selectedSubjectText
+          ? filterCompatibleLocations(
+              locationPresets,
+              selectedSubjectText,
+              undefined // themes are analyzed from text
+            )
+          : locationPresets;
 
-      const chosenLocation = compatibleLocations.length > 0
-        ? getRandomItem(compatibleLocations)
-        : getRandomItem(locationPresets);
+        const chosenLocation = compatibleLocations.length > 0
+          ? getRandomItem(compatibleLocations)
+          : getRandomItem(locationPresets);
 
-      selectedLocationLabel = chosenLocation.label;
-      setLocation(selectedLocationLabel);
-      triggerGlow('location');
+        selectedLocationLabel = chosenLocation.label;
+        setLocation(selectedLocationLabel);
+        triggerGlow('location');
+      }
     }
 
     // === STEP 3: Pick a random director (controls most style conflicts) ===

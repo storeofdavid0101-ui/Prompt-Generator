@@ -69,6 +69,11 @@ export const helpDescriptions: Record<string, HelpDescription> = {
     description: 'The technical color treatment and contrast style applied to your image, similar to color grading in film post-production.',
     tip: 'Color grade affects the overall "look" independent of the color palette.',
   },
+  colorGrading: {
+    title: 'Color Grading',
+    description: 'Professional color grading controls inspired by DaVinci Resolve and Premiere Pro. Includes color wheels (Lift/Gamma/Gain) for tonal control, temperature/tint adjustments, and cinematic LUT-style presets.',
+    tip: 'Use the "Looks" tab for quick presets, "Wheels" for precise tonal adjustments, and "Adjust" for global controls like contrast and saturation.',
+  },
   lighting: {
     title: 'Lighting',
     description: 'The lighting setup for your scene. Choose from classic cinematic techniques, natural lighting, or stylized modern approaches.',
@@ -117,5 +122,40 @@ export const helpDescriptions: Record<string, HelpDescription> = {
     title: 'Depth of Field',
     description: 'Controls the focus depth in your image. Shallow DOF blurs backgrounds, deep DOF keeps everything sharp.',
     tip: 'Shallow DOF isolates subjects, deep DOF is great for landscapes.',
+  },
+
+  // Film Stock
+  filmStock: {
+    title: 'Film Stock',
+    description: 'Emulate the look of classic film stocks from Kodak, Fuji, and CineStill. Includes motion picture, color negative, and slide films with push/pull processing options.',
+    tip: 'Kodak Vision3 500T is the Hollywood standard, CineStill 800T adds signature halation around highlights.',
+  },
+
+  // Grain Engine
+  grainEngine: {
+    title: 'Grain Engine',
+    description: 'Add authentic film grain and texture effects. Choose between organic silver halide grain or digital sensor noise, with controls for size, intensity, dust/scratches, and film gate weave.',
+    tip: 'Combine with Film Stock for authentic period-accurate film simulation, or use alone for texture on digital images.',
+  },
+
+  // Lens Physics
+  lensPhysics: {
+    title: 'Lens Physics',
+    description: 'Control optical properties of your virtual lens. Adjust focal length (14-200mm), aperture (f/1.4-f/22), lens distortion, depth of field control, and bokeh shape for precise cinematographic effects.',
+    tip: 'Wide apertures (f/1.4-f/2.8) create shallow depth with beautiful bokeh. Anamorphic oval bokeh adds a cinematic widescreen aesthetic.',
+  },
+
+  // Advanced Lighting
+  advancedLighting: {
+    title: 'Advanced Lighting',
+    description: 'Professional lighting setup with key/fill/rim positioning, ratios, color temperature, and shadow control. Create classic Hollywood setups like Rembrandt, butterfly, or split lighting.',
+    tip: 'Use 4:1 ratio for classic portraits, 8:1 or higher for dramatic noir. Add rim light to separate subject from background.',
+  },
+
+  // Composition Engine
+  compositionEngine: {
+    title: 'Composition Engine',
+    description: 'Precise composition control with interactive subject placement, frame occupancy, rule of thirds, vanishing points, and frame balance. Use presets for quick cinematic compositions or fine-tune manually.',
+    tip: 'Click directly on the grid to position your subject. Use presets like Golden Ratio or Rule of Thirds for classic compositions.',
   },
 };

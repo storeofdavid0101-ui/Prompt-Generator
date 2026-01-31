@@ -137,3 +137,87 @@ export {
   getSubjectThemes,
 } from './magicSubjects';
 export type { MagicSubject, MagicCharacter, SubjectTheme } from './magicSubjects';
+
+// Character Creator
+export {
+  DEFAULT_FACE_FEATURES,
+  faceFeatureConfigs,
+  characterCreatorHelp,
+  featureGroups,
+} from './characterCreator';
+
+// Color Grading
+export {
+  colorGradingPresets,
+  getPresetsByCategory,
+  DEFAULT_COLOR_WHEELS,
+  DEFAULT_COLOR_WHEEL,
+  DEFAULT_TEMPERATURE_TINT,
+  DEFAULT_SPLIT_TONING,
+  DEFAULT_GLOBAL_ADJUSTMENTS,
+} from './colorGrading';
+
+// Output Format
+export {
+  DEFAULT_OUTPUT_MODE,
+  outputModeConfigs,
+  outputModeOptions,
+} from './outputFormat';
+
+// Film Stock
+export {
+  FILM_STOCK_DEFAULTS,
+  filmStockPresets,
+  getFilmStocksByCategory,
+  getFilmStocksByManufacturer,
+  filmStockCategoryNames,
+  processingTypeOptions,
+  pushPullOptions,
+} from './filmStock';
+
+// Grain Engine
+export {
+  DEFAULT_GRAIN_ENGINE_STATE,
+  grainTypePresets,
+  grainSizePresets,
+  intensityDescriptors,
+  getIntensityDescriptor,
+  dustScratchesKeywords,
+  gateWeaveKeywords,
+  getDustScratchesDescription,
+} from './grainEngine';
+
+// Lens Physics
+export {
+  DEFAULT_LENS_PHYSICS_STATE,
+  aperturePresets,
+  focalLengthPresets,
+  distortionPresets,
+  dofControlPresets,
+  bokehShapePresets,
+  getFocalLengthType,
+  getFocalLengthKeywords,
+} from './lensPhysics';
+
+// Advanced Lighting
+export {
+  DEFAULT_ADVANCED_LIGHTING_STATE,
+  keyLightPositionPresets,
+  keyFillRatioPresets,
+  lightQualityPresets,
+  getColorTemperatureKeywords,
+  getShadowStopKeywords,
+  getRimLightKeywords,
+} from './advancedLighting';
+
+// Composition Engine
+export {
+  DEFAULT_COMPOSITION_ENGINE_STATE,
+  compositionPresets,
+  getPlacementKeywords,
+  getFrameOccupancyKeywords,
+  getVanishingPointKeywords,
+  getRuleOfThirdsKeywords,
+  getFrameBalanceKeywords,
+  getNegativeSpaceDescription,
+} from './compositionEngine';

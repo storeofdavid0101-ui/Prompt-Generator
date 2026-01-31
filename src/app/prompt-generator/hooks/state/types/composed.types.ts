@@ -15,8 +15,18 @@ import type {
   ConflictResult,
   ExpandedSections,
   LockedSections,
+  CharacterType,
+  FaceFeatures,
+  FaceFeatureKey,
 } from '../../../config/types';
+import type { OutputMode } from '../../../config/types/outputFormat';
 import type { SliderValue, Setter, AsyncAction, ResetAction } from './common.types';
+import type { ColorGradingStateReturn } from './colorGrading.types';
+import type { FilmStockStateReturn } from './filmStock.types';
+import type { GrainEngineStateReturn } from './grainEngine.types';
+import type { LensPhysicsStateReturn } from './lensPhysics.types';
+import type { AdvancedLightingStateReturn } from './advancedLighting.types';
+import type { CompositionEngineStateReturn } from './compositionEngine.types';
 
 // ============================================================================
 // Domain State Return Interfaces
@@ -65,6 +75,19 @@ interface ContentStateReturn {
   readonly setLocation: Setter<string>;
   readonly addCharacter: ResetAction;
   readonly removeCharacter: (id: string) => void;
+}
+
+/** Character Creator state in the combined return */
+interface CharacterCreatorStateReturn {
+  readonly characterType: CharacterType;
+  readonly setCharacterType: Setter<CharacterType>;
+  readonly customSpecies: string;
+  readonly setCustomSpecies: Setter<string>;
+  readonly faceFeatures: FaceFeatures;
+  readonly setFaceFeature: (feature: FaceFeatureKey, value: number) => void;
+  readonly clothing: string;
+  readonly setClothing: Setter<string>;
+  readonly resetCharacterCreator: ResetAction;
 }
 
 /** Visual state in the combined return */
@@ -131,6 +154,42 @@ interface ActionsReturn {
   readonly resetAll: ResetAction;
 }
 
+/** Color grading state in the combined return */
+interface ColorGradingReturn {
+  readonly colorGrading: ColorGradingStateReturn;
+}
+
+/** Output format state in the combined return */
+interface OutputFormatReturn {
+  readonly outputMode: OutputMode;
+  readonly setOutputMode: Setter<OutputMode>;
+}
+
+/** Film stock state in the combined return */
+interface FilmStockReturn {
+  readonly filmStock: FilmStockStateReturn;
+}
+
+/** Grain engine state in the combined return */
+interface GrainEngineReturn {
+  readonly grainEngine: GrainEngineStateReturn;
+}
+
+/** Lens physics state in the combined return */
+interface LensPhysicsReturn {
+  readonly lensPhysics: LensPhysicsStateReturn;
+}
+
+/** Advanced lighting state in the combined return */
+interface AdvancedLightingReturn {
+  readonly advancedLighting: AdvancedLightingStateReturn;
+}
+
+/** Composition engine state in the combined return */
+interface CompositionEngineReturn {
+  readonly compositionEngine: CompositionEngineStateReturn;
+}
+
 // ============================================================================
 // Main Combined State Interface
 // ============================================================================
@@ -149,9 +208,17 @@ export interface PromptGeneratorStateReturn
     ModelStateReturn,
     CreativeControlsReturn,
     ContentStateReturn,
+    CharacterCreatorStateReturn,
     VisualStateReturn,
     CameraStateReturn,
     DirectorStateReturn,
     AdvancedStateReturn,
     UIStateReturn,
+    ColorGradingReturn,
+    OutputFormatReturn,
+    FilmStockReturn,
+    GrainEngineReturn,
+    LensPhysicsReturn,
+    AdvancedLightingReturn,
+    CompositionEngineReturn,
     ActionsReturn {}

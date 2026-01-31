@@ -21,8 +21,14 @@ import {
   AtmosphereSelector,
   VisualStyleSelector,
   ColorPaletteSelector,
+  ColorGradingPanel,
   CameraSettings,
   LightingSelector,
+  FilmStockSelector,
+  GrainEngine,
+  LensPhysics,
+  AdvancedLighting,
+  CompositionEngine,
   AdvancedTools,
   OutputBar,
   RandomizeAllButton,
@@ -165,18 +171,24 @@ function PromptGeneratorInner() {
               poseAction={state.poseAction}
               characterPosition={state.characterPosition}
               location={state.location}
+              characterCreatorType={state.characterType}
+              customSpecies={state.customSpecies}
+              faceFeatures={state.faceFeatures}
+              clothing={state.clothing}
               isSubjectLocked={state.lockedSections.subject}
               isCharacterLocked={state.lockedSections.character}
               isGazeLocked={state.lockedSections.gaze}
               isPoseLocked={state.lockedSections.pose}
               isPositionLocked={state.lockedSections.position}
               isLocationLocked={state.lockedSections.location}
+              isCharacterCreatorLocked={state.lockedSections.characterCreator}
               onToggleSubjectLock={() => state.toggleLock('subject')}
               onToggleCharacterLock={() => state.toggleLock('character')}
               onToggleGazeLock={() => state.toggleLock('gaze')}
               onTogglePoseLock={() => state.toggleLock('pose')}
               onTogglePositionLock={() => state.toggleLock('position')}
               onToggleLocationLock={() => state.toggleLock('location')}
+              onToggleCharacterCreatorLock={() => state.toggleLock('characterCreator')}
               onSubjectChange={state.setSubject}
               onCurrentCharacterChange={state.setCurrentCharacter}
               onAddCharacter={state.addCharacter}
@@ -185,10 +197,15 @@ function PromptGeneratorInner() {
               onPoseChange={handlers.handlePoseChange}
               onPositionChange={handlers.handlePositionChange}
               onLocationChange={handlers.handleLocationChange}
+              onCharacterTypeChange={state.setCharacterType}
+              onCustomSpeciesChange={state.setCustomSpecies}
+              onFaceFeatureChange={state.setFaceFeature}
+              onClothingChange={state.setClothing}
               themeColors={themeColors}
               magicState={{
                 subject: magic.magicState.subject,
                 character: magic.magicState.character,
+                characterCreator: false,
                 gaze: magic.magicState.gaze,
                 pose: magic.magicState.pose,
                 position: magic.magicState.position,
@@ -269,6 +286,17 @@ function PromptGeneratorInner() {
 
             <Divider color={themeColors.borderColor} />
 
+            <ColorGradingPanel
+              state={state.colorGrading}
+              isExpanded={state.expandedSections.colorGrading}
+              isLocked={state.lockedSections.colorGrading}
+              onToggleLock={() => state.toggleLock('colorGrading')}
+              onToggleSection={state.toggleSection}
+              themeColors={themeColors}
+            />
+
+            <Divider color={themeColors.borderColor} />
+
             <MagicGlow isActive={magic.magicState.camera} themeColors={themeColors}>
               <CameraSettings
                 selectedCamera={state.selectedCamera}
@@ -315,6 +343,61 @@ function PromptGeneratorInner() {
                 onRandomize={magic.randomizeLighting}
               />
             </MagicGlow>
+
+            <Divider color={themeColors.borderColor} />
+
+            <FilmStockSelector
+              state={state.filmStock}
+              isExpanded={state.expandedSections.filmStock}
+              isLocked={state.lockedSections.filmStock}
+              onToggleLock={() => state.toggleLock('filmStock')}
+              onToggleSection={state.toggleSection}
+              themeColors={themeColors}
+            />
+
+            <Divider color={themeColors.borderColor} />
+
+            <GrainEngine
+              state={state.grainEngine}
+              isExpanded={state.expandedSections.grainEngine}
+              isLocked={state.lockedSections.grainEngine}
+              onToggleLock={() => state.toggleLock('grainEngine')}
+              onToggleSection={state.toggleSection}
+              themeColors={themeColors}
+            />
+
+            <Divider color={themeColors.borderColor} />
+
+            <LensPhysics
+              state={state.lensPhysics}
+              isExpanded={state.expandedSections.lensPhysics}
+              isLocked={state.lockedSections.lensPhysics}
+              onToggleLock={() => state.toggleLock('lensPhysics')}
+              onToggleSection={state.toggleSection}
+              themeColors={themeColors}
+            />
+
+            <Divider color={themeColors.borderColor} />
+
+            <AdvancedLighting
+              state={state.advancedLighting}
+              isExpanded={state.expandedSections.advancedLighting}
+              isLocked={state.lockedSections.advancedLighting}
+              onToggleLock={() => state.toggleLock('advancedLighting')}
+              onToggleSection={state.toggleSection}
+              themeColors={themeColors}
+            />
+
+            <Divider color={themeColors.borderColor} />
+
+            <CompositionEngine
+              state={state.compositionEngine}
+              isExpanded={state.expandedSections.compositionEngine}
+              isLocked={state.lockedSections.compositionEngine}
+              onToggleLock={() => state.toggleLock('compositionEngine')}
+              onToggleSection={state.toggleSection}
+              themeColors={themeColors}
+            />
           </div>
         </motion.div>
 
@@ -355,6 +438,8 @@ function PromptGeneratorInner() {
         onReset={state.resetAll}
         onCopy={state.copyToClipboard}
         themeColors={themeColors}
+        outputMode={state.outputMode}
+        onOutputModeChange={state.setOutputMode}
       />
     </div>
   );
