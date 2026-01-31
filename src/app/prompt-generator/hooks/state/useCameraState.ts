@@ -16,7 +16,6 @@ import {
   categoryConflicts,
   cameraAspectRatios,
 } from '../../config';
-import { analytics } from '../../services';
 import type { CameraState, UseCameraStateParams } from './types';
 import { CAMERA_DEFAULTS } from './constants';
 
@@ -66,7 +65,6 @@ export function useCameraState({
 
       setSelectedCameraInternal(newCamera);
       setCustomCameraInternal('');
-      analytics.trackCameraSelect(newCamera);
 
       // Get conflict rules for the new camera's category
       const category = cameraCategories[newCamera] || 'none';
@@ -110,7 +108,6 @@ export function useCameraState({
 
   const setSelectedLens = useCallback((value: string) => {
     setSelectedLensInternal(value);
-    analytics.trackLensSelect(value);
   }, []);
 
   const setCustomLens = useCallback((value: string) => {
@@ -119,7 +116,6 @@ export function useCameraState({
 
   const setSelectedShot = useCallback((value: string) => {
     setSelectedShotInternal(value);
-    analytics.trackShotSelect(value);
   }, []);
 
   const setCustomShot = useCallback((value: string) => {
@@ -128,12 +124,10 @@ export function useCameraState({
 
   const setDepthOfField = useCallback((value: string) => {
     setDepthOfFieldInternal(value);
-    analytics.trackDOFSelect(value);
   }, []);
 
   const setAspectRatio = useCallback((value: string) => {
     setAspectRatioInternal(value);
-    analytics.trackAspectRatioSelect(value);
   }, []);
 
   const reset = useCallback(() => {

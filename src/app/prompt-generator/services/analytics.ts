@@ -199,6 +199,16 @@ export const analytics = {
       depth_of_field: dof || 'none',
     });
   },
+
+  /**
+   * Track location preset selection
+   * View in GA4: Reports > Engagement > Events > location_selected
+   */
+  trackLocationSelect(location: string): void {
+    sendGAEvent('location_selected', {
+      location: location || 'none',
+    });
+  },
 };
 
 export default analytics;

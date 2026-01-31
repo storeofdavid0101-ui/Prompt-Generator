@@ -13,7 +13,6 @@ import { useState, useCallback } from 'react';
 import type { Atmosphere } from '../../config/types';
 import type { VisualState } from './types';
 import { DEFAULT_CUSTOM_COLORS } from './constants';
-import { analytics } from '../../services';
 
 /**
  * Hook for managing visual styling state
@@ -43,22 +42,18 @@ export function useVisualState(): VisualState {
 
   const setSelectedAtmosphere = useCallback((value: Atmosphere | null) => {
     setSelectedAtmosphereInternal(value);
-    analytics.trackAtmosphereSelect(value || '');
   }, []);
 
   const setSelectedVisualPreset = useCallback((value: string | null) => {
     setSelectedVisualPresetInternal(value);
-    analytics.trackVisualPresetSelect(value || '');
   }, []);
 
   const setSelectedLighting = useCallback((value: string | null) => {
     setSelectedLightingInternal(value);
-    analytics.trackLightingSelect(value || '');
   }, []);
 
   const setSelectedColorPalette = useCallback((value: string | null) => {
     setSelectedColorPaletteInternal(value);
-    analytics.trackColorPaletteSelect(value || '');
   }, []);
 
   const setCustomColors = useCallback((colors: string[]) => {

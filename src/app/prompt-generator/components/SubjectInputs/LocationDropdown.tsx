@@ -22,6 +22,7 @@ import type { LocationDropdownProps } from './types';
 import { KeyboardCodes } from './types';
 import type { LocationPreset } from '../../config/locationPresets';
 import { LocationPresetList } from './LocationPresetList';
+import { analytics } from '../../services';
 
 /** Animation variants for dropdown menu */
 const dropdownVariants = {
@@ -131,6 +132,7 @@ export const LocationDropdown = memo(function LocationDropdown({
   const handlePresetSelect = useCallback((keywords: string) => {
     setForceCustomMode(false);
     onLocationChange(keywords);
+    analytics.trackLocationSelect(keywords);
     setIsOpen(false);
     setFocusedIndex(-1);
     toggleButtonRef.current?.focus();

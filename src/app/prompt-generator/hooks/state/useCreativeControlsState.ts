@@ -12,7 +12,6 @@
 import { useState, useCallback } from 'react';
 import type { CreativeControlsState } from './types';
 import { CREATIVE_CONTROLS_DEFAULTS } from './constants';
-import { analytics } from '../../services';
 
 /**
  * Hook for managing creative control sliders state
@@ -38,7 +37,6 @@ export function useCreativeControlsState(): CreativeControlsState {
 
   const setEnabled = useCallback((value: boolean) => {
     setEnabledInternal(value);
-    analytics.trackCreativeControlsToggle(value);
   }, []);
   const [creativity, setCreativityInternal] = useState(CREATIVE_CONTROLS_DEFAULTS.creativity);
   const [variation, setVariationInternal] = useState(CREATIVE_CONTROLS_DEFAULTS.variation);
