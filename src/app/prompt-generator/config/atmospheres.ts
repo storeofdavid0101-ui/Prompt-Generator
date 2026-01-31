@@ -15,6 +15,7 @@ export const atmosphereConfigs: Record<Atmosphere, AtmosphereConfig> = {
   cyberpunk: {
     name: 'Cyberpunk',
     keywords: 'cyberpunk aesthetic, rain-soaked streets, holographic displays, futuristic dystopia, tech noir',
+    safeKeywords: 'cyberpunk aesthetic, rain-soaked streets, holographic displays, futuristic city, neon-lit technology',
     gradient: 'linear-gradient(135deg, #ff006e 0%, #8338ec 50%, #3a86ff 100%)',
     description: 'Neon-lit futuristic vibes',
   },
@@ -57,6 +58,7 @@ export const atmosphereConfigs: Record<Atmosphere, AtmosphereConfig> = {
   horror: {
     name: 'Horror',
     keywords: 'horror atmosphere, unsettling, creepy lighting, ominous, dread, sinister mood, foreboding darkness',
+    safeKeywords: 'mysterious atmosphere, dramatic shadows, moody lighting, suspenseful, tense mood, deep darkness',
     gradient: 'linear-gradient(135deg, #1a0a0a 0%, #2d1f1f 50%, #4a2c2c 100%)',
     description: 'Dark and unsettling',
   },

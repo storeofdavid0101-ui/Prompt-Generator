@@ -81,6 +81,12 @@ export interface AtmosphereConfig {
   /** Keywords injected into the prompt */
   readonly keywords: string;
 
+  /**
+   * Safe keywords for models with strict content policies (ChatGPT, DALL-E).
+   * Falls back to keywords if not provided.
+   */
+  readonly safeKeywords?: string;
+
   /** CSS gradient for visual preview */
   readonly gradient: string;
 

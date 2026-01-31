@@ -23,9 +23,22 @@ import type { PromptBuilderParams, ModelContext } from './types';
 import { resolveComponents, resolveAspectRatio } from './parameterResolver';
 import { composeNaturalPrompt, composeTagPrompt } from './promptComposer';
 import { getModelStrategy } from './strategies';
+import { modelConfigs } from '../../config';
 
 /** Default message when no prompt content is provided */
 const EMPTY_PROMPT_MESSAGE = 'Start by adding a subject...';
+
+/** Slider value bounds */
+const SLIDER_MIN = 0;
+const SLIDER_MAX = 100;
+
+/**
+ * Clamps a slider value to the valid range (0-100).
+ * Ensures slider values don't produce invalid model parameters.
+ */
+function clampSlider(value: number): number {
+  return Math.max(SLIDER_MIN, Math.min(SLIDER_MAX, value));
+}
 
 /**
  * Generates an AI-optimized prompt from user selections.
@@ -70,11 +83,16 @@ export function generatePrompt(params: PromptBuilderParams): string {
   const strategy = getModelStrategy(params.selectedModel);
 
   // Resolve all user selections to prompt components
-  const components = resolveComponents(params);
+  // Pass model to handle model-specific transformations (e.g., anonymous director keywords for ChatGPT)
+  const components = resolveComponents(params, params.selectedModel);
+
+  // Check if model has strict content policies (ChatGPT, DALL-E, Firefly)
+  const useSafeMode = modelConfigs[params.selectedModel]?.strictContentPolicy === true;
 
   // Build base prompt using model's preferred style
+  // Safe mode uses simplified structure to avoid trigger phrases
   const basePrompt = strategy.promptStyle === 'natural'
-    ? composeNaturalPrompt(components)
+    ? composeNaturalPrompt(components, useSafeMode)
     : composeTagPrompt(components);
 
   // Handle empty prompt case
@@ -82,11 +100,11 @@ export function generatePrompt(params: PromptBuilderParams): string {
     return EMPTY_PROMPT_MESSAGE;
   }
 
-  // Translate slider values for this model
+  // Translate slider values for this model (clamped to 0-100 range)
   const sliderParams = strategy.translateSliders(
-    params.creativity,
-    params.variation,
-    params.uniqueness
+    clampSlider(params.creativity),
+    clampSlider(params.variation),
+    clampSlider(params.uniqueness)
   );
 
   // Build context for model-specific finalization

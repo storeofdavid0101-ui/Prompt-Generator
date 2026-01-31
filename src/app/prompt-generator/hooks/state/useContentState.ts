@@ -45,6 +45,9 @@ export function useContentState(): ContentState {
   const [subject, setSubjectInternal] = useState('');
   const [characterItems, setCharacterItems] = useState<CharacterItem[]>([]);
   const [currentCharacter, setCurrentCharacterInternal] = useState('');
+  const [gazeDirection, setGazeDirectionInternal] = useState('');
+  const [poseAction, setPoseActionInternal] = useState('');
+  const [characterPosition, setCharacterPositionInternal] = useState('');
   const [location, setLocationInternal] = useState('');
 
   const setSubject = useCallback((value: string) => {
@@ -53,6 +56,18 @@ export function useContentState(): ContentState {
 
   const setCurrentCharacter = useCallback((value: string) => {
     setCurrentCharacterInternal(value);
+  }, []);
+
+  const setGazeDirection = useCallback((value: string) => {
+    setGazeDirectionInternal(value);
+  }, []);
+
+  const setPoseAction = useCallback((value: string) => {
+    setPoseActionInternal(value);
+  }, []);
+
+  const setCharacterPosition = useCallback((value: string) => {
+    setCharacterPositionInternal(value);
   }, []);
 
   const setLocation = useCallback((value: string) => {
@@ -78,6 +93,34 @@ export function useContentState(): ContentState {
     setSubjectInternal('');
     setCharacterItems([]);
     setCurrentCharacterInternal('');
+    setGazeDirectionInternal('');
+    setPoseActionInternal('');
+    setCharacterPositionInternal('');
+    setLocationInternal('');
+  }, []);
+
+  const resetSubject = useCallback(() => {
+    setSubjectInternal('');
+  }, []);
+
+  const resetCharacter = useCallback(() => {
+    setCharacterItems([]);
+    setCurrentCharacterInternal('');
+  }, []);
+
+  const resetGaze = useCallback(() => {
+    setGazeDirectionInternal('');
+  }, []);
+
+  const resetPose = useCallback(() => {
+    setPoseActionInternal('');
+  }, []);
+
+  const resetPosition = useCallback(() => {
+    setCharacterPositionInternal('');
+  }, []);
+
+  const resetLocation = useCallback(() => {
     setLocationInternal('');
   }, []);
 
@@ -85,12 +128,24 @@ export function useContentState(): ContentState {
     subject,
     characterItems,
     currentCharacter,
+    gazeDirection,
+    poseAction,
+    characterPosition,
     location,
     setSubject,
     setCurrentCharacter,
+    setGazeDirection,
+    setPoseAction,
+    setCharacterPosition,
     setLocation,
     addCharacter,
     removeCharacter,
     reset,
+    resetSubject,
+    resetCharacter,
+    resetGaze,
+    resetPose,
+    resetPosition,
+    resetLocation,
   };
 }

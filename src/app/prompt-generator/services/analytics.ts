@@ -209,6 +209,36 @@ export const analytics = {
       location: location || 'none',
     });
   },
+
+  /**
+   * Track gaze direction selection
+   * View in GA4: Reports > Engagement > Events > gaze_selected
+   */
+  trackGazeSelect(gaze: string): void {
+    sendGAEvent('gaze_selected', {
+      gaze: gaze || 'none',
+    });
+  },
+
+  /**
+   * Track pose/action selection
+   * View in GA4: Reports > Engagement > Events > pose_selected
+   */
+  trackPoseSelect(pose: string): void {
+    sendGAEvent('pose_selected', {
+      pose: pose || 'none',
+    });
+  },
+
+  /**
+   * Track character position selection
+   * View in GA4: Reports > Engagement > Events > position_selected
+   */
+  trackPositionSelect(position: string): void {
+    sendGAEvent('position_selected', {
+      position: position || 'none',
+    });
+  },
 };
 
 export default analytics;

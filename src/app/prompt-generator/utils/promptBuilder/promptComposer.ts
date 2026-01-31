@@ -65,9 +65,15 @@ function deduplicateKeywords(keywordStrings: (string | null | undefined)[]): str
  * ChatGPT, DALL-E 3, Flux, and others that prefer prose.
  *
  * @param components - Resolved prompt components
+ * @param useSafeMode - Whether to use safe mode for strict content policy models (ChatGPT, DALL-E)
  * @returns Natural language prompt string
  */
-export function composeNaturalPrompt(components: ResolvedComponents): string {
+export function composeNaturalPrompt(components: ResolvedComponents, useSafeMode: boolean = false): string {
+  // For safe mode (ChatGPT/DALL-E), use simplified structure to avoid trigger phrases
+  if (useSafeMode) {
+    return composeSafePrompt(components);
+  }
+
   const sentences: string[] = [];
 
   const mainSentence = buildMainSentence(components);
@@ -101,23 +107,131 @@ export function composeNaturalPrompt(components: ResolvedComponents): string {
 }
 
 /**
+ * Builds a safe prompt for models with strict content policies (ChatGPT, DALL-E).
+ * Avoids "In the style of" phrasing and uses simpler structure.
+ * Keywords are integrated naturally without attribution patterns.
+ *
+ * @param components - Resolved prompt components
+ * @returns Safe natural language prompt string
+ */
+function composeSafePrompt(components: ResolvedComponents): string {
+  const parts: string[] = [];
+
+  // Subject first
+  if (components.subject) {
+    parts.push(stripTrailingPunctuation(components.subject));
+  }
+
+  // Character descriptions integrated
+  if (components.characters.length > 0) {
+    parts.push(components.characters.join(', '));
+  }
+
+  // Gaze and pose - simpler integration
+  if (components.gaze) {
+    parts.push(components.gaze);
+  }
+
+  if (components.pose) {
+    parts.push(components.pose);
+  }
+
+  if (components.position) {
+    parts.push(components.position);
+  }
+
+  // Location
+  if (components.location) {
+    parts.push(`set ${components.location}`);
+  }
+
+  // Visual style - deduplicate and combine naturally
+  const styleKeywords = deduplicateKeywords([
+    components.atmosphere,
+    components.visualPreset,
+    components.director, // Director keywords without "In the style of"
+  ]);
+  if (styleKeywords) {
+    parts.push(styleKeywords);
+  }
+
+  // Lighting - simpler phrasing
+  if (components.lighting) {
+    parts.push(components.lighting);
+  }
+
+  // Color palette
+  if (components.colorPalette) {
+    parts.push(`Color palette: ${components.colorPalette}`);
+  }
+
+  // Camera/technical
+  if (components.camera) {
+    parts.push(components.camera);
+  }
+
+  if (components.lens) {
+    parts.push(`${components.lens} lens`);
+  }
+
+  if (components.shot) {
+    parts.push(components.shot);
+  }
+
+  if (components.dof) {
+    parts.push(components.dof);
+  }
+
+  return parts.filter(Boolean).join('. ');
+}
+
+/**
+ * Strips trailing punctuation from a string.
+ */
+function stripTrailingPunctuation(str: string): string {
+  return str.replace(/[.!?,;:]+$/, '').trim();
+}
+
+/**
  * Builds the main subject/character/location sentence.
- * Integrates character descriptions clearly with the subject.
+ * Integrates character descriptions and gaze direction clearly with the subject.
  */
 function buildMainSentence(components: ResolvedComponents): string {
   let sentence = '';
 
   // Build subject with character descriptions integrated
   if (components.subject && components.characters.length > 0) {
-    // Combine subject with character descriptions
+    // Combine subject with character descriptions (strip trailing punctuation to avoid doubles)
+    const cleanSubject = stripTrailingPunctuation(components.subject);
     const characterDescriptions = components.characters.join('; ');
-    sentence = `${components.subject}. The character: ${characterDescriptions}`;
+    sentence = `${cleanSubject}. The character: ${characterDescriptions}`;
   } else if (components.subject) {
-    sentence = components.subject;
+    sentence = stripTrailingPunctuation(components.subject);
   } else if (components.characters.length > 0) {
     // Only characters, no subject
     const characterDescriptions = components.characters.join('; ');
     sentence = `Character description: ${characterDescriptions}`;
+  }
+
+  // Add gaze direction if specified
+  if (components.gaze) {
+    sentence = sentence
+      ? `${sentence}, ${components.gaze}`
+      : components.gaze;
+  }
+
+  // Add pose/action if specified
+  if (components.pose) {
+    sentence = sentence
+      ? `${sentence}, ${components.pose}`
+      : components.pose;
+  }
+
+  // Add position in frame if specified
+  if (components.position) {
+    sentence = sentence
+      ? `${sentence}, ${components.position}`
+      : components.position;
   }
 
   if (components.location) {
@@ -157,7 +271,13 @@ function buildTechnicalSentence(components: ResolvedComponents): string {
   const elements: string[] = [];
 
   if (components.camera) {
-    elements.push(`shot on ${components.camera}`);
+    // Avoid duplicate "shot on" - some camera keywords already include it
+    const cameraLower = components.camera.toLowerCase();
+    if (cameraLower.startsWith('shot on ') || cameraLower.startsWith('recorded on ')) {
+      elements.push(components.camera);
+    } else {
+      elements.push(`shot on ${components.camera}`);
+    }
   }
 
   if (components.lens) {
@@ -201,6 +321,21 @@ export function composeTagPrompt(components: ResolvedComponents): string {
   } else if (components.characters.length > 0) {
     // Only characters
     parts.push(`[character: ${components.characters.join(', ')}]`);
+  }
+
+  // Add gaze direction if specified
+  if (components.gaze) {
+    parts.push(components.gaze);
+  }
+
+  // Add pose/action if specified
+  if (components.pose) {
+    parts.push(components.pose);
+  }
+
+  // Add position in frame if specified
+  if (components.position) {
+    parts.push(components.position);
   }
 
   if (components.location) {

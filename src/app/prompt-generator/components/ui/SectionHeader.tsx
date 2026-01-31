@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Lock, Unlock, HelpCircle, X } from 'lucide-react';
 import type { ThemeColors } from '../../config/types';
 import type { HelpDescription } from '../../config/helpDescriptions';
+import { MagicButton } from '../MagicButton';
 
 interface TooltipPosition {
   top: number;
@@ -28,6 +29,7 @@ interface SectionHeaderProps {
   help?: HelpDescription;
   onToggle: (key: string) => void;
   onToggleLock?: () => void;
+  onRandomize?: () => void;
   themeColors: ThemeColors;
 }
 
@@ -41,6 +43,7 @@ export function SectionHeader({
   help,
   onToggle,
   onToggleLock,
+  onRandomize,
   themeColors,
 }: SectionHeaderProps) {
   const [showHelp, setShowHelp] = useState(false);
@@ -162,28 +165,38 @@ export function SectionHeader({
           </motion.div>
         </button>
 
-        {onToggleLock && (
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggleLock();
-            }}
-            className="p-1 rounded-md transition-colors"
-            style={{
-              color: isLocked ? themeColors.accent : themeColors.textTertiary,
-              backgroundColor: isLocked ? `${themeColors.accent}15` : 'transparent',
-            }}
-            title={isLocked ? 'Unlock this section' : 'Lock this section'}
-          >
-            {isLocked ? (
-              <Lock className="w-3.5 h-3.5" />
-            ) : (
-              <Unlock className="w-3.5 h-3.5" />
-            )}
-          </motion.button>
-        )}
+        <div className="flex items-center gap-1">
+          {onRandomize && (
+            <MagicButton
+              onClick={onRandomize}
+              disabled={isLocked}
+              themeColors={themeColors}
+              size="sm"
+            />
+          )}
+          {onToggleLock && (
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleLock();
+              }}
+              className="p-1 rounded-md transition-colors"
+              style={{
+                color: isLocked ? themeColors.accent : themeColors.textTertiary,
+                backgroundColor: isLocked ? `${themeColors.accent}15` : 'transparent',
+              }}
+              title={isLocked ? 'Unlock this section' : 'Lock this section'}
+            >
+              {isLocked ? (
+                <Lock className="w-3.5 h-3.5" />
+              ) : (
+                <Unlock className="w-3.5 h-3.5" />
+              )}
+            </motion.button>
+          )}
+        </div>
       </div>
 
       {/* Help Tooltip - rendered via Portal to avoid overflow clipping */}

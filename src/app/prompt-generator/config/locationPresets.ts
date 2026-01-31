@@ -7,6 +7,8 @@ export interface LocationPreset {
   label: string;
   keywords: string;
   category: 'urban' | 'nature' | 'interior' | 'fantasy' | 'industrial';
+  /** Safe keywords for models with strict content policies */
+  safeKeywords?: string;
 }
 
 export const locationPresets: LocationPreset[] = [
@@ -27,11 +29,11 @@ export const locationPresets: LocationPreset[] = [
   { label: 'Snowy Tundra', keywords: 'frozen tundra, snow-covered landscape, icy wilderness, arctic environment', category: 'nature' },
 
   // Interior
-  { label: 'Abandoned Warehouse', keywords: 'abandoned warehouse interior, industrial decay, dusty, shafts of light', category: 'interior' },
+  { label: 'Abandoned Warehouse', keywords: 'abandoned warehouse interior, industrial decay, dusty, shafts of light', category: 'interior', safeKeywords: 'old warehouse interior, industrial architecture, dusty, dramatic shafts of light' },
   { label: 'Luxury Penthouse', keywords: 'luxurious penthouse interior, modern design, floor-to-ceiling windows, elegant', category: 'interior' },
   { label: 'Old Library', keywords: 'ancient library, towering bookshelves, dusty tomes, warm ambient light', category: 'interior' },
   { label: 'Neon Bar', keywords: 'neon-lit bar interior, moody atmosphere, colorful lights, nightlife', category: 'interior' },
-  { label: 'Cathedral', keywords: 'grand cathedral interior, gothic architecture, stained glass windows, sacred space', category: 'interior' },
+  { label: 'Cathedral', keywords: 'grand cathedral interior, gothic architecture, stained glass windows, sacred space', category: 'interior', safeKeywords: 'grand cathedral-like interior, gothic architecture, beautiful stained glass windows, towering arches' },
   { label: 'Office', keywords: 'modern office interior, corporate environment, desks, computers, professional workspace', category: 'interior' },
 
   // Fantasy
@@ -42,9 +44,9 @@ export const locationPresets: LocationPreset[] = [
 
   // Industrial
   { label: 'Factory Floor', keywords: 'industrial factory floor, machinery, metal structures, manufacturing', category: 'industrial' },
-  { label: 'Cyberpunk City', keywords: 'cyberpunk megacity, towering skyscrapers, holographic ads, dystopian future', category: 'industrial' },
+  { label: 'Cyberpunk City', keywords: 'cyberpunk megacity, towering skyscrapers, holographic ads, dystopian future', category: 'industrial', safeKeywords: 'futuristic megacity, towering skyscrapers, holographic advertisements, neon-lit future' },
   { label: 'Space Station', keywords: 'space station interior, futuristic technology, zero gravity, orbital view', category: 'industrial' },
-  { label: 'Underground Bunker', keywords: 'underground bunker, concrete walls, survival shelter, post-apocalyptic', category: 'industrial' },
+  { label: 'Underground Bunker', keywords: 'underground bunker, concrete walls, survival shelter, post-apocalyptic', category: 'industrial', safeKeywords: 'underground facility, concrete walls, industrial shelter, subterranean architecture' },
 ];
 
 // Group presets by category for organized display

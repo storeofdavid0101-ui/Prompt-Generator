@@ -6,7 +6,7 @@
 import type { CameraOption, ShotOption, DOFOption, AspectRatioOption } from './types';
 
 /** Camera category type */
-export type CameraCategory = 'consumer' | 'mirrorless' | 'cinema' | 'film' | 'premium' | 'classic' | 'vintage-film' | 'vintage-video' | 'vintage-photo' | 'antique';
+export type CameraCategory = 'consumer' | 'cinema' | 'film' | 'premium' | 'classic' | 'vintage-film' | 'vintage-video' | 'vintage-photo' | 'antique';
 
 /** Extended camera option with category */
 export interface CameraOptionWithCategory extends CameraOption {
@@ -20,17 +20,8 @@ export const cameraOptions: CameraOptionWithCategory[] = [
   { label: 'GoPro', keywords: 'GoPro footage, wide angle, action camera, immersive', category: 'consumer' },
   { label: 'DJI Drone', keywords: 'drone footage, quadcopter camera, sweeping flyover', category: 'consumer' },
 
-  // Modern DSLRs & Mirrorless
-  { label: 'Sony A7S III', keywords: 'shot on Sony A7S III, low light specialist, video hybrid', category: 'mirrorless' },
-  { label: 'Sony A1', keywords: 'shot on Sony A1, 50 megapixel, flagship mirrorless', category: 'mirrorless' },
-  { label: 'Canon R5', keywords: 'shot on Canon R5, mirrorless, high resolution, modern', category: 'mirrorless' },
-  { label: 'Canon 5D Mark IV', keywords: 'shot on Canon 5D, full frame DSLR, professional photography', category: 'mirrorless' },
-  { label: 'Nikon Z9', keywords: 'shot on Nikon Z9, flagship mirrorless, professional', category: 'mirrorless' },
-  { label: 'Nikon D850', keywords: 'shot on Nikon D850, high resolution DSLR, sharp detail', category: 'mirrorless' },
-
   // Modern Cinema
   { label: 'ARRI Alexa', keywords: 'shot on ARRI Alexa, digital cinema, rich colors, cinematic', category: 'cinema' },
-  { label: 'ARRI Alexa Mini', keywords: 'shot on ARRI Alexa Mini, modern cinema, pristine quality', category: 'cinema' },
   { label: 'ARRI Alexa 65', keywords: 'shot on ARRI Alexa 65, large format digital, incredible detail', category: 'cinema' },
   { label: 'RED V-Raptor', keywords: 'shot on RED V-Raptor, 8K cinema, ultra high resolution', category: 'cinema' },
   { label: 'RED Komodo', keywords: 'shot on RED Komodo, 6K digital cinema, sharp, modern', category: 'cinema' },
@@ -38,7 +29,6 @@ export const cameraOptions: CameraOptionWithCategory[] = [
   { label: 'Sony FX9', keywords: 'shot on Sony FX9, documentary cinema, natural colors', category: 'cinema' },
   { label: 'Blackmagic URSA', keywords: 'shot on Blackmagic URSA, digital film, rich dynamic range', category: 'cinema' },
   { label: 'Canon C500', keywords: 'shot on Canon C500, cinema EOS, clean digital', category: 'cinema' },
-  { label: 'Canon C70', keywords: 'shot on Canon C70, compact cinema camera, versatile', category: 'cinema' },
 
   // Classic Film Formats
   { label: '35mm Film', keywords: 'shot on 35mm film, classic cinema look, rich colors, natural grain', category: 'film' },
@@ -69,7 +59,6 @@ export const cameraOptions: CameraOptionWithCategory[] = [
   // Vintage Video
   { label: 'VHS Camcorder', keywords: 'recorded on VHS camcorder, VHS aesthetic, analog video, scan lines, tracking artifacts, color bleeding, horizontal noise bars, oversaturated reds, interlaced 480i, chromatic aberration, tape degradation, magnetic tape distortion, 1980s home video, CRT television look', category: 'vintage-video' },
   { label: 'MiniDV', keywords: 'recorded on MiniDV camcorder, early digital video, 2000s indie film look, low resolution 480i, soft blurry image, standard definition video still, DV compression artifacts, interlaced video, tape dropout glitches, Y2K era aesthetic, muted washed out colors, color smearing on edges, blocky pixelated compression, crushed blacks, blown highlights, green color cast, low quality video capture, fuzzy details', category: 'vintage-video' },
-  { label: 'Hi8', keywords: 'recorded on Hi8 camcorder, consumer analog video, 1990s camcorder aesthetic, warmer colors than VHS, pastel color shift, soft highlights, family vacation footage, S-video quality, late analog era, RGB color fringing on edges, chroma bleed, soft blurry low resolution, interlaced video artifacts', category: 'vintage-video' },
   { label: 'Handycam', keywords: 'recorded on Sony Handycam, consumer camcorder, home video aesthetic, low resolution video, soft blurry image, auto-exposure fluctuations, handheld camera shake, amateur video quality, auto white balance color shifts, washed out colors, video noise in shadows, interlaced artifacts, blown out highlights, consumer video look, 1990s home movie, fuzzy details, Video8 format', category: 'vintage-video' },
   { label: 'Betacam', keywords: 'recorded on Betacam SP, broadcast video, standard definition 480i, soft blurry image, low resolution, blue cyan color cast tint, blown out highlights, hazy lifted blacks, flat low contrast image, faded washed out colors, RGB misregistration, chroma misalignment, old TV news broadcast footage, 1980s-90s video capture, analog tape generation loss, interlace scan lines', category: 'vintage-video' },
 
@@ -90,7 +79,6 @@ export const cameraOptions: CameraOptionWithCategory[] = [
 // Camera category display names
 export const cameraCategoryNames: Record<CameraCategory, string> = {
   'consumer': 'Consumer & Everyday',
-  'mirrorless': 'DSLR & Mirrorless',
   'cinema': 'Modern Cinema',
   'film': 'Film Formats',
   'premium': 'Premium Photography',
@@ -268,7 +256,6 @@ export const cameraAspectRatios: Record<string, string[]> = {
   // Vintage Video - mostly 4:3
   'VHS Camcorder': ['4:3'],
   'Betacam': ['4:3', '16:9'],
-  'Hi8': ['4:3'],
   'MiniDV': ['4:3', '16:9'],
   'Handycam': ['4:3', '16:9'],
   // Film formats

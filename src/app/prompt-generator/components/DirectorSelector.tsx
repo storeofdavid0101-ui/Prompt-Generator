@@ -11,6 +11,7 @@ import { Sparkles, ChevronDown, Check, X } from 'lucide-react';
 import { directorStyles, helpDescriptions } from '../config';
 import type { ThemeColors } from '../config/types';
 import { SectionLock } from './SectionLock';
+import { MagicButton } from './MagicButton';
 import { HelpLabel } from './ui';
 
 interface DirectorSelectorProps {
@@ -19,6 +20,7 @@ interface DirectorSelectorProps {
   onToggleLock: () => void;
   onDirectorChange: (director: string) => void;
   themeColors: ThemeColors;
+  onRandomize?: () => void;
 }
 
 export function DirectorSelector({
@@ -27,6 +29,7 @@ export function DirectorSelector({
   onToggleLock,
   onDirectorChange,
   themeColors,
+  onRandomize,
 }: DirectorSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -53,7 +56,17 @@ export function DirectorSelector({
           help={helpDescriptions.director}
           themeColors={themeColors}
         />
-        <SectionLock isLocked={isLocked} onToggle={onToggleLock} themeColors={themeColors} />
+        <div className="flex items-center gap-1.5">
+          {onRandomize && (
+            <MagicButton
+              onClick={onRandomize}
+              disabled={isLocked}
+              themeColors={themeColors}
+              size="sm"
+            />
+          )}
+          <SectionLock isLocked={isLocked} onToggle={onToggleLock} themeColors={themeColors} />
+        </div>
       </div>
 
       <div ref={dropdownRef} className="relative">

@@ -119,6 +119,10 @@ export function usePromptGeneratorState(): PromptGeneratorStateReturn {
     selectedLighting: visual.selectedLighting,
     depthOfField: camera.depthOfField,
     selectedDirector: director.selectedDirector,
+    selectedLens: camera.selectedLens,
+    customLens: camera.customLens,
+    selectedShot: camera.selectedShot,
+    selectedLocation: content.location,
   });
 
   // ============================================================
@@ -135,18 +139,18 @@ export function usePromptGeneratorState(): PromptGeneratorStateReturn {
   // Character Management (lock-aware wrappers)
   // ============================================================
   const addCharacter = useCallback(() => {
-    if (!sections.lockedSections.subject) {
+    if (!sections.lockedSections.character) {
       content.addCharacter();
     }
-  }, [sections.lockedSections.subject, content]);
+  }, [sections.lockedSections.character, content]);
 
   const removeCharacter = useCallback(
     (id: string) => {
-      if (!sections.lockedSections.subject) {
+      if (!sections.lockedSections.character) {
         content.removeCharacter(id);
       }
     },
-    [sections.lockedSections.subject, content]
+    [sections.lockedSections.character, content]
   );
 
   // ============================================================
@@ -158,6 +162,9 @@ export function usePromptGeneratorState(): PromptGeneratorStateReturn {
         subject: content.subject,
         characterItems: content.characterItems,
         currentCharacter: content.currentCharacter,
+        gazeDirection: content.gazeDirection,
+        poseAction: content.poseAction,
+        characterPosition: content.characterPosition,
         location: content.location,
         selectedVisualPreset: visual.selectedVisualPreset,
         selectedColorPalette: visual.selectedColorPalette,
@@ -184,6 +191,9 @@ export function usePromptGeneratorState(): PromptGeneratorStateReturn {
       content.subject,
       content.characterItems,
       content.currentCharacter,
+      content.gazeDirection,
+      content.poseAction,
+      content.characterPosition,
       content.location,
       visual.selectedVisualPreset,
       visual.selectedColorPalette,
@@ -240,8 +250,24 @@ export function usePromptGeneratorState(): PromptGeneratorStateReturn {
   const resetAll = useCallback(() => {
     const locks = sections.lockedSections;
 
+    // Reset individual content fields based on their locks
     if (!locks.subject) {
-      content.reset();
+      content.resetSubject();
+    }
+    if (!locks.character) {
+      content.resetCharacter();
+    }
+    if (!locks.gaze) {
+      content.resetGaze();
+    }
+    if (!locks.pose) {
+      content.resetPose();
+    }
+    if (!locks.position) {
+      content.resetPosition();
+    }
+    if (!locks.location) {
+      content.resetLocation();
     }
     if (!locks.atmosphere) {
       visual.resetAtmosphere();
@@ -300,6 +326,12 @@ export function usePromptGeneratorState(): PromptGeneratorStateReturn {
     characterItems: content.characterItems,
     currentCharacter: content.currentCharacter,
     setCurrentCharacter: content.setCurrentCharacter,
+    gazeDirection: content.gazeDirection,
+    setGazeDirection: content.setGazeDirection,
+    poseAction: content.poseAction,
+    setPoseAction: content.setPoseAction,
+    characterPosition: content.characterPosition,
+    setCharacterPosition: content.setCharacterPosition,
     location: content.location,
     setLocation: content.setLocation,
     addCharacter,

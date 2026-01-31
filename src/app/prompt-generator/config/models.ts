@@ -18,6 +18,7 @@ export const modelConfigs: Record<AIModel, ModelConfig> = {
     aspectParam: '',
     supportsNegativePrompt: true,
     promptStyle: 'natural',
+    strictContentPolicy: true,
   },
   midjourney: {
     name: 'Midjourney',
@@ -74,6 +75,7 @@ export const modelConfigs: Record<AIModel, ModelConfig> = {
     aspectParam: 'size:',
     supportsNegativePrompt: false,
     promptStyle: 'natural',
+    strictContentPolicy: true,
   },
   imagen: {
     name: 'Imagen 3',
@@ -118,5 +120,6 @@ export const modelConfigs: Record<AIModel, ModelConfig> = {
     aspectParam: 'aspect_ratio:',
     supportsNegativePrompt: false,
     promptStyle: 'natural',
+    strictContentPolicy: true,
   },
 };

@@ -8,6 +8,9 @@ export { LocationDropdown } from './LocationDropdown';
 export { LocationPresetList } from './LocationPresetList';
 export { CharacterInput } from './CharacterInput';
 export { CharacterTag } from './CharacterTag';
+export { GazeDirection } from './GazeDirection';
+export { PoseAction } from './PoseAction';
+export { CharacterPosition } from './CharacterPosition';
 
 // Re-export types for external use
 export type {
@@ -15,4 +18,6 @@ export type {
   LocationDropdownProps,
   CharacterInputProps,
   CharacterTagProps,
+  MagicFieldState,
+  MagicHandlers,
 } from './types';

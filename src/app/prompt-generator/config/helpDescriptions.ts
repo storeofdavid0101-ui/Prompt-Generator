@@ -25,6 +25,21 @@ export const helpDescriptions: Record<string, HelpDescription> = {
     description: 'The setting or environment where your scene takes place. Choose from presets or enter a custom location.',
     tip: 'Combine location with atmosphere for more immersive scenes.',
   },
+  gaze: {
+    title: 'Gaze Direction',
+    description: 'Control where your character is looking. This adds natural expression and directs viewer attention.',
+    tip: 'Direct eye contact creates connection, looking away adds mystery.',
+  },
+  pose: {
+    title: 'Character Pose/Action',
+    description: 'Define the body pose or action state of your character. Adds dynamic energy and cinematic presence.',
+    tip: 'Static poses work well for portraits, dynamic poses add movement and energy.',
+  },
+  position: {
+    title: 'Position in Frame',
+    description: 'Control where your character appears in the frame. Uses the rule of thirds for balanced composition.',
+    tip: 'Off-center positioning (left/right) creates more dynamic, cinematic compositions.',
+  },
 
   // Model & Style
   model: {

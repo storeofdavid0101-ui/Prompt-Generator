@@ -62,6 +62,8 @@ export type {
 // =============================================================================
 
 export type {
+  BlockReason,
+  BlockReasonMap,
   ConflictRules,
   DirectorStyle,
   EffectCategory,

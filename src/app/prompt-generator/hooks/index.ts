@@ -25,6 +25,8 @@
 export { useTheme } from './useTheme';
 export { useConflicts } from './useConflicts';
 export { usePromptGeneratorState } from './usePromptGeneratorState';
+export { useMagicRandomize, type MagicState } from './useMagicRandomize';
+export { useAnalyticsHandlers } from './useAnalyticsHandlers';
 
 // ============================================================================
 // Context Provider & Hook

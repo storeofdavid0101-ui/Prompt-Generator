@@ -19,3 +19,7 @@ export { LightingSelector } from './LightingSelector';
 export { AdvancedTools } from './AdvancedTools';
 export { OutputBar } from './OutputBar';
 export { SectionLock } from './SectionLock';
+export { FeedbackButton } from './FeedbackButton';
+export { MagicButton, RandomizeAllButton } from './MagicButton';
+export { MagicGlow, MagicPulse } from './MagicGlow';
+export { ScrollHint } from './ScrollHint';

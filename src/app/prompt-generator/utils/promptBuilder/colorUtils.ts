@@ -6,6 +6,9 @@
 /** Regex pattern for valid 6-digit hex color codes (with or without #) */
 const HEX_COLOR_PATTERN = /^#?[0-9A-Fa-f]{6}$/;
 
+/** Maximum number of custom colors allowed to prevent prompt bloating */
+export const MAX_CUSTOM_COLORS = 10;
+
 /**
  * Validates whether a string is a valid 6-digit hex color code.
  *
@@ -39,12 +42,13 @@ export function formatHexColor(color: string): string {
 
 /**
  * Filters an array of color strings to only valid hex colors.
+ * Limits the result to MAX_CUSTOM_COLORS to prevent prompt bloating.
  *
  * @param colors - Array of color strings to filter
- * @returns Array containing only valid hex color codes
+ * @returns Array containing only valid hex color codes (max 10)
  */
 export function filterValidColors(colors: string[]): string[] {
-  return colors.filter(isValidHexColor);
+  return colors.filter(isValidHexColor).slice(0, MAX_CUSTOM_COLORS);
 }
 
 /**

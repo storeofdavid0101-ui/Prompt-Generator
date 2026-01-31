@@ -12,7 +12,6 @@ import { Palette, Check, Pipette } from 'lucide-react';
 import { SectionHeader } from './ui';
 import { colorPalettes, helpDescriptions } from '../config';
 import type { ThemeColors } from '../config/types';
-import { SectionLock } from './SectionLock';
 
 interface ColorPaletteSelectorProps {
   selectedColorPalette: string | null;
@@ -24,6 +23,7 @@ interface ColorPaletteSelectorProps {
   onCustomColorsChange: (colors: string[]) => void;
   onToggleSection: (key: string) => void;
   themeColors: ThemeColors;
+  onRandomize?: () => void;
 }
 
 function isValidHexColor(color: string): boolean {
@@ -46,6 +46,7 @@ export function ColorPaletteSelector({
   onCustomColorsChange,
   onToggleSection,
   themeColors,
+  onRandomize,
 }: ColorPaletteSelectorProps) {
   const getBadge = () => {
     if (selectedColorPalette === 'custom') return 'Custom';
@@ -73,6 +74,7 @@ export function ColorPaletteSelector({
         help={helpDescriptions.colorPalette}
         onToggle={onToggleSection}
         onToggleLock={onToggleLock}
+        onRandomize={onRandomize}
         themeColors={themeColors}
       />
       <AnimatePresence>

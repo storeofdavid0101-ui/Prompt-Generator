@@ -7,6 +7,9 @@
  * - Atmospheres and visual settings
  * - Lighting and preset combinations
  * - Director style redundancies
+ * - Location/environment conflicts
+ * - Camera grammar (shot + lens + DOF)
+ * - Style stacking limits
  *
  * @module conflicts
  */
@@ -45,3 +48,70 @@ export {
   directorAtmosphereRedundancy,
 } from './director';
 export type { DirectorWithConflicts } from './director';
+
+// Location-related conflicts
+export {
+  locationMeta,
+  atmosphereEraConflicts,
+  lightingLocationConflicts,
+  shotScaleConflicts,
+  getLocationMeta,
+  isAtmosphereBlockedByLocation,
+  isLightingBlockedByLocation,
+} from './location';
+export type {
+  LocationCategory,
+  LocationMetaCategory,
+  LocationScale,
+  LocationEra,
+  LocationMeta,
+} from './location';
+
+// Camera grammar conflicts (shot + lens + DOF)
+export {
+  shotGrammar,
+  shotLensConflicts,
+  shotDOFConflicts,
+  lensDOFConflicts,
+  lensRecommendedShots,
+  isLensBlockedByShot,
+  isDOFBlockedByShot,
+  isDOFBlockedByLens,
+  getRecommendedShots,
+  getBlockedLensesForShot,
+} from './cameraGrammar';
+export type { ShotGrammar } from './cameraGrammar';
+
+// Style stacking detection
+export {
+  directorImpliedStyles,
+  atmosphereImpliedStyles,
+  presetImpliedStyles,
+  lightingImpliedStyles,
+  STYLE_CATEGORY_LIMITS,
+  analyzeStyleStacking,
+  getReducingOptions,
+} from './styleStacking';
+export type { StyleCategory, StyleStackingAnalysis } from './styleStacking';
+
+// Director-lens conflicts
+export {
+  directorPreferredLens,
+  directorBlockedLens,
+  isLensBlockedByDirector,
+  getDirectorCompatibleLenses,
+  getDirectorBlockedLenses,
+} from './directorLens';
+
+// Subject-location compatibility
+export {
+  subjectKeywordBlockedLocations,
+  themeLocationPreferences,
+  enclosedLocations,
+  openLocations,
+  isLocationCompatibleWithSubject,
+  getBlockedLocationCategories,
+  getPreferredLocationCategories,
+  filterCompatibleLocations,
+} from './subjectLocation';
+export type { LocationCategory as SubjectLocationCategory } from './subjectLocation';

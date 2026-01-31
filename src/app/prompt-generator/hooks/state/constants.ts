@@ -105,6 +105,11 @@ export const DEFAULT_EXPANDED_SECTIONS: ExpandedSections = {
 export const DEFAULT_LOCKED_SECTIONS: LockedSections = {
   model: false,
   subject: false,
+  character: false,
+  gaze: false,
+  pose: false,
+  position: false,
+  location: false,
   director: false,
   atmosphere: false,
   visual: false,

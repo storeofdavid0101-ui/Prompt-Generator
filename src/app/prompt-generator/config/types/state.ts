@@ -57,6 +57,21 @@ export interface LockedSections {
   /** Subject input locked */
   readonly subject: boolean;
 
+  /** Character description locked */
+  readonly character: boolean;
+
+  /** Gaze direction locked */
+  readonly gaze: boolean;
+
+  /** Pose/action locked */
+  readonly pose: boolean;
+
+  /** Position in frame locked */
+  readonly position: boolean;
+
+  /** Location locked */
+  readonly location: boolean;
+
   /** Director style locked */
   readonly director: boolean;
 

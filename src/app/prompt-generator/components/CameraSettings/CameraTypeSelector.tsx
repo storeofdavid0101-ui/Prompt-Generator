@@ -25,6 +25,7 @@ export const CameraTypeSelector = memo(function CameraTypeSelector({
   selectedCamera,
   customCamera,
   blockedCameras,
+  cameraBlockReasons,
   onCameraChange,
   onCustomCameraChange,
   isLocked,
@@ -42,6 +43,7 @@ export const CameraTypeSelector = memo(function CameraTypeSelector({
         selectedCamera={selectedCamera}
         customCamera={customCamera}
         blockedCameras={blockedCameras}
+        cameraBlockReasons={cameraBlockReasons}
         onCameraChange={onCameraChange}
         onCustomCameraChange={onCustomCameraChange}
         isLocked={isLocked}

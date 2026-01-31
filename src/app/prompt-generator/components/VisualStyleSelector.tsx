@@ -22,6 +22,7 @@ interface VisualStyleSelectorProps {
   onSelectPreset: (preset: string | null) => void;
   onToggleSection: (key: string) => void;
   themeColors: ThemeColors;
+  onRandomize?: () => void;
 }
 
 export function VisualStyleSelector({
@@ -33,6 +34,7 @@ export function VisualStyleSelector({
   onSelectPreset,
   onToggleSection,
   themeColors,
+  onRandomize,
 }: VisualStyleSelectorProps) {
   return (
     <div>
@@ -46,6 +48,7 @@ export function VisualStyleSelector({
         help={helpDescriptions.colorGrade}
         onToggle={onToggleSection}
         onToggleLock={onToggleLock}
+        onRandomize={onRandomize}
         themeColors={themeColors}
       />
       <AnimatePresence>
@@ -59,6 +62,7 @@ export function VisualStyleSelector({
             <div className="grid grid-cols-2 gap-2 pb-4">
               {Object.entries(visualPresets).map(([key, config]) => {
                 const isBlocked = conflicts.blockedPresets.has(key);
+                const blockReason = conflicts.presetBlockReasons.get(key);
                 return (
                   <button
                     key={key}
@@ -68,14 +72,17 @@ export function VisualStyleSelector({
                       onSelectPreset(selectedVisualPreset === key ? null : key)
                     }
                     disabled={isLocked || isBlocked}
-                    className="relative p-3 rounded-xl text-left transition-all border overflow-hidden hover:scale-[1.02] active:scale-[0.98]"
+                    className="relative p-3 rounded-xl text-left transition-all border overflow-hidden hover:scale-[1.02] active:scale-[0.98] group"
                     style={{
                       borderColor:
                         selectedVisualPreset === key
                           ? themeColors.accent
+                          : isBlocked
+                          ? themeColors.warning + '40'
                           : themeColors.borderColor,
-                      opacity: isLocked || isBlocked ? 0.4 : 1,
+                      opacity: isLocked || isBlocked ? 0.5 : 1,
                     }}
+                    title={isBlocked && blockReason ? blockReason.reason : undefined}
                   >
                     <div
                       className="absolute inset-0 opacity-20"
@@ -83,11 +90,19 @@ export function VisualStyleSelector({
                     />
                     <div className="relative z-10">
                       <span
-                        className="text-sm font-medium"
+                        className="text-sm font-medium block"
                         style={{ color: themeColors.textPrimary }}
                       >
                         {config.name}
                       </span>
+                      {isBlocked && blockReason && (
+                        <span
+                          className="text-[10px] block mt-0.5"
+                          style={{ color: themeColors.warning }}
+                        >
+                          {blockReason.reason}
+                        </span>
+                      )}
                       {selectedVisualPreset === key && (
                         <Check
                           className="absolute top-2 right-2 w-4 h-4"

@@ -19,6 +19,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Camera, Video, Film, Aperture, Clapperboard, Edit3 } from 'lucide-react';
 import type { ThemeColors } from '../../../config/types';
+import type { BlockReasonMap } from '../../../config/types/conflict';
 import type { CameraCategory, CameraOptionWithCategory } from '../../../config/cameraOptions';
 import { camerasByCategory, cameraCategoryNames } from '../../../config/cameraOptions';
 
@@ -40,6 +41,7 @@ interface CameraDropdownProps {
   selectedCamera: string;
   customCamera: string;
   blockedCameras: Set<string>;
+  cameraBlockReasons?: BlockReasonMap;
   onCameraChange: (camera: string) => void;
   onCustomCameraChange: (value: string) => void;
   isLocked: boolean;
@@ -51,8 +53,6 @@ function getCategoryIcon(category: CameraCategory) {
   switch (category) {
     case 'consumer':
       return Camera;
-    case 'mirrorless':
-      return Aperture;
     case 'cinema':
     case 'classic':
       return Clapperboard;
@@ -83,6 +83,7 @@ export const CameraDropdown = memo(function CameraDropdown({
   selectedCamera,
   customCamera,
   blockedCameras,
+  cameraBlockReasons,
   onCameraChange,
   onCustomCameraChange,
   isLocked,
@@ -249,7 +250,7 @@ export const CameraDropdown = memo(function CameraDropdown({
 
   // Category order
   const categoryOrder: CameraCategory[] = [
-    'consumer', 'mirrorless', 'cinema', 'film', 'premium',
+    'consumer', 'cinema', 'film', 'premium',
     'classic', 'vintage-film', 'vintage-video', 'vintage-photo', 'antique'
   ];
 
@@ -330,6 +331,7 @@ export const CameraDropdown = memo(function CameraDropdown({
                     {cameras.map((camera) => {
                       const isBlocked = blockedCameras.has(camera.label);
                       const isSelected = selectedCamera === camera.label && !customCamera;
+                      const blockReason = cameraBlockReasons?.get(camera.label);
 
                       return (
                         <div
@@ -338,9 +340,10 @@ export const CameraDropdown = memo(function CameraDropdown({
                           aria-selected={isSelected}
                           aria-disabled={isBlocked}
                           onClick={() => !isBlocked && handleCameraSelect(camera.label)}
+                          title={isBlocked && blockReason ? blockReason.reason : undefined}
                           className={`
                             w-full px-3 py-2 text-sm text-left cursor-pointer transition-all
-                            ${isBlocked ? 'opacity-40 cursor-not-allowed' : 'hover:bg-black/5'}
+                            ${isBlocked ? 'opacity-50 cursor-not-allowed' : 'hover:bg-black/5'}
                             ${isSelected ? 'font-medium' : ''}
                           `}
                           style={{
@@ -349,10 +352,20 @@ export const CameraDropdown = memo(function CameraDropdown({
                             paddingLeft: '2rem',
                           }}
                         >
-                          <span className="flex items-center gap-2">
-                            {camera.label}
-                            {isBlocked && <span className="text-xs">⚠️</span>}
-                          </span>
+                          <div className="flex flex-col">
+                            <span className="flex items-center gap-2">
+                              {camera.label}
+                              {isBlocked && <span className="text-xs">⚠️</span>}
+                            </span>
+                            {isBlocked && blockReason && (
+                              <span
+                                className="text-[10px] mt-0.5"
+                                style={{ color: themeColors.warning }}
+                              >
+                                {blockReason.reason}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       );
                     })}

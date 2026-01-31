@@ -7,6 +7,31 @@ import type { CharacterItem, ThemeColors } from '../../config/types';
 import type { LocationPreset } from '../../config/locationPresets';
 
 /**
+ * Magic state for glow effects on randomized fields
+ */
+export interface MagicFieldState {
+  subject: boolean;
+  character: boolean;
+  gaze: boolean;
+  pose: boolean;
+  position: boolean;
+  location: boolean;
+}
+
+/**
+ * Magic randomize handlers
+ */
+export interface MagicHandlers {
+  randomizeSubject: () => void;
+  randomizeCharacter: () => void;
+  randomizeGaze: () => void;
+  randomizePose: () => void;
+  randomizePosition: () => void;
+  randomizeLocation: () => void;
+  randomizeContent: () => void;
+}
+
+/**
  * Props for the main SubjectInputs component
  */
 export interface SubjectInputsProps {
@@ -16,12 +41,38 @@ export interface SubjectInputsProps {
   characterItems: CharacterItem[];
   /** Current character input value (before submission) */
   currentCharacter: string;
+  /** Selected gaze direction */
+  gazeDirection: string;
+  /** Selected pose/action */
+  poseAction: string;
+  /** Selected character position in frame */
+  characterPosition: string;
   /** Location description or preset keywords */
   location: string;
-  /** Whether the section is locked from editing */
-  isLocked: boolean;
-  /** Callback to toggle section lock state */
-  onToggleLock: () => void;
+  /** Whether the subject section is locked from editing */
+  isSubjectLocked: boolean;
+  /** Whether the character section is locked from editing */
+  isCharacterLocked: boolean;
+  /** Whether the gaze direction is locked from editing */
+  isGazeLocked: boolean;
+  /** Whether the pose/action is locked from editing */
+  isPoseLocked: boolean;
+  /** Whether the position is locked from editing */
+  isPositionLocked: boolean;
+  /** Whether the location is locked from editing */
+  isLocationLocked: boolean;
+  /** Callback to toggle subject lock state */
+  onToggleSubjectLock: () => void;
+  /** Callback to toggle character lock state */
+  onToggleCharacterLock: () => void;
+  /** Callback to toggle gaze lock state */
+  onToggleGazeLock: () => void;
+  /** Callback to toggle pose lock state */
+  onTogglePoseLock: () => void;
+  /** Callback to toggle position lock state */
+  onTogglePositionLock: () => void;
+  /** Callback to toggle location lock state */
+  onToggleLocationLock: () => void;
   /** Callback when subject text changes */
   onSubjectChange: (value: string) => void;
   /** Callback when character input changes */
@@ -30,10 +81,20 @@ export interface SubjectInputsProps {
   onAddCharacter: () => void;
   /** Callback to remove a character by ID */
   onRemoveCharacter: (id: string) => void;
+  /** Callback when gaze direction changes */
+  onGazeChange: (gaze: string) => void;
+  /** Callback when pose/action changes */
+  onPoseChange: (pose: string) => void;
+  /** Callback when character position changes */
+  onPositionChange: (position: string) => void;
   /** Callback when location changes */
   onLocationChange: (value: string) => void;
   /** Theme colors for consistent styling */
   themeColors: ThemeColors;
+  /** Magic state for glow effects (optional) */
+  magicState?: MagicFieldState;
+  /** Magic randomize handlers (optional) */
+  magicHandlers?: MagicHandlers;
 }
 
 /**

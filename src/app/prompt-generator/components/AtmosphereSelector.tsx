@@ -12,6 +12,7 @@ import { Cloud, ChevronDown, Check, AlertTriangle, X } from 'lucide-react';
 import { atmosphereConfigs, helpDescriptions } from '../config';
 import type { Atmosphere, ThemeColors, ConflictResult } from '../config/types';
 import { SectionLock } from './SectionLock';
+import { MagicButton } from './MagicButton';
 import { HelpLabel } from './ui';
 
 interface AtmosphereSelectorProps {
@@ -21,6 +22,7 @@ interface AtmosphereSelectorProps {
   conflicts: ConflictResult;
   onSelectAtmosphere: (atmosphere: Atmosphere | null) => void;
   themeColors: ThemeColors;
+  onRandomize?: () => void;
 }
 
 export function AtmosphereSelector({
@@ -30,6 +32,7 @@ export function AtmosphereSelector({
   conflicts,
   onSelectAtmosphere,
   themeColors,
+  onRandomize,
 }: AtmosphereSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -56,7 +59,17 @@ export function AtmosphereSelector({
           help={helpDescriptions.atmosphere}
           themeColors={themeColors}
         />
-        <SectionLock isLocked={isLocked} onToggle={onToggleLock} themeColors={themeColors} />
+        <div className="flex items-center gap-1.5">
+          {onRandomize && (
+            <MagicButton
+              onClick={onRandomize}
+              disabled={isLocked}
+              themeColors={themeColors}
+              size="sm"
+            />
+          )}
+          <SectionLock isLocked={isLocked} onToggle={onToggleLock} themeColors={themeColors} />
+        </div>
       </div>
 
       <div ref={dropdownRef} className="relative">
@@ -132,6 +145,7 @@ export function AtmosphereSelector({
                   ([key, config]) => {
                     const isBlocked = conflicts.blockedAtmospheres.has(key);
                     const isSelected = selectedAtmosphere === key;
+                    const blockReason = conflicts.atmosphereBlockReasons.get(key);
 
                     return (
                       <button
@@ -143,11 +157,12 @@ export function AtmosphereSelector({
                           }
                         }}
                         disabled={isBlocked}
-                        className="w-full px-3 py-2.5 flex items-center gap-3 hover:bg-black/5 transition-colors"
+                        className="w-full px-3 py-2.5 flex items-center gap-3 hover:bg-black/5 transition-colors group"
                         style={{
-                          opacity: isBlocked ? 0.4 : 1,
+                          opacity: isBlocked ? 0.5 : 1,
                           backgroundColor: isSelected ? themeColors.promptBg : 'transparent',
                         }}
+                        title={isBlocked && blockReason ? `${blockReason.reason}` : undefined}
                       >
                         {/* Color swatch */}
                         <div
@@ -167,7 +182,13 @@ export function AtmosphereSelector({
                             className="text-xs"
                             style={{ color: themeColors.textTertiary }}
                           >
-                            {config.description}
+                            {isBlocked && blockReason ? (
+                              <span style={{ color: themeColors.warning }}>
+                                {blockReason.reason}
+                              </span>
+                            ) : (
+                              config.description
+                            )}
                           </div>
                         </div>
 

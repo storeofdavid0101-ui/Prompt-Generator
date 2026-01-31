@@ -52,8 +52,18 @@ export interface DirectorStyle {
   /** Brief description of the visual style */
   readonly description: string;
 
-  /** Keywords injected into the prompt */
+  /** Keywords injected into the prompt (includes director name) */
   readonly keywords: string;
+
+  /** Keywords without director name for models with content restrictions (e.g., ChatGPT) */
+  readonly anonymousKeywords: string;
+
+  /**
+   * Safe keywords for models with strict content policies (ChatGPT, DALL-E).
+   * Avoids fingerprinted phrase combinations and potentially flagged terms.
+   * Falls back to anonymousKeywords if not provided.
+   */
+  readonly safeKeywords?: string;
 
   /** Atmospheres that conflict with this style */
   readonly blockedAtmospheres: readonly Atmosphere[];
@@ -93,6 +103,23 @@ export interface EffectStackingWarning {
 }
 
 /**
+ * Block reason explaining why an option is blocked.
+ * Used for tooltip display on blocked options.
+ */
+export interface BlockReason {
+  /** The source that caused the block (e.g., "Wes Anderson", "Cyberpunk atmosphere") */
+  readonly source: string;
+  /** Human-readable reason for the block */
+  readonly reason: string;
+}
+
+/**
+ * Map of blocked option keys to their block reasons.
+ * Used to display tooltips explaining why options are blocked.
+ */
+export type BlockReasonMap = Map<string, BlockReason>;
+
+/**
  * Complete conflict detection result.
  *
  * Aggregated output from conflict analysis containing all
@@ -111,6 +138,15 @@ export interface ConflictResult {
   /** Set of cameras blocked by current selections */
   readonly blockedCameras: Set<string>;
 
+  /** Set of shots blocked by current selections */
+  readonly blockedShots: Set<string>;
+
+  /** Set of lens categories blocked by current selections */
+  readonly blockedLensCategories: Set<string>;
+
+  /** Set of lighting options blocked by current selections */
+  readonly blockedLighting: Set<string>;
+
   /** Array of human-readable active conflict descriptions */
   readonly activeConflicts: readonly string[];
 
@@ -128,4 +164,28 @@ export interface ConflictResult {
 
   /** Restricted aspect ratios if any (mutable for component compatibility) */
   readonly allowedAspectRatios: string[] | null;
+
+  /** Map of blocked atmosphere keys to their block reasons */
+  readonly atmosphereBlockReasons: BlockReasonMap;
+
+  /** Map of blocked preset keys to their block reasons */
+  readonly presetBlockReasons: BlockReasonMap;
+
+  /** Map of blocked camera keys to their block reasons */
+  readonly cameraBlockReasons: BlockReasonMap;
+
+  /** Map of blocked DOF keys to their block reasons */
+  readonly dofBlockReasons: BlockReasonMap;
+
+  /** Map of blocked shot keys to their block reasons */
+  readonly shotBlockReasons: BlockReasonMap;
+
+  /** Map of blocked lens category keys to their block reasons */
+  readonly lensBlockReasons: BlockReasonMap;
+
+  /** Map of blocked lighting keys to their block reasons */
+  readonly lightingBlockReasons: BlockReasonMap;
+
+  /** Style stacking warning if too many style assertions */
+  readonly styleStackingWarning: string | null;
 }

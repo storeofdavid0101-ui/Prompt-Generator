@@ -55,6 +55,12 @@ interface ContentStateReturn {
   readonly characterItems: CharacterItem[];
   readonly currentCharacter: string;
   readonly setCurrentCharacter: Setter<string>;
+  readonly gazeDirection: string;
+  readonly setGazeDirection: Setter<string>;
+  readonly poseAction: string;
+  readonly setPoseAction: Setter<string>;
+  readonly characterPosition: string;
+  readonly setCharacterPosition: Setter<string>;
   readonly location: string;
   readonly setLocation: Setter<string>;
   readonly addCharacter: ResetAction;

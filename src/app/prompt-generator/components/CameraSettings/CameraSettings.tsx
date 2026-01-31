@@ -77,6 +77,7 @@ export const CameraSettings = memo(function CameraSettings({
   onCustomShotChange,
   onAspectRatioChange,
   onToggleSection,
+  onRandomize,
 }: CameraSettingsProps) {
   return (
     <section aria-labelledby="camera-settings-header">
@@ -90,6 +91,7 @@ export const CameraSettings = memo(function CameraSettings({
         help={helpDescriptions.camera}
         onToggle={onToggleSection}
         onToggleLock={onToggleLock}
+        onRandomize={onRandomize}
         themeColors={themeColors}
       />
 
@@ -108,6 +110,7 @@ export const CameraSettings = memo(function CameraSettings({
                 selectedCamera={selectedCamera}
                 customCamera={customCamera}
                 blockedCameras={conflicts.blockedCameras}
+                cameraBlockReasons={conflicts.cameraBlockReasons}
                 onCameraChange={onCameraChange}
                 onCustomCameraChange={onCustomCameraChange}
                 isLocked={isLocked}

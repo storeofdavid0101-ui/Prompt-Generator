@@ -8,6 +8,7 @@
  */
 
 import type { ThemeColors, ConflictResult, ZoomRange, HelpDescription } from '../../config/types';
+import type { BlockReasonMap } from '../../config/types/conflict';
 
 /**
  * Base props shared across all camera sub-components
@@ -101,6 +102,8 @@ export interface CameraTypeSelectorProps extends BaseCameraProps {
   customCamera: string;
   /** Set of blocked camera names from conflicts */
   blockedCameras: Set<string>;
+  /** Map of blocked camera names to their block reasons */
+  cameraBlockReasons?: BlockReasonMap;
   /** Callback when camera selection changes */
   onCameraChange: (camera: string) => void;
   /** Callback when custom camera input changes */
@@ -197,4 +200,6 @@ export interface CameraSettingsProps {
   onAspectRatioChange: (ratio: string) => void;
   /** Callback to toggle section expansion */
   onToggleSection: (key: string) => void;
+  /** Optional callback for magic randomize */
+  onRandomize?: () => void;
 }

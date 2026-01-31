@@ -19,6 +19,15 @@ export interface PromptBuilderParams {
   /** Currently typed character (not yet added) */
   currentCharacter: string;
 
+  /** Selected gaze direction for character */
+  gazeDirection: string;
+
+  /** Selected pose/action for character */
+  poseAction: string;
+
+  /** Character position in frame (left/center/right) */
+  characterPosition: string;
+
   /** Scene location or setting */
   location: string;
 
@@ -108,6 +117,15 @@ export interface ResolvedComponents {
 
   /** All character descriptions combined */
   characters: string[];
+
+  /** Gaze direction keywords or null */
+  gaze: string | null;
+
+  /** Pose/action keywords or null */
+  pose: string | null;
+
+  /** Character position keywords or null */
+  position: string | null;
 
   /** Formatted location string */
   location: string;

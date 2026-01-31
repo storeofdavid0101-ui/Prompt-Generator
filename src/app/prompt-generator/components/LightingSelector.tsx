@@ -19,6 +19,7 @@ interface LightingSelectorProps {
   onSelectLighting: (lighting: string | null) => void;
   onToggleSection: (key: string) => void;
   themeColors: ThemeColors;
+  onRandomize?: () => void;
 }
 
 type LightingCategory = 'classic' | 'natural' | 'stylized';
@@ -37,6 +38,7 @@ export function LightingSelector({
   onSelectLighting,
   onToggleSection,
   themeColors,
+  onRandomize,
 }: LightingSelectorProps) {
   const renderCategory = (category: LightingCategory) => (
     <div key={category}>
@@ -84,6 +86,7 @@ export function LightingSelector({
         help={helpDescriptions.lighting}
         onToggle={onToggleSection}
         onToggleLock={onToggleLock}
+        onRandomize={onRandomize}
         themeColors={themeColors}
       />
       <AnimatePresence>

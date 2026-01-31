@@ -71,6 +71,13 @@ export interface ModelConfig {
 
   /** Prompt formatting style for this model */
   readonly promptStyle: PromptStyle;
+
+  /**
+   * Whether the model has strict content policies (like ChatGPT/DALL-E).
+   * When true, uses safe alternatives for director styles, atmospheres,
+   * magic subjects, and filters problematic combinations.
+   */
+  readonly strictContentPolicy?: boolean;
 }
 
 /**

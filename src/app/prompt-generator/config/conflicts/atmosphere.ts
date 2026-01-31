@@ -34,7 +34,8 @@ export const atmosphereBlocksCategories: Partial<Record<Atmosphere, CameraCatego
  * atmosphereBlocksDOF.dreamy // ['shallow']
  */
 export const atmosphereBlocksDOF: Partial<Record<Atmosphere, DOFValue[]>> = {
-  dreamy: ['shallow'],
+  dreamy: ['shallow', 'tilt-shift'], // Both cause blur stacking with dreamy's soft focus
+  romantic: ['shallow'], // Romantic's soft glow + shallow DOF causes effect stacking
 };
 
 /**

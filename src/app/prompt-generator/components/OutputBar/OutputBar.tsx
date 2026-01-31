@@ -24,6 +24,7 @@ import {
   CONTAINER_MAX_WIDTH,
   DISCLAIMER_TEXT,
 } from './constants';
+import { FeedbackButton } from '../FeedbackButton';
 
 /**
  * OutputBar component - Sticky bottom bar with prompt preview and action buttons
@@ -133,13 +134,16 @@ export const OutputBar = memo(function OutputBar({
                 themeColors={themeColors}
               />
 
-              {/* Disclaimer */}
-              <p
-                className="text-[10px] text-center mt-3 opacity-60"
-                style={disclaimerStyles}
-              >
-                {DISCLAIMER_TEXT}
-              </p>
+              {/* Disclaimer and Feedback */}
+              <div className="flex items-center justify-center gap-3 mt-3">
+                <FeedbackButton themeColors={themeColors} />
+                <p
+                  className="text-[10px] opacity-60"
+                  style={disclaimerStyles}
+                >
+                  {DISCLAIMER_TEXT}
+                </p>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>

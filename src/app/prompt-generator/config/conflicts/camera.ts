@@ -34,7 +34,6 @@ export const cameraCategories: Record<string, CameraCategory> = {
   // Vintage Lo-Fi (inherently low quality, no DOF control)
   'VHS Camcorder': 'vintage-lofi',
   Betacam: 'vintage-lofi',
-  Hi8: 'vintage-lofi',
   MiniDV: 'vintage-lofi',
   Handycam: 'vintage-lofi',
   '8mm Film': 'vintage-lofi',
@@ -73,7 +72,6 @@ export const cameraCategories: Record<string, CameraCategory> = {
 
   // Modern Cinema
   'ARRI Alexa': 'modern-cinema',
-  'ARRI Alexa Mini': 'modern-cinema',
   'ARRI Alexa 65': 'modern-cinema',
   'RED Komodo': 'modern-cinema',
   'RED V-Raptor': 'modern-cinema',
@@ -81,19 +79,12 @@ export const cameraCategories: Record<string, CameraCategory> = {
   'Sony FX9': 'modern-cinema',
   'Blackmagic URSA': 'modern-cinema',
   'Canon C500': 'modern-cinema',
-  'Canon C70': 'modern-cinema',
   'Panavision DXL2': 'modern-cinema',
 
-  // Modern Digital
+  // Modern Digital (Premium Photography)
   'Hasselblad X2D': 'modern-digital',
   'Leica M11': 'modern-digital',
   'Phase One XF': 'modern-digital',
-  'Canon 5D Mark IV': 'modern-digital',
-  'Canon R5': 'modern-digital',
-  'Nikon D850': 'modern-digital',
-  'Nikon Z9': 'modern-digital',
-  'Sony A7S III': 'modern-digital',
-  'Sony A1': 'modern-digital',
 
   // Consumer/Mobile
   GoPro: 'consumer-mobile',
@@ -179,10 +170,6 @@ export const cameraZoomRange: Record<string, ZoomRange> = {
   Handycam: {
     range: '3.6-36mm (40-400mm equiv)',
     options: ['3.6mm (Wide)', '10mm', '20mm', '36mm (Tele)'],
-  },
-  Hi8: {
-    range: '5.4-54mm (42-420mm equiv)',
-    options: ['5.4mm (Wide)', '15mm', '30mm', '54mm (Tele)'],
   },
   Betacam: {
     range: '8.5-119mm broadcast zoom',

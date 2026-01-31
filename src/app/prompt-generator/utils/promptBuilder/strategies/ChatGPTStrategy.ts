@@ -39,6 +39,7 @@ export const ChatGPTStrategy: ModelStrategy = {
       prompt += `, without ${context.negativePrompt.trim()}`;
     }
 
-    return prompt;
+    // Add "generate this:" prefix to help ChatGPT understand intent
+    return `generate this: ${prompt}`;
   },
 };

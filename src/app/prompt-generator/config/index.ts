@@ -73,9 +73,67 @@ export {
   directorLightingRedundancy,
   directorPresetRedundancy,
   directorAtmosphereRedundancy,
+  // Location conflicts
+  locationMeta,
+  atmosphereEraConflicts,
+  lightingLocationConflicts,
+  shotScaleConflicts,
+  getLocationMeta,
+  isAtmosphereBlockedByLocation,
+  isLightingBlockedByLocation,
+  // Camera grammar conflicts
+  shotGrammar,
+  shotLensConflicts,
+  shotDOFConflicts,
+  lensDOFConflicts,
+  lensRecommendedShots,
+  isLensBlockedByShot,
+  isDOFBlockedByShot,
+  isDOFBlockedByLens,
+  getRecommendedShots,
+  getBlockedLensesForShot,
+  // Style stacking
+  directorImpliedStyles,
+  atmosphereImpliedStyles,
+  presetImpliedStyles,
+  lightingImpliedStyles,
+  STYLE_CATEGORY_LIMITS,
+  analyzeStyleStacking,
+  getReducingOptions,
+  // Director-lens conflicts
+  directorBlockedLens,
+  getDirectorBlockedLenses,
+  // Subject-location compatibility
+  filterCompatibleLocations,
 } from './conflicts';
-export type { RedundancyKey, DirectorWithConflicts } from './conflicts';
+export type {
+  RedundancyKey,
+  DirectorWithConflicts,
+  LocationCategory,
+  LocationMetaCategory,
+  LocationScale,
+  LocationEra,
+  LocationMeta,
+  ShotGrammar,
+  StyleCategory,
+  StyleStackingAnalysis,
+} from './conflicts';
 
 // Help descriptions
 export { helpDescriptions } from './helpDescriptions';
 export type { HelpDescription } from './helpDescriptions';
+
+// Magic randomize subjects
+export {
+  magicSubjects,
+  magicCharacters,
+  getRandomItem,
+  getRandomSubject,
+  getRandomSubjectWithMeta,
+  getSubjectText,
+  getRandomCharacter,
+  getCharacterText,
+  getMatchingCharacter,
+  getSubjectThemes,
+} from './magicSubjects';
+export type { MagicSubject, MagicCharacter, SubjectTheme } from './magicSubjects';
