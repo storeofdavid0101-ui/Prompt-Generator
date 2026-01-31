@@ -113,6 +113,18 @@ export function PromptGenerator() {
     }
   }, [state]);
 
+  const handleCameraChange = useCallback((camera: string) => {
+    analytics.trackCameraSelect(camera);
+    state.handleCameraChange(camera);
+  }, [state]);
+
+  const handleCreativeControlsToggle = useCallback(() => {
+    if (!state.lockedSections.advanced) {
+      analytics.trackCreativeControlsToggle(!state.creativeControlsEnabled);
+      state.setCreativeControlsEnabled(!state.creativeControlsEnabled);
+    }
+  }, [state]);
+
   return (
     <div
       className="min-h-screen pb-80 transition-colors duration-300"
@@ -258,7 +270,7 @@ export function PromptGenerator() {
               isLocked={state.lockedSections.camera}
               onToggleLock={() => state.toggleLock('camera')}
               conflicts={state.conflicts}
-              onCameraChange={state.handleCameraChange}
+              onCameraChange={handleCameraChange}
               onCustomCameraChange={(v) => !state.lockedSections.camera && state.setCustomCamera(v)}
               onLensChange={handleLensChange}
               onCustomLensChange={(v) => !state.lockedSections.camera && state.setCustomLens(v)}
@@ -296,9 +308,7 @@ export function PromptGenerator() {
           onToggleLock={() => state.toggleLock('advanced')}
           conflicts={state.conflicts}
           onNegativePromptChange={(v) => !state.lockedSections.advanced && state.setNegativePrompt(v)}
-          onCreativeControlsToggle={() =>
-            !state.lockedSections.advanced && state.setCreativeControlsEnabled(!state.creativeControlsEnabled)
-          }
+          onCreativeControlsToggle={handleCreativeControlsToggle}
           onCreativityChange={(v) => !state.lockedSections.advanced && state.setCreativity(v)}
           onVariationChange={(v) => !state.lockedSections.advanced && state.setVariation(v)}
           onUniquenessChange={(v) => !state.lockedSections.advanced && state.setUniqueness(v)}
